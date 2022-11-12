@@ -1,0 +1,28 @@
+---
+title: "P8105 Final Project"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+\ \par
+
+Hi, welcome to explore this project
+
+\ \par
+
+### Introduction
+
+This is the final project of P8105 Data Science.
+
+\ \par
+
+### Contact Information
+
+Shaohan Chen
+
+Columbia Mailman School of Public Health
+
+100 Haven Ave, New York, NY 10032
+

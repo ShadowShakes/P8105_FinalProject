@@ -1,0 +1,23 @@
+---
+title: "About our team and this project"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+### Team Members
+
+Our project team:
+
+Jiajun Tao
+
+Hongru Tang
+
+Hongjie Liu
+
+Shaohan Chen
+
+Zijian Xu
+
+<img src="Images/about.jpeg" style="width:80%">

@@ -6,18 +6,37 @@ output:
     toc_float: true
 ---
 
+   
+\ \par
+
+\ \par
+
+\ \par
+       
+
 ### Team Members
 
-Our project team:
+\ \par
 
-Jiajun Tao
+\ \par
 
-Hongru Tang
+<img src="Images/Team_Members/Jiajun_Tao.png" style="width:15%">   \ \ \ \ \ \ \ \ \ Leader of  
+\ \ \ \ \ \ \ **Jiajun Tao**
 
-Hongjie Liu
+\ \par
+<img src="Images/Team_Members/Hongru_Tang.png" style="width:15%">  \ \ \ \ \ \ \ \ \ Leader of  
+\ \ \ \ \ \ **Hongru Tang**
 
-Shaohan Chen
+\ \par
+<img src="Images/Team_Members/Hongjie_Liu.png" style="width:15%">  \ \ \ \ \ \ \ \ \ Leader of   
+\ \ \ \ \ \ \ \ **Hongjie Liu**
+ 
+\ \par
+<img src="Images/Team_Members/Shaohan_Chen.png" style="width:15%">  \ \ \ \ \ \ \ \ \ Leader of  
+\ \ \ \ **Shaohan Chen**
+ 
+\ \par
+<img src="Images/Team_Members/Zijian_Xu.png" style="width:15%">  \ \ \ \ \ \ \ \ \ Leader of  
+\ \ \ \ \ \ \ \ \ \ **Zijian Xu**
 
-Zijian Xu
 
-<img src="Images/about.jpeg" style="width:80%">

@@ -2,6 +2,15 @@ name: "Final Project"
 output_dir: "."
 navbar:
   title: "Home"
+  left:
+    - text: "Visual Analysis"
+      href: about.html 
+    - text: "Statistical Analysis"
+      href: about.html 
+    - text: "Linear Analysis"
+      href: about.html 
+    - text: "Conclusion and Report"
+      href: about.html 
   right:
     - text: "About"
       href: about.html

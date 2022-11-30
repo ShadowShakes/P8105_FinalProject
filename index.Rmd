@@ -20,7 +20,7 @@ This is the final project of P8105 Data Science.
 
 ### Contact Information
 
-Shaohan Chen
+Shaohan Chen (Project Contact)
 
 Columbia Mailman School of Public Health
 

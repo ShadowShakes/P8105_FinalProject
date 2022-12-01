@@ -4,13 +4,13 @@ navbar:
   title: "Home"
   left:
     - text: "Visual Analysis"
-      href: about.html 
+      href: https://github.com/ 
     - text: "Statistical Analysis"
-      href: about.html 
+      href: https://github.com/ 
     - text: "Linear Analysis"
-      href: about.html 
+      href: https://github.com/ 
     - text: "Conclusion and Report"
-      href: about.html 
+      href: https://github.com/ 
   right:
     - text: "About"
       href: about.html

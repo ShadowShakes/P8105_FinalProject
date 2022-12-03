@@ -60,7 +60,7 @@ We obtain the complaint data for each year from 2016 to 2022 as mentioned above.
 
 We want to get rid of redundant variables or variables with little information, and only keep those important.
 
-After a decision, we retained `CMPLNT_NUM`, `ADDR_PCT_CD`, `BORO_NM`, `CMPLNT_FR_DT`, `CMPLNT_FR_TM`, `CRM_ATPT_CPTD_CD`, `JURIS_DESC`, `LAW_CAT_CD`, `OFNS_DESC`, `SUSP_AGE_GROUP`, `SUSP_RACE`, `SUSP_SEX`, `VIC_AGE_GROUP`, `VIC_RACE`, `VIC_SEX`, `Latitude`, and `Longitude`.
+After a decision, we retained `CMPLNT_NUM`, `ADDR_PCT_CD`, `BORO_NM`, `CMPLNT_FR_DT`, `CMPLNT_FR_TM`, `CRM_ATPT_CPTD_CD`, `JURIS_DESC`, `LAW_CAT_CD`, `OFNS_DESC`, `SUSP_AGE_GROUP`, `SUSP_RACE`, `SUSP_SEX`, `VIC_AGE_GROUP`, `VIC_RACE`, `VIC_SEX`, `Latitude`, and `Longitude`. And rename some variables to more reasonable names.
 
 ```{r}
 files_name = list.files("data/")
@@ -92,7 +92,17 @@ cleaning_data = function(filename){
       vic_age_group = factor(vic_age_group),
       vic_race = factor(vic_race),
       vic_sex = factor(vic_sex)
-    ) 
+    ) %>% 
+    rename(
+      precinct = addr_pct_cd,
+      borough = boro_nm,
+      date = cmplnt_fr_dt,
+      time = cmplnt_fr_tm,
+      atpt_cptd = crm_atpt_cptd_cd,
+      jurisdiction = juris_desc,
+      level = law_cat_cd,    
+      offense = ofns_desc
+    )
   
   exporting_path = str_c("data/cleaned_", filename)
   

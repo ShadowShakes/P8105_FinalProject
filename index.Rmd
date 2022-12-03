@@ -1,5 +1,5 @@
 ---
-title: "P8105 Final Project"
+title: "NYC Safety Complaint Analysis"
 output: 
   html_document:
     toc: true
@@ -8,19 +8,61 @@ output:
 
 \ \par
 
-Hi, welcome to explore this project
+<img src="Images/nypd_3.jpeg" style="width:100%">
 
 \ \par
 
+Hi! This is the final project of P8105 Data Science, and welcome to explore this project.
+
+
 ### Introduction
 
-This is the final project of P8105 Data Science.
+During this semester we have received many local safety alerts from campus safety department and apps like "Citizen". Last month, a shooting case happened on the Broadway very close to our campus. This further raised our team's strong intention to conduct exploration and analysis of CUMC local and New York City's safety problems.
+
+<center class="half">
+![](//v.fastcdn.co/u/3d5e9daf/62717465-0-Untitled--Frame-7094.gif){width=40%}
+</center>
+ 
+\ \par
+In this project, we will first conduct data cleaning, exploratory data analytics so as to better understand the distribution and features of NYC criminal complaint. Next, we will research if the Covid-19 pandemic did have an impact on the crime reports'  distribution in NYC. In the end, we will implement an interactive map to help visualize the criminal complaints distribution and summraize our final conclusions.
+
+\ \par
+
+### Project Guide
+
+Based on this github website, you can explore different parts of our projects freely.
+
+We mainly divide our project into following parts:
+
+* Data Preprocessing  
+Clean and tidy the dataset, retain useful variables and deal with nulls and outliers.
+
+* Data visualization analysis  
+Conduct visual analysis based on a series of data visualization plots.
+
+* Statistical modelling analysis  
+Build statistical models to give prediction and interpretation of the modelling.
+
+* Statistical testing analysis  
+Statistical testings and give analysis.
+
+* Interactive map  
+Implementation of an interactive map.
+
+* Conclusions and report  
+Draw conclusions and summarize our findings.
+
+\ \par
+
+If you have any questions and suggestions for our project, please feel free to contact us!
 
 \ \par
 
 ### Contact Information
 
 Shaohan Chen (Project Contact)
+
+<sc5154@cumc.columiba.edu>
 
 Columbia Mailman School of Public Health
 

@@ -19,8 +19,7 @@ navbar:
     - icon: fa-envelope fa-lg
       href: mailto:<sc5154@cumc.columiba.edu>
     - icon: fa-github fa-lg
-      href: https://github.com/
-
+      href: https://github.com/ShadowShakes/P8105_Final_Project
 output:
   html_document:
     theme: flatly

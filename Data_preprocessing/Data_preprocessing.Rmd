@@ -60,7 +60,7 @@ We obtain the complaint data for each year from 2016 to 2022 as mentioned above.
 
 We want to get rid of redundant variables or variables with little information, and only keep those important.
 
-After a decision, we retained `CMPLNT_NUM`, `ADDR_PCT_CD`, `BORO_NM`, `CMPLNT_FR_DT`, `CMPLNT_FR_TM`, `CRM_ATPT_CPTD_CD`, `JURISDICTION_CODE`, `JURIS_DESC`, `KY_CD`, `LAW_CAT_CD`, `OFNS_DESC`, `SUSP_AGE_GROUP`, `SUSP_RACE`, `SUSP_SEX`, `VIC_AGE_GROUP`, `VIC_RACE`, `VIC_SEX`, `Latitude`, and `Longitude`.
+After a decision, we retained `CMPLNT_NUM`, `ADDR_PCT_CD`, `BORO_NM`, `CMPLNT_FR_DT`, `CMPLNT_FR_TM`, `CRM_ATPT_CPTD_CD`, `JURIS_DESC`, `LAW_CAT_CD`, `OFNS_DESC`, `SUSP_AGE_GROUP`, `SUSP_RACE`, `SUSP_SEX`, `VIC_AGE_GROUP`, `VIC_RACE`, `VIC_SEX`, `Latitude`, and `Longitude`.
 
 ```{r}
 files_name = list.files("data/")
@@ -71,7 +71,7 @@ cleaning_data = function(filename){
   
   clean_df = 
     read_csv(path) %>% 
-    select(CMPLNT_NUM, ADDR_PCT_CD, BORO_NM, CMPLNT_FR_DT, CMPLNT_FR_TM, CRM_ATPT_CPTD_CD, JURISDICTION_CODE, JURIS_DESC, KY_CD, LAW_CAT_CD, OFNS_DESC, SUSP_AGE_GROUP, SUSP_RACE, SUSP_SEX, VIC_AGE_GROUP, VIC_RACE, VIC_SEX, Latitude, Longitude) %>% 
+    select(CMPLNT_NUM, ADDR_PCT_CD, BORO_NM, CMPLNT_FR_DT, CMPLNT_FR_TM, CRM_ATPT_CPTD_CD, JURIS_DESC, LAW_CAT_CD, OFNS_DESC, SUSP_AGE_GROUP, SUSP_RACE, SUSP_SEX, VIC_AGE_GROUP, VIC_RACE, VIC_SEX, Latitude, Longitude) %>% 
     janitor::clean_names() %>% 
     mutate(
       susp_age_group = ifelse(susp_age_group %in% c("<18", "18-24", "25-44", "45-64", "65+"), susp_age_group, "UNKNOWN"),
@@ -83,9 +83,7 @@ cleaning_data = function(filename){
       addr_pct_cd = factor(addr_pct_cd),
       boro_nm = factor(boro_nm),
       crm_atpt_cptd_cd = factor(crm_atpt_cptd_cd),
-      jurisdiction_code = factor(jurisdiction_code),
       juris_desc = factor(juris_desc),
-      ky_cd = factor(ky_cd),
       law_cat_cd = factor(law_cat_cd),
       ofns_desc = factor(ofns_desc),
       susp_age_group = factor(susp_age_group),

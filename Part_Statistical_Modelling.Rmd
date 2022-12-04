@@ -1,11 +1,14 @@
 ---
-title: "hongru Tang"
-author: "ht2611"
-date: "2022-12-03"
-output: github_document
+title: "Statistical Modelling"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: show
 ---
 
-## data clean
+
+\ \par
 
 ```{r}
 library(tidyverse)
@@ -15,8 +18,13 @@ library(dbplyr)
 library(plyr)
 ```
 
+\ \par
+
+### Data cleaning
+
+
 ```{r}
-setwd(dir="./Data_preprocessing/data")
+setwd(dir = "./Data_preprocessing/data")
 a <- list.files()     
 a 
 dir <- paste("./",a,sep="")                 
@@ -32,16 +40,16 @@ for (i in 2:7){
 }
 ```
 
-## data clean, drop data with unknown
+### Data cleaning, drop data with unknown
 ```{r}
 # filter data with unknown
 tidydata1=merge_data%>%
   na.omit()%>%
-  filter(!susp_sex=="U")%>%
-  filter(!susp_race=="UNKNOWN")%>%
-  filter(!susp_age_group=="UNKNOWN")%>%
-   filter(!vic_race=="UNKNOWN")%>%
-  filter(!vic_age_group=="UNKNOWN")%>%
+  filter(!susp_sex == "U")%>%
+  filter(!susp_race == "UNKNOWN")%>%
+  filter(!susp_age_group == "UNKNOWN")%>%
+   filter(!vic_race == "UNKNOWN")%>%
+  filter(!vic_age_group == "UNKNOWN")%>%
   separate(date,into=c("mon","day","year"),sep="/")%>%
   mutate(jurisdiction_code=as.numeric(jurisdiction_code))%>%
   mutate(susp_sex=ifelse(susp_sex=="M",1,0),vic_sex=ifelse(vic_sex=="M",1,0),jurisdiction_code=ifelse(jurisdiction_code>=3,3,jurisdiction_code+0))%>%
@@ -50,7 +58,7 @@ tidydata1=merge_data%>%
 # when year >=2020, we assume the world is in a covid state.
 ```
 
-## susp sex is a predictor, use logisitc regression
+### The variable susp_sex is a predictor, so we use logisitc regression
 
 ```{r}
 mylogit <- glm(susp_sex ~ precinct
@@ -106,7 +114,7 @@ tidydata1 %>%
   theme(axis.text.x = element_text(angle = 80, hjust = 1))+facet_wrap(~covid_state)
 ```
 
-## susp race is a predictor
+### Use susp_race is a predictor
 ```{r}
 # There are lot of race, we only focus on white and black
 tidydata2=tidydata1%>%

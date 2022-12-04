@@ -6,9 +6,9 @@ navbar:
     - text: "Data Processing"
       href: Part_Data_Preprocessing.html 
     - text: "Visual Analysis"
-      href: https://github.com/ 
+      href: https://github.com/
     - text: "Statistical Analysis"
-      href: https://github.com/ 
+      href: Part_Statistical_Modelling.html 
     - text: "Statistical Modelling"
       href: https://github.com/ 
     - text: "Conclusion and Report"

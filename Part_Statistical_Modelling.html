@@ -9,11 +9,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="ht2611" />
 
-<meta name="date" content="2022-12-03" />
 
-<title>hongru Tang</title>
+<title>Statistical Modelling</title>
 
 <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
 <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
@@ -31,7 +29,11 @@
        h6 {font-size: 12px;}
        code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
        pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
@@ -227,7 +229,73 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
 
 
 
@@ -237,6 +305,16 @@ $(document).ready(function () {
 
 
 <div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
 
 
 
@@ -260,7 +338,7 @@ $(document).ready(function () {
   <a href="https://github.com/">Visual Analysis</a>
 </li>
 <li>
-  <a href="https://github.com/">Statistical Analysis</a>
+  <a href="Part_Statistical_Modelling.html">Statistical Analysis</a>
 </li>
 <li>
   <a href="https://github.com/">Statistical Modelling</a>
@@ -292,53 +370,50 @@ $(document).ready(function () {
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
 
 
-<h1 class="title toc-ignore">hongru Tang</h1>
-<h4 class="author">ht2611</h4>
-<h4 class="date">2022-12-03</h4>
+
+<h1 class="title toc-ignore">Statistical Modelling</h1>
 
 </div>
 
 
-<div id="data-clean" class="section level2">
-<h2>data clean</h2>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-## ✔ ggplot2 3.3.6      ✔ purrr   0.3.4 
-## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
-## ✔ tidyr   1.2.0      ✔ stringr 1.4.1 
-## ✔ readr   2.1.2      ✔ forcats 0.5.2 
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(purrr)
+ 
+<pre class="r"><code>library(tidyverse)
+library(purrr)
 library(modelr)
 library(dbplyr)</code></pre>
 <pre><code>## 
-## 载入程辑包：&#39;dbplyr&#39;
-## 
-## The following objects are masked from &#39;package:dplyr&#39;:
+## Attaching package: &#39;dbplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
 ## 
 ##     ident, sql</code></pre>
 <pre class="r"><code>library(plyr)</code></pre>
-<pre><code>## ------------------------------------------------------------------------------
-## You have loaded plyr after dplyr - this is likely to cause problems.
+<pre><code>## ------------------------------------------------------------------------------</code></pre>
+<pre><code>## You have loaded plyr after dplyr - this is likely to cause problems.
 ## If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
-## library(plyr); library(dplyr)
-## ------------------------------------------------------------------------------
-## 
-## 载入程辑包：&#39;plyr&#39;
-## 
-## The following objects are masked from &#39;package:dplyr&#39;:
+## library(plyr); library(dplyr)</code></pre>
+<pre><code>## ------------------------------------------------------------------------------</code></pre>
+<pre><code>## 
+## Attaching package: &#39;plyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
 ## 
 ##     arrange, count, desc, failwith, id, mutate, rename, summarise,
-##     summarize
-## 
-## The following object is masked from &#39;package:purrr&#39;:
+##     summarize</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
 ## 
 ##     compact</code></pre>
-<pre class="r"><code>setwd(dir=&quot;./Data_preprocessing/data&quot;)
+ 
+<div id="data-cleaning" class="section level3">
+<h3>Data cleaning</h3>
+<pre class="r"><code>setwd(dir = &quot;./Data_preprocessing/data&quot;)
 a &lt;- list.files()     
 a </code></pre>
 <pre><code>## [1] &quot;cleaned_NYPD_2016.csv&quot; &quot;cleaned_NYPD_2017.csv&quot; &quot;cleaned_NYPD_2018.csv&quot;
@@ -356,16 +431,16 @@ for (i in 2:7){
   merge_data &lt;- rbind(merge_data,new.data)
 }</code></pre>
 </div>
-<div id="data-clean-drop-data-with-unknown" class="section level2">
-<h2>data clean, drop data with unknown</h2>
+<div id="data-cleaning-drop-data-with-unknown" class="section level3">
+<h3>Data cleaning, drop data with unknown</h3>
 <pre class="r"><code># filter data with unknown
 tidydata1=merge_data%&gt;%
   na.omit()%&gt;%
-  filter(!susp_sex==&quot;U&quot;)%&gt;%
-  filter(!susp_race==&quot;UNKNOWN&quot;)%&gt;%
-  filter(!susp_age_group==&quot;UNKNOWN&quot;)%&gt;%
-   filter(!vic_race==&quot;UNKNOWN&quot;)%&gt;%
-  filter(!vic_age_group==&quot;UNKNOWN&quot;)%&gt;%
+  filter(!susp_sex == &quot;U&quot;)%&gt;%
+  filter(!susp_race == &quot;UNKNOWN&quot;)%&gt;%
+  filter(!susp_age_group == &quot;UNKNOWN&quot;)%&gt;%
+   filter(!vic_race == &quot;UNKNOWN&quot;)%&gt;%
+  filter(!vic_age_group == &quot;UNKNOWN&quot;)%&gt;%
   separate(date,into=c(&quot;mon&quot;,&quot;day&quot;,&quot;year&quot;),sep=&quot;/&quot;)%&gt;%
   mutate(jurisdiction_code=as.numeric(jurisdiction_code))%&gt;%
   mutate(susp_sex=ifelse(susp_sex==&quot;M&quot;,1,0),vic_sex=ifelse(vic_sex==&quot;M&quot;,1,0),jurisdiction_code=ifelse(jurisdiction_code&gt;=3,3,jurisdiction_code+0))%&gt;%
@@ -373,9 +448,11 @@ tidydata1=merge_data%&gt;%
   mutate(covid_state=ifelse(year&gt;=2020,1,0))
 # when year &gt;=2020, we assume the world is in a covid state.</code></pre>
 </div>
-<div id="susp-sex-is-a-predictor-use-logisitc-regression"
-class="section level2">
-<h2>susp sex is a predictor, use logisitc regression</h2>
+<div
+id="the-variable-susp_sex-is-a-predictor-so-we-use-logisitc-regression"
+class="section level3">
+<h3>The variable susp_sex is a predictor, so we use logisitc
+regression</h3>
 <pre class="r"><code>mylogit &lt;- glm(susp_sex ~ precinct
  + borough + jurisdiction_code+atpt_cptd
 +level+susp_age_group
@@ -469,28 +546,28 @@ tidydata1 %&gt;%
   add_predictions(mylogit) %&gt;% 
   ggplot(aes(x = borough, y = susp_sex)) + geom_point() + 
   geom_line(aes(y = pred), color = &quot;red&quot;)</code></pre>
-<p><img src="hongru-Tang_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="Part_Statistical_Modelling_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code>tidydata1 %&gt;% 
   modelr::add_residuals(mylogit) %&gt;% 
   ggplot(aes(x = borough, y = resid)) + geom_violin()+
    facet_wrap(~covid_state)+theme(axis.text.x = element_text(angle = 80, hjust = 1))</code></pre>
-<p><img src="hongru-Tang_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="Part_Statistical_Modelling_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code>tidydata1 %&gt;% 
   modelr::add_residuals(mylogit) %&gt;% 
   ggplot(aes(x = level, y = resid)) + geom_violin()+facet_wrap(~covid_state)</code></pre>
-<p><img src="hongru-Tang_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="Part_Statistical_Modelling_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <pre class="r"><code>tidydata1 %&gt;% 
   modelr::add_residuals(mylogit) %&gt;% 
   ggplot(aes(x = susp_age_group, y = resid)) + geom_violin()+facet_wrap(~covid_state)</code></pre>
-<p><img src="hongru-Tang_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="Part_Statistical_Modelling_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <pre class="r"><code>tidydata1 %&gt;% 
   modelr::add_residuals(mylogit) %&gt;% 
   ggplot(aes(x = susp_race, y = resid)) + geom_violin()+
   theme(axis.text.x = element_text(angle = 80, hjust = 1))+facet_wrap(~covid_state)</code></pre>
-<p><img src="hongru-Tang_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="Part_Statistical_Modelling_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
-<div id="susp-race-is-a-predictor" class="section level2">
-<h2>susp race is a predictor</h2>
+<div id="use-susp_race-is-a-predictor" class="section level3">
+<h3>Use susp_race is a predictor</h3>
 <pre class="r"><code># There are lot of race, we only focus on white and black
 tidydata2=tidydata1%&gt;%
   filter(susp_race %in% c(&quot;BLACK&quot;,&quot;WHITE&quot;))%&gt;%
@@ -520,19 +597,21 @@ mylogit_2%&gt;%
 <pre class="r"><code>tidydata2 %&gt;% 
   modelr::add_residuals(mylogit_2) %&gt;% 
   ggplot(aes(x = borough, y = resid)) + geom_violin()+facet_wrap(~covid_state)+theme(axis.text.x = element_text(angle = 80, hjust = 1))</code></pre>
-<p><img src="hongru-Tang_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="Part_Statistical_Modelling_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <pre class="r"><code>tidydata2 %&gt;% 
   modelr::add_residuals(mylogit_2) %&gt;% 
   ggplot(aes(x = level, y = resid)) + geom_violin()+facet_wrap(~covid_state)</code></pre>
-<p><img src="hongru-Tang_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="Part_Statistical_Modelling_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <pre class="r"><code>tidydata2 %&gt;% 
   modelr::add_residuals(mylogit_2) %&gt;% 
   ggplot(aes(x = susp_age_group, y = resid)) + geom_violin()+facet_wrap(~covid_state)</code></pre>
-<p><img src="hongru-Tang_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="Part_Statistical_Modelling_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 
 
 
+</div>
+</div>
 
 </div>
 
@@ -564,7 +643,41 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("show" === "show");
+});
+</script>
 
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>

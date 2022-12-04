@@ -338,10 +338,10 @@ div.tocify {
   <a href="https://github.com/">Visual Analysis</a>
 </li>
 <li>
-  <a href="Part_Statistical_Modelling.html">Statistical Analysis</a>
+  <a href="https://github.com/">Statistical Testing</a>
 </li>
 <li>
-  <a href="https://github.com/">Statistical Modelling</a>
+  <a href="Part_Statistical_Modelling.html">Statistical Modelling</a>
 </li>
 <li>
   <a href="https://github.com/">Conclusion and Report</a>
@@ -448,11 +448,8 @@ tidydata1=merge_data%&gt;%
   mutate(covid_state=ifelse(year&gt;=2020,1,0))
 # when year &gt;=2020, we assume the world is in a covid state.</code></pre>
 </div>
-<div
-id="the-variable-susp_sex-is-a-predictor-so-we-use-logisitc-regression"
-class="section level3">
-<h3>The variable susp_sex is a predictor, so we use logisitc
-regression</h3>
+<div id="logisitc-regression-of-susp_sex" class="section level3">
+<h3>Logisitc regression of susp_sex</h3>
 <pre class="r"><code>mylogit &lt;- glm(susp_sex ~ precinct
  + borough + jurisdiction_code+atpt_cptd
 +level+susp_age_group
@@ -566,8 +563,8 @@ tidydata1 %&gt;%
   theme(axis.text.x = element_text(angle = 80, hjust = 1))+facet_wrap(~covid_state)</code></pre>
 <p><img src="Part_Statistical_Modelling_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
-<div id="use-susp_race-is-a-predictor" class="section level3">
-<h3>Use susp_race is a predictor</h3>
+<div id="prediction-of-susp_race" class="section level3">
+<h3>Prediction of susp_race</h3>
 <pre class="r"><code># There are lot of race, we only focus on white and black
 tidydata2=tidydata1%&gt;%
   filter(susp_race %in% c(&quot;BLACK&quot;,&quot;WHITE&quot;))%&gt;%

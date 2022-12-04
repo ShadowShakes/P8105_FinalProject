@@ -58,7 +58,7 @@ tidydata1=merge_data%>%
 # when year >=2020, we assume the world is in a covid state.
 ```
 
-### The variable susp_sex is a predictor, so we use logisitc regression
+### Logisitc regression of susp_sex
 
 ```{r}
 mylogit <- glm(susp_sex ~ precinct
@@ -114,7 +114,7 @@ tidydata1 %>%
   theme(axis.text.x = element_text(angle = 80, hjust = 1))+facet_wrap(~covid_state)
 ```
 
-### Use susp_race is a predictor
+### Prediction of susp_race
 ```{r}
 # There are lot of race, we only focus on white and black
 tidydata2=tidydata1%>%

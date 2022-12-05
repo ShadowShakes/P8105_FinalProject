@@ -10,6 +10,10 @@ output:
 
 \ \par
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, message = FALSE, eval = FALSE)
+```
+
 ```{r}
 library(tidyverse)
 library(purrr)

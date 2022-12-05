@@ -3,19 +3,21 @@ output_dir: "."
 navbar:
   title: "Home"
   left:
-    - text: "Data Processing"
+    - text: "Data & Processing"
       href: Part_Data_Preprocessing.html 
-    - text: "Visual Analysis"
-      href: https://github.com/
-    - text: "Statistical Testing"
-      href: https://github.com/
-    - text: "Statistical Modelling"
-      href: Part_Statistical_Modelling.html 
+    - text: 'Data-driven Analysis'
+      menu:
+      - text: "Visual Analysis"
+        href: https://github.com/
+      - text: "Statistical Testing"
+        href: https://github.com/
+      - text: "Machine Learning Modelling"
+        href: Part_Statistical_Modelling.html 
+    - text: "Interactive Map"
+      href: Part_Interactive_Map.html
     - text: "Conclusion and Report"
       href: https://github.com/ 
   right:
-    - text: "Interactive Map"
-      href: Part_Interactive_Map.html
     - text: "About"
       href: about.html
     - icon: fa-envelope fa-lg

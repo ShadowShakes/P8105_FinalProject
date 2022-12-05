@@ -1,0 +1,49 @@
+---
+title: "Data Preprocessing"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
+
+library(tidyverse)
+library(plotly)
+
+```
+
+### Interactive Map 2016
+
+```{r}
+nypd_2016 = read_csv("Data_preprocessing/data/cleaned_NYPD_2016.csv")
+```
+
+
+```{r}
+NYPD_plot = 
+  nypd_2016 %>%
+  filter(
+    offense %in% c("BURGLARY", "FELONY ASSAULT", "GRAND LARCENY", "GRAND LARCENY OF MOTOR VEHICLE", "MURDER", "RAPE", "ROBBERY")
+  ) %>%
+  plot_ly(
+    lat = ~latitude,
+    lon = ~longitude,
+    type = "scattermapbox",
+    mode = "markers",
+    alpha = 0.2,
+    color = ~ borough) %>%
+  layout(
+    mapbox = list(
+      style = "carto-positron",
+      zoom = 9,
+      center = list(lon = -73.9, lat = 40.7)
+    )
+  )
+  
+NYPD_plot  
+```
+

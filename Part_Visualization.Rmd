@@ -13,7 +13,6 @@ library(viridis)
 library(plotly)
 
 knitr::opts_chunk$set(
-	echo = FALSE,
 	message = FALSE,
 	warning = FALSE,
 	fig.width = 10,

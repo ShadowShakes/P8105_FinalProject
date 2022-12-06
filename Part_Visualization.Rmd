@@ -1,0 +1,238 @@
+---
+title: "Exploratory Analysis"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(viridis)
+library(plotly)
+
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	fig.width = 10,
+  out.width = "80%"
+)
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+Our dataset does not contain data for October, November and December of the year 2022. We are interested in the following main felonies: Burglary, Felony Assault, Grand Larceny, Grand Larceny of Motor Vehicle, Murder and Non-negligent Manslaughter, Rape, and Robbery.
+
+```{r read&tidy, include = FALSE}
+complaint =
+  tibble(
+    files = list.files("./Data_preprocessing/data/"),
+    path = str_c("./Data_preprocessing/data/", files)
+  ) %>% 
+  mutate(data = map(path, read_csv)) %>% 
+  unnest(data) %>% 
+  select(-files, -path, -cmplnt_num, -ky_cd, -atpt_cptd, -jurisdiction, -jurisdiction_code) %>% 
+  mutate(day_of_week = strftime(as.Date(date, format = "%m/%d/%Y"),"%a")) %>% 
+  separate(date, into = c("month", "day", "year"), sep = "/", convert = TRUE) %>% 
+  mutate(
+    month = month.abb[month],
+    hour = substr(time, start = 1, stop = 2),
+    borough = ifelse(borough == "(null)", NA, borough),
+    susp_sex = ifelse(susp_sex %in% c("M", "F"), susp_sex, NA),
+    susp_age_group = ifelse(susp_age_group %in% c("<18", "18-24", "25-44", "45-64", "65+"), susp_age_group, NA),
+    susp_race = ifelse(susp_race %in% c("UNKNOWN", "(null)"), NA, susp_race),
+    vic_sex = ifelse(vic_sex %in% c("M", "F"), vic_sex, NA),
+    vic_age_group = ifelse(vic_age_group %in% c("<18", "18-24", "25-44", "45-64", "65+"), vic_age_group, NA),
+    vic_race = ifelse(vic_race %in% c("UNKNOWN", "(null)"), NA, vic_race),
+    offense = ifelse(offense %in% c("BURGLARY", "FELONY ASSAULT", "GRAND LARCENY", "GRAND LARCENY OF MOTOR VEHICLE", "MURDER & NON-NEGL. MANSLAUGHTER", "RAPE", "ROBBERY"), offense, NA)
+  ) %>% 
+  select(-day, -time) %>% 
+  mutate(
+    month = factor(month, levels = month.abb),
+    day_of_week = factor(day_of_week, levels = c("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")),
+    hour = factor(hour),
+    precinct = as.factor(precinct),
+    borough = as.factor(borough),
+    level = as.factor(level),
+    offense = as.factor(offense),
+    susp_sex = as.factor(susp_sex),
+    susp_age_group = as.factor(susp_age_group),
+    susp_race = as.factor(susp_race),
+    vic_sex = as.factor(vic_sex),
+    vic_age_group = as.factor(vic_age_group),
+    vic_race = as.factor(vic_race),
+  )
+```
+
+### Felony Frequency by Borough
+
+```{r plot_borough}
+complaint %>% 
+  drop_na(borough, offense) %>% 
+  group_by(borough) %>% 
+  summarize(n_obs = n()) %>% 
+  ggplot(aes(x = reorder(borough, -n_obs), y = n_obs, fill = reorder(borough, -n_obs))) +
+  geom_bar(stat = 'identity') +
+  labs(
+    title = "Frequency of Felonies by Borough (2016-2022)",
+    x = "Borough",
+    y = "Frequency"
+  ) +
+  theme(legend.position = "none")
+```
+
+### Felony Frequency by Crime Type
+
+```{r plot_offense}
+complaint %>% 
+  drop_na(offense) %>% 
+  group_by(offense) %>% 
+  summarize(n_obs = n()) %>% 
+  mutate(offense = reorder(offense, n_obs)) %>% 
+  ggplot(aes(x = offense, y = n_obs, fill = offense)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    title = "Frequency of Felonies (2016-2022)",
+    x = "Felony",
+    y = "Frequency"
+  ) +
+  coord_flip() +
+  theme(legend.position = "none")
+```
+
+### Trend of Felony Frequency
+
+```{r plot_trend}
+complaint %>% 
+  filter(year != 2022) %>% 
+  drop_na(offense) %>% 
+  group_by(offense, year) %>% 
+  summarize(n_obs = n()) %>% 
+  ggplot(aes(x = year, y = n_obs, fill = offense)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    title = "Frequency of 7 Felonies by Year (2016-2021)",
+    x = "Year",
+    y = "Frequency",
+    fill = "Felony"
+  ) +
+  theme(legend.position = "bottom") +
+  guides(fill = guide_legend(nrow = 4,byrow = TRUE))
+```
+
+### Trend of Proportion of Felony Frequency by Demographics of Victim
+
+#### Sex
+
+```{r plot_vic_sex}
+complaint %>% 
+  drop_na(offense, vic_sex) %>% 
+  group_by(year, vic_sex) %>% 
+  summarize(n_obs = n()) %>% 
+  group_by(year) %>% 
+  summarize(vic_sex, percentage = n_obs/sum(n_obs)) %>% 
+  ggplot(aes(x = year, y = percentage, fill = vic_sex)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Year",
+    y = "Proportion",
+    title = "Proportions of Felonies by Victim Sex and Year",
+    fill = "Victim Sex"
+  )
+```
+
+#### Age Group
+
+```{r plot_vic_age_group}
+complaint %>% 
+  drop_na(offense, vic_age_group) %>% 
+  group_by(year, vic_age_group) %>% 
+  summarize(n_obs = n()) %>% 
+  group_by(year) %>% 
+  summarize(vic_age_group, percentage = n_obs/sum(n_obs)) %>% 
+  ggplot(aes(x = year, y = percentage, fill = vic_age_group)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Year",
+    y = "Proportion",
+    title = "Proportions of Felonies by Victim Age Group and Year",
+    fill = "Victim Age Group"
+  )
+```
+
+#### Race
+
+```{r plot_vic_race}
+complaint %>% 
+  drop_na(offense, vic_race) %>% 
+  group_by(year, vic_race) %>% 
+  summarize(n_obs = n()) %>% 
+  group_by(year) %>% 
+  summarize(vic_race, percentage = n_obs/sum(n_obs)) %>% 
+  ggplot(aes(x = year, y = percentage, fill = vic_race)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Year",
+    y = "Proportion",
+    title = "Proportions of Felonies by Victim Race and Year",
+    fill = "Victim Race"
+  )
+```
+
+### Month, Day of the Week, Time
+
+#### Average Felony Frequency by Year and Month
+
+```{r plot_year&month}
+complaint %>% 
+  drop_na(offense) %>% 
+  mutate(
+    year = as.factor(year),
+    year = fct_rev(year)
+  ) %>% 
+  group_by(year, month) %>% 
+  summarize(freq = n()) %>% 
+  plot_ly(
+    x = ~month, y = ~year, z = ~freq,
+    type = "heatmap"
+  ) %>% 
+  colorbar(x = 1, y = 1) %>% 
+  layout(
+    title = "Average Felony Frequency by Year and Month",
+    xaxis = list(title = "Month"),
+    yaxis = list(title = "Year")
+  )
+```
+
+#### Average Felony Frequency by Time of the Week
+
+```{r plot_week&time}
+complaint %>% 
+  drop_na(offense) %>% 
+  mutate(
+    day_of_week = fct_rev(day_of_week)
+  ) %>% 
+  group_by(hour, day_of_week) %>% 
+  summarize(mean_freq = n() / 352) %>% 
+  plot_ly(
+    x = ~hour, y = ~day_of_week, z = ~mean_freq,
+    type = "heatmap"
+  ) %>% 
+  colorbar(x = 1, y = 1) %>% 
+  layout(
+    title = "Average Felony Frequency by Time of the Week",
+    xaxis = list(title = "Hour of the Day"),
+    yaxis = list(title = "Day of the Week")
+  )
+```
+

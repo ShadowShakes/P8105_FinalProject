@@ -57,6 +57,7 @@ complaint =
   ) %>% 
   select(-day, -time) %>% 
   mutate(
+    year = as.factor(year),
     month = factor(month, levels = month.abb),
     day_of_week = factor(day_of_week, levels = c("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")),
     hour = factor(hour),
@@ -206,10 +207,7 @@ num_days = function(month, year) {
 
 complaint %>% 
   drop_na(offense) %>% 
-  mutate(
-    year = as.factor(year),
-    year = fct_rev(year)
-  ) %>% 
+  mutate(year = fct_rev(year)) %>% 
   group_by(year, month) %>% 
   summarize(mean_freq = n() / num_days(month, year)) %>% 
   plot_ly(

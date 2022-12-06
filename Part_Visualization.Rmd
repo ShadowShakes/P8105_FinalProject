@@ -190,9 +190,20 @@ complaint %>%
 
 ### Month, Day of the Week, Time
 
-#### Average Felony Frequency by Year and Month
+#### Average Daily Felony Frequency by Year and Month
 
 ```{r plot_year&month}
+num_days = function(month, year) {
+  
+  year = as.integer(year)
+  months = 1:12
+  names(months) = month.abb
+  month = months[month]
+  
+  as.numeric(strftime(as.Date(paste(year + month %/% 12, month %% 12 + 1, "01", sep = "-")) - 1, "%d"))
+  
+}
+
 complaint %>% 
   drop_na(offense) %>% 
   mutate(
@@ -200,20 +211,20 @@ complaint %>%
     year = fct_rev(year)
   ) %>% 
   group_by(year, month) %>% 
-  summarize(freq = n()) %>% 
+  summarize(mean_freq = n() / num_days(month, year)) %>% 
   plot_ly(
-    x = ~month, y = ~year, z = ~freq,
+    x = ~month, y = ~year, z = ~mean_freq,
     type = "heatmap"
   ) %>% 
   colorbar(x = 1, y = 1) %>% 
   layout(
-    title = "Average Felony Frequency by Year and Month",
+    title = "Average Daily Felony Frequency by Year and Month",
     xaxis = list(title = "Month"),
     yaxis = list(title = "Year")
   )
 ```
 
-#### Average Felony Frequency by Time of the Week
+#### Average Hourly Felony Frequency by Time of the Week
 
 ```{r plot_week&time}
 complaint %>% 
@@ -229,7 +240,7 @@ complaint %>%
   ) %>% 
   colorbar(x = 1, y = 1) %>% 
   layout(
-    title = "Average Felony Frequency by Time of the Week",
+    title = "Average Hourly Felony Frequency by Time of the Week",
     xaxis = list(title = "Hour of the Day"),
     yaxis = list(title = "Day of the Week")
   )

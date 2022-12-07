@@ -81,7 +81,7 @@ complaint =
 complaint %>% 
   drop_na(borough, offense) %>% 
   group_by(borough) %>% 
-  summarize(n_obs = n()) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
   ggplot(aes(x = reorder(borough, -n_obs), y = n_obs, fill = reorder(borough, -n_obs))) +
   geom_bar(stat = 'identity') +
   labs(
@@ -98,7 +98,7 @@ complaint %>%
 complaint %>% 
   drop_na(offense) %>% 
   group_by(offense) %>% 
-  summarize(n_obs = n()) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
   mutate(offense = reorder(offense, n_obs)) %>% 
   ggplot(aes(x = offense, y = n_obs, fill = offense)) +
   geom_bar(stat = 'identity') +
@@ -118,7 +118,7 @@ complaint %>%
   filter(year != 2022) %>% 
   drop_na(offense) %>% 
   group_by(offense, year) %>% 
-  summarize(n_obs = n()) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
   ggplot(aes(x = year, y = n_obs, fill = offense)) +
   geom_bar(stat = 'identity') +
   labs(
@@ -139,9 +139,9 @@ complaint %>%
 complaint %>% 
   drop_na(offense, vic_sex) %>% 
   group_by(year, vic_sex) %>% 
-  summarize(n_obs = n()) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
   group_by(year) %>% 
-  summarize(vic_sex, percentage = n_obs/sum(n_obs)) %>% 
+  dplyr::summarize(vic_sex, percentage = n_obs/sum(n_obs)) %>% 
   ggplot(aes(x = year, y = percentage, fill = vic_sex)) +
   geom_bar(stat = 'identity') +
   labs(
@@ -158,9 +158,9 @@ complaint %>%
 complaint %>% 
   drop_na(offense, vic_age_group) %>% 
   group_by(year, vic_age_group) %>% 
-  summarize(n_obs = n()) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
   group_by(year) %>% 
-  summarize(vic_age_group, percentage = n_obs/sum(n_obs)) %>% 
+  dplyr::summarize(vic_age_group, percentage = n_obs/sum(n_obs)) %>% 
   ggplot(aes(x = year, y = percentage, fill = vic_age_group)) +
   geom_bar(stat = 'identity') +
   labs(
@@ -177,9 +177,9 @@ complaint %>%
 complaint %>% 
   drop_na(offense, vic_race) %>% 
   group_by(year, vic_race) %>% 
-  summarize(n_obs = n()) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
   group_by(year) %>% 
-  summarize(vic_race, percentage = n_obs/sum(n_obs)) %>% 
+  dplyr::summarize(vic_race, percentage = n_obs/sum(n_obs)) %>% 
   ggplot(aes(x = year, y = percentage, fill = vic_race)) +
   geom_bar(stat = 'identity') +
   labs(
@@ -210,7 +210,7 @@ complaint %>%
   drop_na(offense) %>% 
   mutate(year = fct_rev(year)) %>% 
   group_by(year, month) %>% 
-  summarize(mean_freq = n() / num_days(month, year)) %>% 
+  dplyr::summarize(mean_freq = n() / num_days(month, year)) %>% 
   plot_ly(
     x = ~month, y = ~year, z = ~mean_freq,
     type = "heatmap"
@@ -232,7 +232,7 @@ complaint %>%
     day_of_week = fct_rev(day_of_week)
   ) %>% 
   group_by(hour, day_of_week) %>% 
-  summarize(mean_freq = n() / 352) %>% 
+  dplyr::summarize(mean_freq = n() / 352) %>% 
   plot_ly(
     x = ~hour, y = ~day_of_week, z = ~mean_freq,
     type = "heatmap"

@@ -398,101 +398,35 @@ div.tocify {
 
 
  
-<pre class="r"><code>library(tidyverse)
-library(purrr)
-library(modelr)
-library(dbplyr)
-library(plyr)
-library(lubridate)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;lubridate&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     date, intersect, setdiff, union</code></pre>
  
-<div id="data-cleaning" class="section level3">
-<h3>Data cleaning</h3>
-<pre class="r"><code>a &lt;- list.files(&quot;./Data&quot;)     
-a </code></pre>
-<pre><code>## [1] &quot;cleaned_NYPD_2016.csv&quot; &quot;cleaned_NYPD_2017.csv&quot; &quot;cleaned_NYPD_2018.csv&quot;
-## [4] &quot;cleaned_NYPD_2019.csv&quot; &quot;cleaned_NYPD_2020.csv&quot; &quot;cleaned_NYPD_2021.csv&quot;
-## [7] &quot;cleaned_NYPD_2022.csv&quot;</code></pre>
-<pre class="r"><code>dir &lt;- paste(&quot;./Data/&quot;,a,sep=&quot;&quot;)                 
-n &lt;- length(dir) 
-merge_data &lt;- read.csv(file = dir[1],header=T,sep=&quot;,&quot;)   
-merge_data &lt;- cbind(dir[1], merge_data )
-merge_data &lt;- rename(merge_data, c(&quot;dir[1]&quot;=&quot;yyyymm&quot;))
-for (i in 2:7){
-  new.data &lt;- read.csv(file = dir[i], header=T, sep=&quot;,&quot;)
-  new.data &lt;- cbind(dir[i], new.data)
-  new.data &lt;- rename(new.data, c(&quot;dir[i]&quot;=&quot;yyyymm&quot;))
-  merge_data &lt;- rbind(merge_data,new.data)
-}</code></pre>
-</div>
-<div id="data-cleaning-drop-data-with-unknown" class="section level3">
-<h3>Data cleaning, drop data with unknown</h3>
-<pre class="r"><code># filter data with unknown
-tidydata1=merge_data%&gt;%
-  na.omit()%&gt;%
-  filter(!susp_sex == &quot;U&quot;)%&gt;%
-  filter(!susp_race == &quot;UNKNOWN&quot;)%&gt;%
-  filter(!susp_age_group == &quot;UNKNOWN&quot;)%&gt;%
-   filter(!vic_race == &quot;UNKNOWN&quot;)%&gt;%
-  filter(!vic_age_group == &quot;UNKNOWN&quot;)%&gt;%
-  separate(date,into=c(&quot;mon&quot;,&quot;day&quot;,&quot;year&quot;),sep=&quot;/&quot;)%&gt;%
-  mutate(jurisdiction_code=as.numeric(jurisdiction_code))%&gt;%
-  mutate(susp_sex=ifelse(susp_sex==&quot;M&quot;,1,0),vic_sex=ifelse(vic_sex==&quot;M&quot;,1,0),jurisdiction_code=ifelse(jurisdiction_code&gt;=3,3,jurisdiction_code+0))%&gt;%
-  mutate(jurisdiction_code=as.factor(jurisdiction_code))%&gt;%
-  mutate(covid_state=ifelse(year&gt;=2020,1,0))
-# when year &gt;=2020, we assume the world is in a covid state.</code></pre>
-<pre class="r"><code>tidydata3=tidydata1 %&gt;%
-  mutate(
-   time= substring(time, 1,2)
-  )
-
-tidydata3= tidydata3 %&gt;% 
- mutate(
-   time1=substring(time,1,1),
-   time2=substring(time,2,2),
-   time3=ifelse(time1==&quot;0&quot;,&quot;&quot;,time1),
-   time4=paste(time3,time2,sep=&quot;&quot;),
-   time5=as.numeric(time4)
- ) 
-  tidydata3=tidydata3 %&gt;% 
-  mutate(time_range=case_when(
-      (time5 &gt; 22) | (time5 &lt;= 6) ~ 0,
-      (time5&gt;6) &amp; (time5&lt;=14) ~ 1,
-      (time5&gt;14) &amp; (time5&lt;=22) ~ 2
-    ))</code></pre>
-<p>This is the beginning of test First of all let’s define the “danger”
-as the <em>total number of crime event</em> occure in <em>one
-day</em></p>
-</div>
-<div id="dangers-define-as-the-criminal-events-happen-by-day"
-class="section level1">
-<h1>dangers define as the criminal events happen by day</h1>
-<div id="lets-see-does-it-correlate-to-the-criminals-gender"
+<p>In this section we use statistical testing methods to conduct
+in-depth analysis towards the distribution and different features of the
+NYC crime data.</p>
+<div id="when-dangers-define-as-the-criminal-events-happen-by-day"
 class="section level2">
-<h2>1.let’s see does it correlate to the criminal’s gender?</h2>
-<pre class="r"><code>crimebyday_men=tidydata1 %&gt;% 
+<h2>When dangers define as the criminal events happen by day</h2>
+<p>First, we define the “danger” as the <em>total number of crime
+event</em> occur in <em>one day</em></p>
+<div id="does-dangers-correlate-to-the-criminals-gender"
+class="section level3">
+<h3>1.Does dangers correlate to the criminal’s gender?</h3>
+<pre class="r"><code>crimebyday_men = tidydata1 %&gt;% 
   group_by(year,mon,day) %&gt;% 
-  filter(susp_sex==1) %&gt;% 
+  filter(susp_sex == 1) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
+    n_bydate = n(),
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code>crimebyday_women=tidydata1 %&gt;% 
+  unique()
+
+crimebyday_women = tidydata1 %&gt;% 
   group_by(year,mon,day) %&gt;% 
-  filter(susp_sex==0) %&gt;% 
+  filter(susp_sex == 0) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
+    n_bydate = n(),
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code>t.test(crimebyday_men$n_bydate,crimebyday_women$n_bydate)</code></pre>
+  unique()
+
+t.test(crimebyday_men$n_bydate,crimebyday_women$n_bydate)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
@@ -504,30 +438,30 @@ class="section level2">
 ## sample estimates:
 ## mean of x mean of y 
 ## 269.11440  92.68438</code></pre>
-<p>significant difference</p>
+<p>The Welch two sample t-test shows that there is a significant
+difference between criminal genders on their daily criminal events, with
+male criminals much more than female.</p>
 </div>
-<div id="lets-see-does-it-correlate-to-the-victims-gender"
-class="section level2">
-<h2>2.let’s see does it correlate to the victim’s gender?</h2>
-<pre class="r"><code>crimebyday_men=tidydata1 %&gt;% 
+<div id="does-dangers-correlate-to-the-the-victims-gender"
+class="section level3">
+<h3>2.Does dangers correlate to the the victim’s gender?</h3>
+<pre class="r"><code>crimebyday_men = tidydata1 %&gt;% 
   group_by(year,mon,day) %&gt;% 
-  filter(vic_sex==1) %&gt;% 
+  filter(vic_sex == 1) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
+    n_bydate = n(),
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code>crimebyday_women=tidydata1 %&gt;% 
+  unique()
+
+crimebyday_women = tidydata1 %&gt;% 
   group_by(year,mon,day) %&gt;% 
-  filter(vic_sex==0) %&gt;% 
+  filter(vic_sex == 0) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
+    n_bydate = n(),
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code>t.test(crimebyday_men$n_bydate,crimebyday_women$n_bydate)</code></pre>
+  unique()
+
+t.test(crimebyday_men$n_bydate,crimebyday_women$n_bydate)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
@@ -539,35 +473,33 @@ class="section level2">
 ## sample estimates:
 ## mean of x mean of y 
 ##  133.5509  228.2479</code></pre>
-<p>significant difference female victims are significantly higher than
-male</p>
+<p>The Welch two sample t-test also shows significant difference between
+victim’s gender. Female victims are significantly higher than male on
+daily criminal events.</p>
 </div>
-<div id="lets-see-does-it-correlate-to-the-criminals-race"
-class="section level2">
-<h2>3.let’s see does it correlate to the criminals’ race?</h2>
-<pre class="r"><code>crimebyday_balck=tidydata1 %&gt;% 
+<div id="does-dangers-correlate-to-the-criminals-race"
+class="section level3">
+<h3>3.Does dangers correlate to the criminals’ race?</h3>
+<pre class="r"><code>crimebyday_black = tidydata1 %&gt;% 
   group_by(year,mon,day) %&gt;% 
-  filter(susp_race==&quot;BLACK&quot;) %&gt;% 
+  filter(susp_race == &quot;BLACK&quot;) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
+    n_bydate = n(),
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code>crimebyday_white=tidydata1 %&gt;% 
+  unique()
+
+crimebyday_white = tidydata1 %&gt;% 
   group_by(year,mon,day) %&gt;% 
-  filter(susp_race==&quot;WHITE&quot;) %&gt;% 
+  filter(susp_race == &quot;WHITE&quot;) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
+    n_bydate = n(),
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code>t.test(crimebyday_balck$n_bydate,crimebyday_white$n_bydate)</code></pre>
+  unique()
+t.test(crimebyday_black$n_bydate,crimebyday_white$n_bydate)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
-## data:  crimebyday_balck$n_bydate and crimebyday_white$n_bydate
+## data:  crimebyday_black$n_bydate and crimebyday_white$n_bydate
 ## t = 260.11, df = 3286.2, p-value &lt; 2.2e-16
 ## alternative hypothesis: true difference in means is not equal to 0
 ## 95 percent confidence interval:
@@ -575,30 +507,29 @@ class="section level2">
 ## sample estimates:
 ## mean of x mean of y 
 ## 177.31075  47.23043</code></pre>
-<p>significant the number of white race criminals are significantly
-lower than black.</p>
+<p>The Welch two sample t-test also shows significant difference between
+victim’s gender. White criminals are significantly lower than black
+criminals on daily criminal events.</p>
 </div>
-<div id="what-about-other-criminals-race" class="section level2">
-<h2>4.What about other criminals’ race?</h2>
-<pre class="r"><code>crimebyday_aspa=tidydata1 %&gt;% 
+<div id="what-about-other-criminals-race" class="section level3">
+<h3>4.What about other criminals’ race?</h3>
+<pre class="r"><code>crimebyday_aspa = tidydata1 %&gt;% 
   group_by(year,mon,day) %&gt;% 
-  filter(susp_race==&quot;ASIAN / PACIFIC ISLANDER&quot;) %&gt;% 
+  filter(susp_race == &quot;ASIAN / PACIFIC ISLANDER&quot;) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
+    n_bydate = n(),
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code>crimebyday_white=tidydata1 %&gt;% 
+  unique()
+
+crimebyday_white = tidydata1 %&gt;% 
   group_by(year,mon,day) %&gt;% 
-  filter(susp_race==&quot;WHITE&quot;) %&gt;% 
+  filter(susp_race == &quot;WHITE&quot;) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
+    n_bydate = n(),
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code>t.test(crimebyday_aspa$n_bydate,crimebyday_white$n_bydate)</code></pre>
+  unique()
+
+t.test(crimebyday_aspa$n_bydate,crimebyday_white$n_bydate)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
@@ -610,25 +541,24 @@ lower than black.</p>
 ## sample estimates:
 ## mean of x mean of y 
 ##  21.44178  47.23043</code></pre>
-<p>The number of ASIAN / PACIFIC ISLANDER race of criminals are less
-than white criminals. …if you need more can be shown about race…</p>
+<p>The test shows that the number of ASIAN / PACIFIC ISLANDER race of
+criminals are less than white criminals.</p>
 </div>
-<div id="compare-crime-events-number-by-covid-statu"
-class="section level2">
-<h2>5.compare crime events number by covid statu</h2>
-<pre class="r"><code>crimebyday_covid0=tidydata1 %&gt;% 
+<div id="crime-events-number-by-covid-status" class="section level3">
+<h3>5.Crime events number by covid status</h3>
+<pre class="r"><code>crimebyday_covid0 = tidydata1 %&gt;% 
   group_by(year,mon,day) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
-    covid_state=covid_state
+    n_bydate = n(),
+    covid_state = covid_state
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;, &#39;day&#39;. You can
-## override using the `.groups` argument.</code></pre>
-<pre class="r"><code>casenum_byday_0=ifelse(crimebyday_covid0$covid_state==0,crimebyday_covid0$n_bydate,NA) %&gt;% 
+  unique()
+
+casenum_byday_0 = ifelse(crimebyday_covid0$covid_state == 0, crimebyday_covid0$n_bydate,NA) %&gt;% 
   na.omit()
-casenum_byday_1=ifelse(crimebyday_covid0$covid_state==0,NA,crimebyday_covid0$n_bydate) %&gt;% 
+casenum_byday_1 = ifelse(crimebyday_covid0$covid_state == 0, NA, crimebyday_covid0$n_bydate) %&gt;% 
   na.omit()
+
 t.test(casenum_byday_0,casenum_byday_1)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
@@ -641,40 +571,38 @@ t.test(casenum_byday_0,casenum_byday_1)</code></pre>
 ## sample estimates:
 ## mean of x mean of y 
 ##  370.0438  349.8008</code></pre>
-<p>The diference is significant. Among the overall status of covid we
+<p>The difference is significant. Among the overall status of covid we
 can see there is a downtrend before covid and after covid.</p>
 </div>
 <div id="compare-crime-events-number-by-time-range"
-class="section level2">
-<h2>6.compare crime events number by time range</h2>
-<pre class="r"><code>crimebyday_time0=tidydata3 %&gt;%
-  filter(time_range==0) %&gt;% 
+class="section level3">
+<h3>6.Compare crime events number by time range</h3>
+<pre class="r"><code>crimebyday_time0 = tidydata3 %&gt;%
+  filter(time_range == 0) %&gt;% 
   group_by(year,mon,day) %&gt;% 
   dplyr::summarize(
-    n_bydate=n()
+    n_bydate = n()
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code>crimebyday_time1=tidydata3 %&gt;%
-  filter(time_range==1) %&gt;% 
+  unique()
+
+crimebyday_time1 = tidydata3 %&gt;%
+  filter(time_range == 1) %&gt;% 
   group_by(year,mon,day) %&gt;% 
   dplyr::summarize(
-    n_bydate=n()
+    n_bydate = n()
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code>crimebyday_time2=tidydata3 %&gt;%
-  filter(time_range==2) %&gt;% 
+  unique()
+
+crimebyday_time2 = tidydata3 %&gt;%
+  filter(time_range == 2) %&gt;% 
   group_by(year,mon,day) %&gt;% 
   dplyr::summarize(
-    n_bydate=n()
+    n_bydate = n()
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code>t.test(crimebyday_time0$n_bydate,crimebyday_time1$n_bydate)</code></pre>
+  unique()
+
+
+t.test(crimebyday_time0$n_bydate,crimebyday_time1$n_bydate)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
@@ -712,35 +640,36 @@ class="section level2">
 ##  122.5643  156.6694</code></pre>
 <p>From the test, we can see a significant different number of criminal
 events occur at different time range:22-6 6-14 14-22 during a day. And
-the relation can be conclude as: 22-6 &lt; 6-14 &lt;14-22</p>
+the relation can be conclude as:<br />
+22-6 &lt; 6-14 &lt; 14-22</p>
 </div>
 </div>
 <div id="dangers-define-as-the-felony-events-happen-by-day"
-class="section level1">
-<h1>dangers define as the FELONY events happen by day</h1>
-<div id="about-races" class="section level2">
-<h2>about races</h2>
-<pre class="r"><code>crimebyday_aspa=tidydata1 %&gt;% 
-  filter(level==&quot;FELONY&quot;) %&gt;%
+class="section level2">
+<h2>Dangers define as the FELONY events happen by day</h2>
+<p>Second, we redefine the “danger” as the <em>total number of felony
+crime event</em> occur in <em>one day</em></p>
+<div id="about-races" class="section level3">
+<h3>1. About races</h3>
+<pre class="r"><code>crimebyday_aspa = tidydata1 %&gt;% 
+  filter(level == &quot;FELONY&quot;) %&gt;%
   group_by(year,mon,day) %&gt;% 
-  filter(susp_race==&quot;ASIAN / PACIFIC ISLANDER&quot;) %&gt;% 
+  filter(susp_race == &quot;ASIAN / PACIFIC ISLANDER&quot;) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
+    n_bydate = n(),
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code>crimebyday_white=tidydata1 %&gt;% 
-  filter(level==&quot;FELONY&quot;) %&gt;%
+  unique()
+
+crimebyday_white = tidydata1 %&gt;% 
+  filter(level == &quot;FELONY&quot;) %&gt;%
   group_by(year,mon,day) %&gt;% 
-  filter(susp_race==&quot;WHITE&quot;) %&gt;% 
+  filter(susp_race == &quot;WHITE&quot;) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
+    n_bydate = n(),
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
-## using the `.groups` argument.</code></pre>
-<pre class="r"><code>t.test(crimebyday_aspa$n_bydate,crimebyday_white$n_bydate)</code></pre>
+  unique()
+
+t.test(crimebyday_aspa$n_bydate,crimebyday_white$n_bydate)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
@@ -752,24 +681,24 @@ class="section level1">
 ## sample estimates:
 ## mean of x mean of y 
 ##  5.598695 10.358215</code></pre>
-<p>races is follow the same as normal event assumption</p>
+<p>The races is follow the same as normal event assumption.</p>
 </div>
-<div id="about-covid-state" class="section level2">
-<h2>about covid state</h2>
-<pre class="r"><code>compare_date_data3=tidydata3 %&gt;% 
-  filter(level==&quot;FELONY&quot;) %&gt;% 
+<div id="about-covid-state" class="section level3">
+<h3>2. About covid state</h3>
+<pre class="r"><code>compare_date_data3 = tidydata3 %&gt;% 
+  filter(level == &quot;FELONY&quot;) %&gt;% 
   group_by(year,mon,day) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
-    covid_state=covid_state
+    n_bydate = n(),
+    covid_state = covid_state
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;, &#39;day&#39;. You can
-## override using the `.groups` argument.</code></pre>
-<pre class="r"><code>casenum_byday_0=ifelse(compare_date_data3$covid_state==0,compare_date_data3$n_bydate,NA) %&gt;% 
+  unique()
+
+casenum_byday_0 = ifelse(compare_date_data3$covid_state == 0,compare_date_data3$n_bydate,NA) %&gt;% 
   na.omit()
-casenum_byday_1=ifelse(compare_date_data3$covid_state==0,NA,compare_date_data3$n_bydate) %&gt;% 
+casenum_byday_1 = ifelse(compare_date_data3$covid_state == 0,NA,compare_date_data3$n_bydate) %&gt;% 
   na.omit()
+
 t.test(casenum_byday_0,casenum_byday_1)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
@@ -782,25 +711,25 @@ t.test(casenum_byday_0,casenum_byday_1)</code></pre>
 ## sample estimates:
 ## mean of x mean of y 
 ##  96.51608  98.76096</code></pre>
-<p>significant difference we can see after covid, the probability of
+<p>Based on testing results, we can see after covid, the probability of
 happen FELONY is greater than the time before covid.</p>
 </div>
-<div id="about-time-range" class="section level2">
-<h2>about time range</h2>
-<pre class="r"><code>compare_date_data3=tidydata3 %&gt;% 
-  filter(level==&quot;FELONY&quot;) %&gt;% 
+<div id="about-time-range" class="section level3">
+<h3>3. About time range</h3>
+<pre class="r"><code>compare_date_data3 = tidydata3 %&gt;% 
+  filter(level == &quot;FELONY&quot;) %&gt;% 
   group_by(year,mon,day,time_range) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
-    covid_state=covid_state
+    n_bydate = n(),
+    covid_state = covid_state
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;, &#39;day&#39;,
-## &#39;time_range&#39;. You can override using the `.groups` argument.</code></pre>
-<pre class="r"><code>casenum_byday_0=ifelse(compare_date_data3$time_range==0,compare_date_data3$n_bydate,NA) %&gt;% 
+  unique()
+
+casenum_byday_0=ifelse(compare_date_data3$time_range==0,compare_date_data3$n_bydate,NA) %&gt;% 
   na.omit()
 casenum_byday_1=ifelse(compare_date_data3$time_range==1,compare_date_data3$n_bydate,NA) %&gt;% 
   na.omit()
+
 t.test(casenum_byday_0,casenum_byday_1)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
@@ -817,6 +746,7 @@ t.test(casenum_byday_0,casenum_byday_1)</code></pre>
   na.omit()
 casenum_byday_1=ifelse(compare_date_data3$time_range==2,compare_date_data3$n_bydate,NA) %&gt;% 
   na.omit()
+
 t.test(casenum_byday_0,casenum_byday_1)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
@@ -833,6 +763,7 @@ t.test(casenum_byday_0,casenum_byday_1)</code></pre>
   na.omit()
 casenum_byday_1=ifelse(compare_date_data3$time_range==2,compare_date_data3$n_bydate,NA) %&gt;% 
   na.omit()
+
 t.test(casenum_byday_0,casenum_byday_1)</code></pre>
 <pre><code>## 
 ##  Welch Two Sample t-test
@@ -848,38 +779,36 @@ t.test(casenum_byday_0,casenum_byday_1)</code></pre>
 <p>It’s the same as all event circumstances.</p>
 </div>
 <div
-id="lets-compare-the-time-range-as-different-seasons-and-use-paired-t_test"
-class="section level2">
-<h2>Let’s compare the time range as different seasons and use paired
-t_test</h2>
+id="compare-the-time-range-as-different-seasons-and-use-paired-t_test"
+class="section level3">
+<h3>4. Compare the time range as different seasons and use paired
+t_test</h3>
 <pre class="r"><code>tidydata3 = tidydata3 %&gt;% 
   mutate(
-    mon=as.numeric(mon)
+    mon = as.numeric(mon)
   )
 
-compare_date_data4=tidydata3 %&gt;% 
-  filter(level==&quot;FELONY&quot;) %&gt;%
-  filter(mon&gt;5 &amp; mon&lt;9) %&gt;% 
+compare_date_data4 = tidydata3 %&gt;% 
+  filter(level == &quot;FELONY&quot;) %&gt;%
+  filter(mon &gt; 5 &amp; mon &lt; 9) %&gt;% 
   group_by(year) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
-    covid_state=covid_state
+    n_bydate = n(),
+    covid_state = covid_state
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;. You can override using
-## the `.groups` argument.</code></pre>
-<pre class="r"><code>compare_date_data5=tidydata3 %&gt;% 
-  filter(level==&quot;FELONY&quot;) %&gt;%
-  filter(mon&gt;11 | mon&lt;3) %&gt;% 
+  unique()
+
+compare_date_data5 = tidydata3 %&gt;% 
+  filter(level == &quot;FELONY&quot;) %&gt;%
+  filter(mon &gt; 11 | mon &lt; 3) %&gt;% 
   group_by(year) %&gt;% 
   dplyr::summarize(
-    n_bydate=n(),
-    covid_state=covid_state
+    n_bydate = n(),
+    covid_state = covid_state
   ) %&gt;% 
-  unique()</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;year&#39;. You can override using
-## the `.groups` argument.</code></pre>
-<pre class="r"><code>t.test(compare_date_data4$n_bydate,compare_date_data5$n_bydate,paired=TRUE)</code></pre>
+  unique()
+
+t.test(compare_date_data4$n_bydate,compare_date_data5$n_bydate,paired = TRUE)</code></pre>
 <pre><code>## 
 ##  Paired t-test
 ## 

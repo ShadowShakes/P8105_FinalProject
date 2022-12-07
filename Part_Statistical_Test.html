@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Statistical Testing</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="Part_Data_Preprocessing.html">Data &amp; Processing</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Data-driven Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Part_Visualization.html">Visual Analysis</a>
+    </li>
+    <li>
+      <a href="Part_Statistical_Test.html">Statistical Testing</a>
+    </li>
+    <li>
+      <a href="Part_Statistical_Modelling.html">Machine Learning Modelling</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="Part_Interactive_Map.html">Interactive Map</a>
+</li>
+<li>
+  <a href="https://github.com/">Conclusion and Report</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="mailto:&lt;sc5154@cumc.columiba.edu&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/ShadowShakes/P8105_Final_Project">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Statistical Testing</h1>
+
+</div>
+
+
+ 
+<pre class="r"><code>library(tidyverse)
+library(purrr)
+library(modelr)
+library(dbplyr)
+library(plyr)
+library(lubridate)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;lubridate&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     date, intersect, setdiff, union</code></pre>
+ 
+<div id="data-cleaning" class="section level3">
+<h3>Data cleaning</h3>
+<pre class="r"><code>a &lt;- list.files(&quot;./Data&quot;)     
+a </code></pre>
+<pre><code>## [1] &quot;cleaned_NYPD_2016.csv&quot; &quot;cleaned_NYPD_2017.csv&quot; &quot;cleaned_NYPD_2018.csv&quot;
+## [4] &quot;cleaned_NYPD_2019.csv&quot; &quot;cleaned_NYPD_2020.csv&quot; &quot;cleaned_NYPD_2021.csv&quot;
+## [7] &quot;cleaned_NYPD_2022.csv&quot;</code></pre>
+<pre class="r"><code>dir &lt;- paste(&quot;./Data/&quot;,a,sep=&quot;&quot;)                 
+n &lt;- length(dir) 
+merge_data &lt;- read.csv(file = dir[1],header=T,sep=&quot;,&quot;)   
+merge_data &lt;- cbind(dir[1], merge_data )
+merge_data &lt;- rename(merge_data, c(&quot;dir[1]&quot;=&quot;yyyymm&quot;))
+for (i in 2:7){
+  new.data &lt;- read.csv(file = dir[i], header=T, sep=&quot;,&quot;)
+  new.data &lt;- cbind(dir[i], new.data)
+  new.data &lt;- rename(new.data, c(&quot;dir[i]&quot;=&quot;yyyymm&quot;))
+  merge_data &lt;- rbind(merge_data,new.data)
+}</code></pre>
+</div>
+<div id="data-cleaning-drop-data-with-unknown" class="section level3">
+<h3>Data cleaning, drop data with unknown</h3>
+<pre class="r"><code># filter data with unknown
+tidydata1=merge_data%&gt;%
+  na.omit()%&gt;%
+  filter(!susp_sex == &quot;U&quot;)%&gt;%
+  filter(!susp_race == &quot;UNKNOWN&quot;)%&gt;%
+  filter(!susp_age_group == &quot;UNKNOWN&quot;)%&gt;%
+   filter(!vic_race == &quot;UNKNOWN&quot;)%&gt;%
+  filter(!vic_age_group == &quot;UNKNOWN&quot;)%&gt;%
+  separate(date,into=c(&quot;mon&quot;,&quot;day&quot;,&quot;year&quot;),sep=&quot;/&quot;)%&gt;%
+  mutate(jurisdiction_code=as.numeric(jurisdiction_code))%&gt;%
+  mutate(susp_sex=ifelse(susp_sex==&quot;M&quot;,1,0),vic_sex=ifelse(vic_sex==&quot;M&quot;,1,0),jurisdiction_code=ifelse(jurisdiction_code&gt;=3,3,jurisdiction_code+0))%&gt;%
+  mutate(jurisdiction_code=as.factor(jurisdiction_code))%&gt;%
+  mutate(covid_state=ifelse(year&gt;=2020,1,0))
+# when year &gt;=2020, we assume the world is in a covid state.</code></pre>
+<pre class="r"><code>tidydata3=tidydata1 %&gt;%
+  mutate(
+   time= substring(time, 1,2)
+  )
+
+tidydata3= tidydata3 %&gt;% 
+ mutate(
+   time1=substring(time,1,1),
+   time2=substring(time,2,2),
+   time3=ifelse(time1==&quot;0&quot;,&quot;&quot;,time1),
+   time4=paste(time3,time2,sep=&quot;&quot;),
+   time5=as.numeric(time4)
+ ) 
+  tidydata3=tidydata3 %&gt;% 
+  mutate(time_range=case_when(
+      (time5 &gt; 22) | (time5 &lt;= 6) ~ 0,
+      (time5&gt;6) &amp; (time5&lt;=14) ~ 1,
+      (time5&gt;14) &amp; (time5&lt;=22) ~ 2
+    ))</code></pre>
+<p>This is the beginning of test First of all let’s define the “danger”
+as the <em>total number of crime event</em> occure in <em>one
+day</em></p>
+</div>
+<div id="dangers-define-as-the-criminal-events-happen-by-day"
+class="section level1">
+<h1>dangers define as the criminal events happen by day</h1>
+<div id="lets-see-does-it-correlate-to-the-criminals-gender"
+class="section level2">
+<h2>1.let’s see does it correlate to the criminal’s gender?</h2>
+<pre class="r"><code>crimebyday_men=tidydata1 %&gt;% 
+  group_by(year,mon,day) %&gt;% 
+  filter(susp_sex==1) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
+## using the `.groups` argument.</code></pre>
+<pre class="r"><code>crimebyday_women=tidydata1 %&gt;% 
+  group_by(year,mon,day) %&gt;% 
+  filter(susp_sex==0) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
+## using the `.groups` argument.</code></pre>
+<pre class="r"><code>t.test(crimebyday_men$n_bydate,crimebyday_women$n_bydate)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  crimebyday_men$n_bydate and crimebyday_women$n_bydate
+## t = 235.61, df = 3517.7, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  174.9619 177.8982
+## sample estimates:
+## mean of x mean of y 
+## 269.11440  92.68438</code></pre>
+<p>significant difference</p>
+</div>
+<div id="lets-see-does-it-correlate-to-the-victims-gender"
+class="section level2">
+<h2>2.let’s see does it correlate to the victim’s gender?</h2>
+<pre class="r"><code>crimebyday_men=tidydata1 %&gt;% 
+  group_by(year,mon,day) %&gt;% 
+  filter(vic_sex==1) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
+## using the `.groups` argument.</code></pre>
+<pre class="r"><code>crimebyday_women=tidydata1 %&gt;% 
+  group_by(year,mon,day) %&gt;% 
+  filter(vic_sex==0) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
+## using the `.groups` argument.</code></pre>
+<pre class="r"><code>t.test(crimebyday_men$n_bydate,crimebyday_women$n_bydate)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  crimebyday_men$n_bydate and crimebyday_women$n_bydate
+## t = -133.2, df = 4302.4, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -96.09079 -93.30312
+## sample estimates:
+## mean of x mean of y 
+##  133.5509  228.2479</code></pre>
+<p>significant difference female victims are significantly higher than
+male</p>
+</div>
+<div id="lets-see-does-it-correlate-to-the-criminals-race"
+class="section level2">
+<h2>3.let’s see does it correlate to the criminals’ race?</h2>
+<pre class="r"><code>crimebyday_balck=tidydata1 %&gt;% 
+  group_by(year,mon,day) %&gt;% 
+  filter(susp_race==&quot;BLACK&quot;) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
+## using the `.groups` argument.</code></pre>
+<pre class="r"><code>crimebyday_white=tidydata1 %&gt;% 
+  group_by(year,mon,day) %&gt;% 
+  filter(susp_race==&quot;WHITE&quot;) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
+## using the `.groups` argument.</code></pre>
+<pre class="r"><code>t.test(crimebyday_balck$n_bydate,crimebyday_white$n_bydate)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  crimebyday_balck$n_bydate and crimebyday_white$n_bydate
+## t = 260.11, df = 3286.2, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  129.0998 131.0609
+## sample estimates:
+## mean of x mean of y 
+## 177.31075  47.23043</code></pre>
+<p>significant the number of white race criminals are significantly
+lower than black.</p>
+</div>
+<div id="what-about-other-criminals-race" class="section level2">
+<h2>4.What about other criminals’ race?</h2>
+<pre class="r"><code>crimebyday_aspa=tidydata1 %&gt;% 
+  group_by(year,mon,day) %&gt;% 
+  filter(susp_race==&quot;ASIAN / PACIFIC ISLANDER&quot;) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
+## using the `.groups` argument.</code></pre>
+<pre class="r"><code>crimebyday_white=tidydata1 %&gt;% 
+  group_by(year,mon,day) %&gt;% 
+  filter(susp_race==&quot;WHITE&quot;) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
+## using the `.groups` argument.</code></pre>
+<pre class="r"><code>t.test(crimebyday_aspa$n_bydate,crimebyday_white$n_bydate)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  crimebyday_aspa$n_bydate and crimebyday_white$n_bydate
+## t = -114.75, df = 4092.9, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -26.22925 -25.34803
+## sample estimates:
+## mean of x mean of y 
+##  21.44178  47.23043</code></pre>
+<p>The number of ASIAN / PACIFIC ISLANDER race of criminals are less
+than white criminals. …if you need more can be shown about race…</p>
+</div>
+<div id="compare-crime-events-number-by-covid-statu"
+class="section level2">
+<h2>5.compare crime events number by covid statu</h2>
+<pre class="r"><code>crimebyday_covid0=tidydata1 %&gt;% 
+  group_by(year,mon,day) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+    covid_state=covid_state
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;, &#39;day&#39;. You can
+## override using the `.groups` argument.</code></pre>
+<pre class="r"><code>casenum_byday_0=ifelse(crimebyday_covid0$covid_state==0,crimebyday_covid0$n_bydate,NA) %&gt;% 
+  na.omit()
+casenum_byday_1=ifelse(crimebyday_covid0$covid_state==0,NA,crimebyday_covid0$n_bydate) %&gt;% 
+  na.omit()
+t.test(casenum_byday_0,casenum_byday_1)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  casenum_byday_0 and casenum_byday_1
+## t = 10.966, df = 1883.3, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  16.62263 23.86338
+## sample estimates:
+## mean of x mean of y 
+##  370.0438  349.8008</code></pre>
+<p>The diference is significant. Among the overall status of covid we
+can see there is a downtrend before covid and after covid.</p>
+</div>
+<div id="compare-crime-events-number-by-time-range"
+class="section level2">
+<h2>6.compare crime events number by time range</h2>
+<pre class="r"><code>crimebyday_time0=tidydata3 %&gt;%
+  filter(time_range==0) %&gt;% 
+  group_by(year,mon,day) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n()
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
+## using the `.groups` argument.</code></pre>
+<pre class="r"><code>crimebyday_time1=tidydata3 %&gt;%
+  filter(time_range==1) %&gt;% 
+  group_by(year,mon,day) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n()
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
+## using the `.groups` argument.</code></pre>
+<pre class="r"><code>crimebyday_time2=tidydata3 %&gt;%
+  filter(time_range==2) %&gt;% 
+  group_by(year,mon,day) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n()
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
+## using the `.groups` argument.</code></pre>
+<pre class="r"><code>t.test(crimebyday_time0$n_bydate,crimebyday_time1$n_bydate)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  crimebyday_time0$n_bydate and crimebyday_time1$n_bydate
+## t = -64.668, df = 4581.6, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -41.21182 -38.78656
+## sample estimates:
+## mean of x mean of y 
+##  82.56511 122.56430</code></pre>
+<pre class="r"><code>t.test(crimebyday_time0$n_bydate,crimebyday_time2$n_bydate)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  crimebyday_time0$n_bydate and crimebyday_time2$n_bydate
+## t = -114.17, df = 4808.1, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -75.37668 -72.83184
+## sample estimates:
+## mean of x mean of y 
+##  82.56511 156.66937</code></pre>
+<pre class="r"><code>t.test(crimebyday_time1$n_bydate,crimebyday_time2$n_bydate)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  crimebyday_time1$n_bydate and crimebyday_time2$n_bydate
+## t = -60.664, df = 4855.3, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -35.20723 -33.00291
+## sample estimates:
+## mean of x mean of y 
+##  122.5643  156.6694</code></pre>
+<p>From the test, we can see a significant different number of criminal
+events occur at different time range:22-6 6-14 14-22 during a day. And
+the relation can be conclude as: 22-6 &lt; 6-14 &lt;14-22</p>
+</div>
+</div>
+<div id="dangers-define-as-the-felony-events-happen-by-day"
+class="section level1">
+<h1>dangers define as the FELONY events happen by day</h1>
+<div id="about-races" class="section level2">
+<h2>about races</h2>
+<pre class="r"><code>crimebyday_aspa=tidydata1 %&gt;% 
+  filter(level==&quot;FELONY&quot;) %&gt;%
+  group_by(year,mon,day) %&gt;% 
+  filter(susp_race==&quot;ASIAN / PACIFIC ISLANDER&quot;) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
+## using the `.groups` argument.</code></pre>
+<pre class="r"><code>crimebyday_white=tidydata1 %&gt;% 
+  filter(level==&quot;FELONY&quot;) %&gt;%
+  group_by(year,mon,day) %&gt;% 
+  filter(susp_race==&quot;WHITE&quot;) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;. You can override
+## using the `.groups` argument.</code></pre>
+<pre class="r"><code>t.test(crimebyday_aspa$n_bydate,crimebyday_white$n_bydate)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  crimebyday_aspa$n_bydate and crimebyday_white$n_bydate
+## t = -54.195, df = 4528.4, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -4.931695 -4.587345
+## sample estimates:
+## mean of x mean of y 
+##  5.598695 10.358215</code></pre>
+<p>races is follow the same as normal event assumption</p>
+</div>
+<div id="about-covid-state" class="section level2">
+<h2>about covid state</h2>
+<pre class="r"><code>compare_date_data3=tidydata3 %&gt;% 
+  filter(level==&quot;FELONY&quot;) %&gt;% 
+  group_by(year,mon,day) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+    covid_state=covid_state
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;, &#39;day&#39;. You can
+## override using the `.groups` argument.</code></pre>
+<pre class="r"><code>casenum_byday_0=ifelse(compare_date_data3$covid_state==0,compare_date_data3$n_bydate,NA) %&gt;% 
+  na.omit()
+casenum_byday_1=ifelse(compare_date_data3$covid_state==0,NA,compare_date_data3$n_bydate) %&gt;% 
+  na.omit()
+t.test(casenum_byday_0,casenum_byday_1)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  casenum_byday_0 and casenum_byday_1
+## t = -3.2454, df = 1827.7, p-value = 0.001194
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -3.6015021 -0.8882405
+## sample estimates:
+## mean of x mean of y 
+##  96.51608  98.76096</code></pre>
+<p>significant difference we can see after covid, the probability of
+happen FELONY is greater than the time before covid.</p>
+</div>
+<div id="about-time-range" class="section level2">
+<h2>about time range</h2>
+<pre class="r"><code>compare_date_data3=tidydata3 %&gt;% 
+  filter(level==&quot;FELONY&quot;) %&gt;% 
+  group_by(year,mon,day,time_range) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+    covid_state=covid_state
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;, &#39;mon&#39;, &#39;day&#39;,
+## &#39;time_range&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>casenum_byday_0=ifelse(compare_date_data3$time_range==0,compare_date_data3$n_bydate,NA) %&gt;% 
+  na.omit()
+casenum_byday_1=ifelse(compare_date_data3$time_range==1,compare_date_data3$n_bydate,NA) %&gt;% 
+  na.omit()
+t.test(casenum_byday_0,casenum_byday_1)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  casenum_byday_0 and casenum_byday_1
+## t = -10.718, df = 4389.7, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -2.928759 -2.022965
+## sample estimates:
+## mean of x mean of y 
+##  26.82596  29.30183</code></pre>
+<pre class="r"><code>casenum_byday_0=ifelse(compare_date_data3$time_range==0,compare_date_data3$n_bydate,NA) %&gt;% 
+  na.omit()
+casenum_byday_1=ifelse(compare_date_data3$time_range==2,compare_date_data3$n_bydate,NA) %&gt;% 
+  na.omit()
+t.test(casenum_byday_0,casenum_byday_1)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  casenum_byday_0 and casenum_byday_1
+## t = -58.182, df = 4799.2, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -14.96447 -13.98888
+## sample estimates:
+## mean of x mean of y 
+##  26.82596  41.30264</code></pre>
+<pre class="r"><code>casenum_byday_0=ifelse(compare_date_data3$time_range==1,compare_date_data3$n_bydate,NA) %&gt;% 
+  na.omit()
+casenum_byday_1=ifelse(compare_date_data3$time_range==2,compare_date_data3$n_bydate,NA) %&gt;% 
+  na.omit()
+t.test(casenum_byday_0,casenum_byday_1)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  casenum_byday_0 and casenum_byday_1
+## t = -57.724, df = 4742.7, p-value &lt; 2.2e-16
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -12.40839 -11.59323
+## sample estimates:
+## mean of x mean of y 
+##  29.30183  41.30264</code></pre>
+<p>It’s the same as all event circumstances.</p>
+</div>
+<div
+id="lets-compare-the-time-range-as-different-seasons-and-use-paired-t_test"
+class="section level2">
+<h2>Let’s compare the time range as different seasons and use paired
+t_test</h2>
+<pre class="r"><code>tidydata3 = tidydata3 %&gt;% 
+  mutate(
+    mon=as.numeric(mon)
+  )
+
+compare_date_data4=tidydata3 %&gt;% 
+  filter(level==&quot;FELONY&quot;) %&gt;%
+  filter(mon&gt;5 &amp; mon&lt;9) %&gt;% 
+  group_by(year) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+    covid_state=covid_state
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;. You can override using
+## the `.groups` argument.</code></pre>
+<pre class="r"><code>compare_date_data5=tidydata3 %&gt;% 
+  filter(level==&quot;FELONY&quot;) %&gt;%
+  filter(mon&gt;11 | mon&lt;3) %&gt;% 
+  group_by(year) %&gt;% 
+  dplyr::summarize(
+    n_bydate=n(),
+    covid_state=covid_state
+  ) %&gt;% 
+  unique()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;year&#39;. You can override using
+## the `.groups` argument.</code></pre>
+<pre class="r"><code>t.test(compare_date_data4$n_bydate,compare_date_data5$n_bydate,paired=TRUE)</code></pre>
+<pre><code>## 
+##  Paired t-test
+## 
+## data:  compare_date_data4$n_bydate and compare_date_data5$n_bydate
+## t = 2.8493, df = 6, p-value = 0.02921
+## alternative hypothesis: true mean difference is not equal to 0
+## 95 percent confidence interval:
+##   279.2582 3675.5989
+## sample estimates:
+## mean difference 
+##        1977.429</code></pre>
+<p>Here is a significant difference b/w winter and summer.</p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

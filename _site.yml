@@ -10,7 +10,7 @@ navbar:
       - text: "Visual Analysis"
         href: Part_Visualization.html
       - text: "Statistical Testing"
-        href: https://github.com/
+        href: Part_Statistical_Test.html
       - text: "Machine Learning Modelling"
         href: Part_Statistical_Modelling.html 
     - text: "Interactive Map"

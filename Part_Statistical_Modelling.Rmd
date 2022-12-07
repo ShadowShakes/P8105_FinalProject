@@ -11,7 +11,7 @@ output:
 \ \par
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(collapse = TRUE, message = FALSE, eval = FALSE)
+knitr::opts_chunk$set(collapse = TRUE, message = FALSE)
 ```
 
 ```{r}
@@ -28,10 +28,9 @@ library(plyr)
 
 
 ```{r}
-setwd(dir = "./Data_preprocessing/data")
-a <- list.files()     
+a <- list.files("./Data")     
 a 
-dir <- paste("./",a,sep="")                 
+dir <- paste("./Data/",a,sep="")                  
 n <- length(dir) 
 merge_data <- read.csv(file = dir[1],header=T,sep=",")   
 merge_data <- cbind(dir[1], merge_data )

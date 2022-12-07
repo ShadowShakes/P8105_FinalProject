@@ -11,6 +11,7 @@ output:
 library(tidyverse)
 library(viridis)
 library(plotly)
+library(dplyr)
 
 knitr::opts_chunk$set(
 	message = FALSE,

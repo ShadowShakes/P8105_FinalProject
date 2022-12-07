@@ -21,7 +21,7 @@ library(lubridate)
 
 
 ```{r}
-setwd(dir = "./data")
+setwd(dir = "./Data")
 a <- list.files()     
 a 
 dir <- paste("./",a,sep="")                 

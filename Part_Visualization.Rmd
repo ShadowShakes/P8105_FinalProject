@@ -47,6 +47,7 @@ complaint =
   mutate(
     month = month.abb[month],
     hour = substr(time, start = 1, stop = 2),
+    minute = substr(time, start = 4, stop = 5),
     borough = ifelse(borough == "(null)", NA, borough),
     susp_sex = ifelse(susp_sex %in% c("M", "F"), susp_sex, NA),
     susp_age_group = ifelse(susp_age_group %in% c("<18", "18-24", "25-44", "45-64", "65+"), susp_age_group, NA),
@@ -141,7 +142,7 @@ complaint %>%
   group_by(year, vic_sex) %>% 
   dplyr::summarize(n_obs = n()) %>% 
   group_by(year) %>% 
-  dplyr::summarize(vic_sex, percentage = n_obs/sum(n_obs)) %>% 
+  dplyr::summarize(vic_sex, percentage = n_obs / sum(n_obs)) %>% 
   ggplot(aes(x = year, y = percentage, fill = vic_sex)) +
   geom_bar(stat = 'identity') +
   labs(
@@ -160,7 +161,7 @@ complaint %>%
   group_by(year, vic_age_group) %>% 
   dplyr::summarize(n_obs = n()) %>% 
   group_by(year) %>% 
-  dplyr::summarize(vic_age_group, percentage = n_obs/sum(n_obs)) %>% 
+  dplyr::summarize(vic_age_group, percentage = n_obs / sum(n_obs)) %>% 
   ggplot(aes(x = year, y = percentage, fill = vic_age_group)) +
   geom_bar(stat = 'identity') +
   labs(
@@ -179,7 +180,7 @@ complaint %>%
   group_by(year, vic_race) %>% 
   dplyr::summarize(n_obs = n()) %>% 
   group_by(year) %>% 
-  dplyr::summarize(vic_race, percentage = n_obs/sum(n_obs)) %>% 
+  dplyr::summarize(vic_race, percentage = n_obs / sum(n_obs)) %>% 
   ggplot(aes(x = year, y = percentage, fill = vic_race)) +
   geom_bar(stat = 'identity') +
   labs(
@@ -228,9 +229,8 @@ complaint %>%
 ```{r plot_week&time}
 complaint %>% 
   drop_na(offense) %>% 
-  mutate(
-    day_of_week = fct_rev(day_of_week)
-  ) %>% 
+  filter(hour != "00" | minute != "01") %>% 
+  mutate(day_of_week = fct_rev(day_of_week)) %>% 
   group_by(hour, day_of_week) %>% 
   dplyr::summarize(mean_freq = n() / 352) %>% 
   plot_ly(

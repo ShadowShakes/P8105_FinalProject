@@ -6,13 +6,9 @@ output:
     toc_float: true
 ---
 
-\ \par
 
-<img src="Images/nypd_3.jpeg" style="width:100%">
+<img src="Images/new_york_2.jpeg" style="width:100%">
 
-\ \par
-
-Hi! This is the final project of P8105 Data Science, and welcome to explore this project.
 
 
 ### Introduction

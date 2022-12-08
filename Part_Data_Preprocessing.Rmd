@@ -19,7 +19,6 @@ library(wordcloud2)
 
 <center><img src="Images/data_processing.jpeg" style="width:100%"></center>
 
-
 \ \par
 
 ## Data Source
@@ -50,7 +49,7 @@ According to the attachment, there are 34 columns and we want to select those me
 
 ### Column Information
 
-The specific column names and their corresonding explanation are listed below: 
+The specific original column names and their corresponding explanation are listed below: 
 
 * `CMPLNT_NUM`: Randomly generated persistent ID for each complaint (numeric)
 * `ADDR_PCT_CD`: The precinct in which the incident occurred (categorical factor)

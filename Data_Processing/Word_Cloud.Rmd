@@ -1,0 +1,31 @@
+---
+title: "Word_Cloud"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+```{r}
+# Word cloud example of the dataset
+example_data = read_csv("./Data/cleaned_NYPD_2016.csv")
+
+example_data$offense = tolower(example_data$offense)
+
+words_list = 
+  example_data %>%
+  group_by(offense) %>%
+  summarize(
+    frequency = round(n()/nrow(example_data), 4)
+    ) %>%
+  select(offense, frequency) %>%
+  distinct()
+
+
+wordcloud2(words_list, size = 0.2, minSize = 0, gridSize =  0,  
+           fontFamily = NULL, fontWeight = '600',  
+           color = 'random-dark', backgroundColor = "white",  
+           minRotation = -pi/4, maxRotation = pi/4, rotateRatio = 0.5,  
+           shape = 'circle', ellipticity = 0.75, widgetsize = NULL) 
+```

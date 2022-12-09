@@ -19,7 +19,7 @@ library(plotly)
 ### Interactive Map 2016
 
 ```{r}
-nypd_2016 = read_csv("Data_preprocessing/data/cleaned_NYPD_2016.csv")
+nypd_2016 = read_csv("Data/cleaned_NYPD_2016.csv")
 ```
 
 

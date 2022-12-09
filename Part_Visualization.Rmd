@@ -36,12 +36,12 @@ Our dataset does not contain data for October, November and December of the year
 ```{r read&tidy, include = FALSE}
 complaint =
   tibble(
-    files = list.files("./Data_preprocessing/data/"),
-    path = str_c("./Data_preprocessing/data/", files)
+    files = list.files("./Data/"),
+    path = str_c("./Data/", files)
   ) %>% 
   mutate(data = map(path, read_csv)) %>% 
   unnest(data) %>% 
-  select(-files, -path, -cmplnt_num, -ky_cd, -atpt_cptd, -jurisdiction, -jurisdiction_code) %>% 
+  dplyr::select(-files, -path, -cmplnt_num, -ky_cd, -atpt_cptd, -jurisdiction) %>% 
   mutate(day_of_week = strftime(as.Date(date, format = "%m/%d/%Y"),"%a")) %>% 
   separate(date, into = c("month", "day", "year"), sep = "/", convert = TRUE) %>% 
   mutate(
@@ -57,7 +57,7 @@ complaint =
     vic_race = ifelse(vic_race %in% c("UNKNOWN", "(null)"), NA, vic_race),
     offense = ifelse(offense %in% c("BURGLARY", "FELONY ASSAULT", "GRAND LARCENY", "GRAND LARCENY OF MOTOR VEHICLE", "MURDER & NON-NEGL. MANSLAUGHTER", "RAPE", "ROBBERY"), offense, NA)
   ) %>% 
-  select(-day, -time) %>% 
+  dplyr::select(-day, -time) %>% 
   mutate(
     year = as.factor(year),
     month = factor(month, levels = month.abb),

@@ -102,8 +102,12 @@ complaint =
 # let's define the dangerous level related to average daily criminal events
 ```{r}
 dangrous_data=complaint %>% 
- # filter(!level=="VIOLATION") %>%
-  na.omit()
+  select(-day_of_week) %>% 
+  dplyr::filter(!is.na(vic_race)) %>% 
+  dplyr::filter(!is.na(level)) %>% 
+  dplyr::filter(!is.na(vic_age_group)) %>% 
+  dplyr::filter(!is.na(vic_sex))
+  
 
 dangrous_data = dangrous_data%>% 
   mutate(
@@ -139,7 +143,7 @@ plot_pie_sex0=dangrous_data %>%
 
 plot_pie_sex0=plot_ly(plot_pie_sex0,labels =~ vic_sex,values= ~n_obs) %>% 
   add_pie %>% 
-  layout(title="MISDEMEANOR for vic_sex")
+  layout(title="VIOLATION for vic_sex")
 
 plot_pie_sex1=dangrous_data %>%
   group_by(level,vic_sex) %>% 
@@ -151,7 +155,7 @@ plot_pie_sex1=dangrous_data %>%
   filter(type==1)
 plot_pie_sex1=plot_ly(plot_pie_sex1,labels =~ vic_sex,values= ~n_obs) %>% 
   add_pie %>% 
-  layout(title="VIOLATION for vic_sex")
+  layout(title="MISDEMEANOR for vic_sex")
 
 plot_pie_sex2=dangrous_data %>%
   group_by(level,vic_sex) %>% 
@@ -187,6 +191,15 @@ summary(model_virace)
 
 ```{r}
 # same methods to find the relation about vic_age
+dangrous_data = dangrous_data%>% 
+  mutate(
+   level_lm= case_when(
+     level == 'VIOLATION' ~ 0,
+     level == "MISDEMEANOR" ~ 1,
+     level == "FELONY" ~ 2
+   )
+  )
+
 dnd=dangrous_data %>% 
   group_by(level,vic_age_group) %>% 
   dplyr::summarize(
@@ -200,18 +213,7 @@ dnd=dangrous_data %>%
   geom_bar(stat="identity")
 
 
-plot_his_age=dangrous_data %>% 
-  group_by(level,vic_age_group) %>% 
-  dplyr::summarize(
-    n_obs=n(),
-    type=level_lm
-  ) %>% 
-  unique() %>% 
-  ggplot(
-    aes(x=level,y=n_obs,fill=vic_age_group)
-  )+
-  geom_bar(stat="identity")
-plot_his_age
+
 
 plot_pie_age0=dangrous_data %>%
   group_by(level,vic_age_group) %>% 
@@ -224,7 +226,7 @@ plot_pie_age0=dangrous_data %>%
 
 plot_pie_age0=plot_ly(plot_pie_age0,labels =~ vic_age_group,values= ~n_obs) %>% 
   add_pie %>% 
-  layout(title="MISDEMEANOR for vic_age")
+  layout(title="VIOLATION for vic_age")
 
 plot_pie_age1=dangrous_data %>%
   group_by(level,vic_age_group) %>% 
@@ -236,7 +238,7 @@ plot_pie_age1=dangrous_data %>%
   filter(type==1)
 plot_pie_age1=plot_ly(plot_pie_age1,labels =~ vic_age_group,values= ~n_obs) %>% 
   add_pie %>% 
-  layout(title="VIOLATION for vic_age")
+  layout(title="MISDEMEANOR for vic_age")
 
 plot_pie_age2=dangrous_data %>%
   group_by(level,vic_age_group) %>% 
@@ -268,6 +270,15 @@ summary(model_viage)
 ```
 # same way for sus_race
 ```{r}
+dangrous_data = dangrous_data%>% 
+  mutate(
+   level_lm= case_when(
+     level == 'VIOLATION' ~ 0,
+     level == "MISDEMEANOR" ~ 1,
+     level == "FELONY" ~ 2
+   )
+  )
+
 dnd=dangrous_data %>% 
   group_by(level,vic_race) %>% 
   dplyr::summarize(
@@ -304,7 +315,7 @@ plot_pie_race0=dangrous_data %>%
 
 plot_pie_race0=plot_ly(plot_pie_race0,labels =~ vic_race,values= ~n_obs) %>% 
   add_pie %>% 
-  layout(title="MISDEMEANOR for vic_race")
+  layout(title="VIOLATION for vic_race")
 
 plot_pie_race1=dangrous_data %>%
   group_by(level,vic_race) %>% 
@@ -317,7 +328,7 @@ plot_pie_race1=dangrous_data %>%
 
 plot_pie_race1=plot_ly(plot_pie_race1,labels =~ vic_race,values= ~n_obs) %>% 
   add_pie %>% 
-  layout(title="VIOLATION for vic_race")
+  layout(title="MISDEMEANOR for vic_race")
 
 plot_pie_race2=dangrous_data %>%
   group_by(level,vic_race) %>% 
@@ -356,7 +367,14 @@ summary(model_visex)
 
 # go into detials about offense
 ```{r}
+
 dangerous=dangrous_data%>%
+  mutate(
+   level_lm= case_when(
+     level == 'VIOLATION' ~ 0,
+     level == "MISDEMEANOR" ~ 0,
+     level == "FELONY" ~ 1
+   ) )%>% 
   mutate(
     level_lm=ordered(level_lm, labels = c('1', '0'))
     )

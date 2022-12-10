@@ -355,9 +355,6 @@ div.tocify {
     </li>
   </ul>
 </li>
-<li>
-  <a href="Analysis_CUMC.html">CUMC Safety Analysis</a>
-</li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
     Shiny App
@@ -376,6 +373,21 @@ div.tocify {
     </li>
     <li>
       <a href="https://shadowshakes.shinyapps.io/app_detect_safety/">Shiny Safety Assessment</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    CUMC Safety Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Analysis_CUMC.html">Visual Analysis</a>
+    </li>
+    <li>
+      <a href="https://shadowshakes.shinyapps.io/app_cumc/">CUMC Safety Map</a>
     </li>
   </ul>
 </li>
@@ -550,7 +562,8 @@ information, and only keep those important.</p>
 <code>Longitude</code>. And rename some variables to more reasonable
 names. We export the cleaned sliced dataset into the “Data” folder in
 the root path.</p>
-<p>Click the <code>code</code> button to see the processing details.</p>
+<p>Click code to check the first period’s data preprocessing for brief
+analysis it here.</p>
 <pre class="r"><code>files_name = list.files(&quot;data/&quot;)
 
 cleaning_data = function(filename){
@@ -599,6 +612,65 @@ cleaning_data = function(filename){
 }
 
 map(files_name, cleaning_data)</code></pre>
+<p>When we are going to conduct in-depth data-driven analysis, we
+further process the data for the convenience of subsequent data
+manipulation.<br />
+Click code to check the second period’s data preprocessing for in-depth
+analysis it here.</p>
+<pre class="r"><code>complaint =
+  tibble(
+    files = list.files(&quot;./Data/&quot;),
+    path = str_c(&quot;./Data/&quot;, files)
+  ) %&gt;% 
+  mutate(data = map(path, read_csv)) %&gt;% 
+  unnest(data) %&gt;% 
+  select(-files, -path, -cmplnt_num, -ky_cd, -atpt_cptd, -jurisdiction) %&gt;% 
+  mutate(day_of_week = strftime(as.Date(date, format = &quot;%m/%d/%Y&quot;),&quot;%a&quot;)) %&gt;% 
+  separate(date, into = c(&quot;month&quot;, &quot;day&quot;, &quot;year&quot;), sep = &quot;/&quot;, convert = TRUE) %&gt;% 
+  mutate(
+    month = month.abb[month],
+    hour = substr(time, start = 1, stop = 2),
+    minute = substr(time, start = 4, stop = 5),
+    hour = ifelse(hour == &quot;00&quot; &amp; minute == &quot;01&quot;, NA, hour),
+    wkend_wkday = ifelse(day_of_week %in% c(&quot;Sat&quot;, &quot;Sun&quot;), &quot;weekend&quot;, &quot;weekday&quot;),
+    borough = ifelse(borough == &quot;(null)&quot;, NA, borough),
+    offense = ifelse(offense == &quot;(null)&quot;, NA, offense),
+    susp_sex = ifelse(susp_sex %in% c(&quot;M&quot;, &quot;F&quot;), susp_sex, NA),
+    susp_age_group = ifelse(susp_age_group %in% c(&quot;&lt;18&quot;, &quot;18-24&quot;, &quot;25-44&quot;, &quot;45-64&quot;, &quot;65+&quot;), susp_age_group, NA),
+    susp_race = ifelse(susp_race %in% c(&quot;UNKNOWN&quot;, &quot;(null)&quot;), NA, susp_race),
+    vic_sex = ifelse(vic_sex %in% c(&quot;M&quot;, &quot;F&quot;), vic_sex, NA),
+    vic_age_group = ifelse(vic_age_group %in% c(&quot;&lt;18&quot;, &quot;18-24&quot;, &quot;25-44&quot;, &quot;45-64&quot;, &quot;65+&quot;), vic_age_group, NA),
+    vic_race = ifelse(vic_race %in% c(&quot;UNKNOWN&quot;, &quot;(null)&quot;), NA, vic_race),
+    jurisdiction_code = as.numeric(jurisdiction_code),
+    jurisdiction_code = ifelse(jurisdiction_code &gt;= 3, 3, jurisdiction_code),
+    covid_state = ifelse(year &gt;= 2020, 1, 0),
+    time_range = case_when(
+      (as.integer(hour) &gt; 22) | (as.integer(hour) &lt;= 6) ~ 0,
+      (as.integer(hour) &gt; 6) &amp; (as.integer(hour) &lt;= 14) ~ 1,
+      (as.integer(hour) &gt; 14) &amp; (as.integer(hour) &lt;= 22) ~ 2
+    )
+  ) %&gt;% 
+  select(-time, -minute) %&gt;% 
+  mutate(
+    year = as.factor(year),
+    month = factor(month, levels = month.abb),
+    day_of_week = factor(day_of_week, levels = c(&quot;Sun&quot;, &quot;Mon&quot;, &quot;Tue&quot;, &quot;Wed&quot;, &quot;Thu&quot;, &quot;Fri&quot;, &quot;Sat&quot;)),
+    hour = factor(hour),
+    precinct = as.factor(precinct),
+    borough = as.factor(borough),
+    level = as.factor(level),
+    offense = as.factor(offense),
+    susp_sex = as.factor(susp_sex),
+    susp_age_group = as.factor(susp_age_group),
+    susp_race = as.factor(susp_race),
+    vic_sex = as.factor(vic_sex),
+    vic_age_group = as.factor(vic_age_group),
+    vic_race = as.factor(vic_race),
+    wkend_wkday = as.factor(wkend_wkday),
+    covid_state = as.factor(covid_state),
+    time_range = as.factor(time_range),
+    jurisdiction_code = as.factor(jurisdiction_code)
+  )</code></pre>
 </div>
 </div>
 

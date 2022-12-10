@@ -15,8 +15,6 @@ navbar:
         href: Analysis_Region.html 
       - text: "Time Range Analysis"
         href: Analysis_Time.html
-    - text: "CUMC Safety Analysis"
-      href: Analysis_CUMC.html
     - text: "Shiny App"
       menu:
       - text: "Shiny App Notification"
@@ -27,7 +25,13 @@ navbar:
         href: https://shadowshakes.shinyapps.io/app_after_covid/ 
       - text: "Shiny Safety Assessment" 
         href: https://shadowshakes.shinyapps.io/app_detect_safety/
-
+    - text: "CUMC Safety Analysis"
+      menu:
+      - text: "Visual Analysis"  
+        href: Analysis_CUMC.html
+      - text: "CUMC Safety Map"
+        href: https://shadowshakes.shinyapps.io/app_cumc/
+  
   right:
     - text: "Conclusion & Report"
       href: Project_Report.html 

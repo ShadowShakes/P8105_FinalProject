@@ -30,9 +30,235 @@ scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
-<center><img src="Images/cumc.jpeg" style="width:100%"></center>
+<center><img src="Images/cumc_around.jpeg" style="width:100%"></center>
 
 \ \par
 
-In this section we would like to briefly analyze the crime complaints that happen near CUMC campus.
+In this section we briefly analyze the crime complaints that happen near CUMC campus.
+
+We define The following region as the CUMC campus where most of us would go out for daily studying, eating and shopping.  
+
+<img src="Images/campus_region.png" style="width:40%">
+
+```{r}
+complaint =
+  tibble(
+    files = list.files("./Data/"),
+    path = str_c("./Data/", files)
+  ) %>% 
+  mutate(data = map(path, read_csv)) %>% 
+  unnest(data) %>% 
+  select(-files, -path, -cmplnt_num, -ky_cd, -atpt_cptd, -jurisdiction) %>% 
+  mutate(day_of_week = strftime(as.Date(date, format = "%m/%d/%Y"),"%a")) %>% 
+  separate(date, into = c("month", "day", "year"), sep = "/", convert = TRUE) %>% 
+  mutate(
+    month = month.abb[month],
+    hour = substr(time, start = 1, stop = 2),
+    minute = substr(time, start = 4, stop = 5),
+    hour = ifelse(hour == "00" & minute == "01", NA, hour),
+    wkend_wkday = ifelse(day_of_week %in% c("Sat", "Sun"), "weekend", "weekday"),
+    borough = ifelse(borough == "(null)", NA, borough),
+    offense = ifelse(offense == "(null)", NA, offense),
+    susp_sex = ifelse(susp_sex %in% c("M", "F"), susp_sex, NA),
+    susp_age_group = ifelse(susp_age_group %in% c("<18", "18-24", "25-44", "45-64", "65+"), susp_age_group, NA),
+    susp_race = ifelse(susp_race %in% c("UNKNOWN", "(null)"), NA, susp_race),
+    vic_sex = ifelse(vic_sex %in% c("M", "F"), vic_sex, NA),
+    vic_age_group = ifelse(vic_age_group %in% c("<18", "18-24", "25-44", "45-64", "65+"), vic_age_group, NA),
+    vic_race = ifelse(vic_race %in% c("UNKNOWN", "(null)"), NA, vic_race),
+    jurisdiction_code = as.numeric(jurisdiction_code),
+    jurisdiction_code = ifelse(jurisdiction_code >= 3, 3, jurisdiction_code),
+    covid_state = ifelse(year >= 2020, 1, 0),
+    time_range = case_when(
+      (as.integer(hour) > 22) | (as.integer(hour) <= 6) ~ 0,
+      (as.integer(hour) > 6) & (as.integer(hour) <= 14) ~ 1,
+      (as.integer(hour) > 14) & (as.integer(hour) <= 22) ~ 2
+    )
+  ) %>% 
+  select(-time, -minute) %>% 
+  mutate(
+    year = as.factor(year),
+    month = factor(month, levels = month.abb),
+    day_of_week = factor(day_of_week, levels = c("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")),
+    hour = factor(hour),
+    precinct = as.factor(precinct),
+    borough = as.factor(borough),
+    level = as.factor(level),
+    offense = as.factor(offense),
+    susp_sex = as.factor(susp_sex),
+    susp_age_group = as.factor(susp_age_group),
+    susp_race = as.factor(susp_race),
+    vic_sex = as.factor(vic_sex),
+    vic_age_group = as.factor(vic_age_group),
+    vic_race = as.factor(vic_race),
+    wkend_wkday = as.factor(wkend_wkday),
+    covid_state = as.factor(covid_state),
+    time_range = as.factor(time_range),
+    jurisdiction_code = as.factor(jurisdiction_code)
+  ) %>%
+  filter(
+    longitude >= -73.942758 & longitude <= -73.936854,
+    latitude >= 40.838875 & latitude <= 40.846296
+    )
+```
+
+
+
+```{r}
+num_days = function(month, year) {
+  
+  year = as.integer(year)
+  months = 1:12
+  names(months) = month.abb
+  month = months[month]
+  
+  as.numeric(strftime(as.Date(paste(year + month %/% 12, month %% 12 + 1, "01", sep = "-")) - 1, "%d"))
+  
+}
+
+complaint %>%
+  filter(level == "FELONY") %>% 
+  mutate(
+    year = fct_rev(year),
+    month = fct_rev(month)
+         ) %>% 
+  group_by(year, month) %>% 
+  dplyr::summarize(mean_freq = n() / num_days(month, year)) %>% 
+  plot_ly(
+    x = ~list(year, month), y = ~mean_freq, color = "orange",
+    type = "bar"
+  ) %>% 
+  colorbar(x = 1, y = 1) %>% 
+  layout(
+    title = "Average Daily Felony Frequency by Year and Month around CUMC",
+    xaxis = list(title = "Year & Month", titlefont = list(size = 1)),
+    yaxis = list(title = "Felony Frequency")
+  )
+```
+
+### Suspect Race
+```{r}
+complaint %>% 
+  drop_na(offense, susp_race) %>% 
+  group_by(year, susp_race) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
+  group_by(year) %>% 
+  dplyr::summarize(susp_race, percentage = n_obs / sum(n_obs)) %>% 
+  ggplot(aes(x = year, y = percentage, fill = susp_race)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Year",
+    y = "Proportion",
+    title = "Proportions of Suspect Race and Year",
+    fill = "Suspect Race"
+  )
+complaint %>% 
+  drop_na(offense, susp_race) %>% 
+  group_by(level, susp_race) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
+  group_by(level) %>% 
+  dplyr::summarize(susp_race, percentage = n_obs / sum(n_obs)) %>% 
+  ggplot(aes(x = level, y = percentage, fill = susp_race)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Level",
+    y = "Proportion",
+    title = "Proportions of Suspect Race and Level",
+    fill = "Suspect Race"
+  )
+```
+
+### Suspect Age Group
+```{r}
+complaint %>% 
+  drop_na(offense, susp_age_group) %>% 
+  group_by(year, susp_age_group) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
+  group_by(year) %>% 
+  dplyr::summarize(susp_age_group, percentage = n_obs / sum(n_obs)) %>% 
+  ggplot(aes(x = year, y = percentage, fill = susp_age_group)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Year",
+    y = "Proportion",
+    title = "Proportions of Suspect Age Group and Year",
+    fill = "Suspect Age Group"
+  )
+complaint %>% 
+  drop_na(offense, susp_age_group) %>% 
+  group_by(level, susp_age_group) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
+  group_by(level) %>% 
+  dplyr::summarize(susp_age_group, percentage = n_obs / sum(n_obs)) %>% 
+  ggplot(aes(x = level, y = percentage, fill = susp_age_group)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Level",
+    y = "Proportion",
+    title = "Proportions of Suspect Age Group and Level",
+    fill = "Suspect Age Group"
+  )
+```
+
+### Victim Sex
+```{r}
+complaint %>% 
+  drop_na(offense, vic_sex) %>% 
+  group_by(year, vic_sex) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
+  group_by(year) %>% 
+  dplyr::summarize(vic_sex, percentage = n_obs / sum(n_obs)) %>% 
+  ggplot(aes(x = year, y = percentage, fill = vic_sex)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Year",
+    y = "Proportion",
+    title = "Proportions of Suspect Sex and Year",
+    fill = "Suspect Sex"
+  )
+complaint %>% 
+  drop_na(offense, vic_sex) %>% 
+  group_by(level, vic_sex) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
+  group_by(level) %>% 
+  dplyr::summarize(vic_sex, percentage = n_obs / sum(n_obs)) %>% 
+  ggplot(aes(x = level, y = percentage, fill = vic_sex)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Level",
+    y = "Proportion",
+    title = "Proportions of Suspect Sex and Level",
+    fill = "Suspect Sex"
+  )
+```
+### Victim Race
+```{r}
+complaint %>% 
+  drop_na(offense, vic_race) %>% 
+  group_by(year, vic_race) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
+  group_by(year) %>% 
+  dplyr::summarize(vic_race, percentage = n_obs / sum(n_obs)) %>% 
+  ggplot(aes(x = year, y = percentage, fill = vic_race)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Year",
+    y = "Proportion",
+    title = "Proportions of Suspect Race and Year",
+    fill = "Suspect Race"
+  )
+complaint %>% 
+  drop_na(offense, vic_race) %>% 
+  group_by(level, vic_race) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
+  group_by(level) %>% 
+  dplyr::summarize(vic_race, percentage = n_obs / sum(n_obs)) %>% 
+  ggplot(aes(x = level, y = percentage, fill = vic_race)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Level",
+    y = "Proportion",
+    title = "Proportions of Suspect Race and Level",
+    fill = "Suspect Race"
+  )
+```
 

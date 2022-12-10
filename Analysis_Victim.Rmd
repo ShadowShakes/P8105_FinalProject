@@ -1,4 +1,5 @@
----
+
+（）“---
 title: "Victim Analysis"
 output: 
   html_document:
@@ -20,6 +21,7 @@ library(rms)
 library(ResourceSelection)
 library(VGAM)
 library(ResourceSelection)
+library(patchwork)
 knitr::opts_chunk$set(
 	message = FALSE,
 	warning = FALSE,
@@ -117,8 +119,15 @@ dangrous_data = dangrous_data%>%
      level == "FELONY" ~ 2
    )
   )
+```
+From the data, we can easily find that violation represents the lowest level, followed by misdemeanors and felonies. Therefore, they are assigned 0, 1, and 2 to represent the degree of danger of the event, that is, the risk factor faced by the victim.
 
-## first
+# Next, let's further analyze the relationship between the characteristics of the victim and the level of danger.
+
+## The first is the gender of the victim
+
+### First, by drawing a stacked bar graph, we will observe whether there are differences in the historical total amount of dangerous incidents encountered by victims of different genders.
+```{r}
 plot_his_sex=dangrous_data %>% 
   group_by(level,vic_sex) %>% 
   dplyr::summarize(
@@ -129,9 +138,19 @@ plot_his_sex=dangrous_data %>%
   ggplot(
     aes(x=level,y=n_obs,fill=vic_sex)
   )+
-  geom_bar(stat="identity")
+  geom_bar(stat="identity")+
+  labs(
+    title="relationship between dangerous and victim sex",
+    x="dangerous level",
+    y="number of cases"
+  )
 plot_his_sex
+```
 
+Through the stacked bar chart, we can see that when the danger level is violation (0), the number of incidents where the victim is a woman is much higher than that of a man. At intermediate and higher levels, no significant differences can be observed by observation,
+
+### First, by drawing a stacked bar graph, we will observe whether there are differences in the historical total amount of dangerous incidents encountered by victims of different genders.
+```{r}
 plot_pie_sex0=dangrous_data %>%
   group_by(level,vic_sex) %>% 
   dplyr::summarize(
@@ -170,28 +189,40 @@ plot_pie_sex2=plot_ly(plot_pie_sex2,labels =~ vic_sex,values= ~n_obs) %>%
   add_pie %>% 
   layout(title="FELONY for vic_sex")
 
+
+par(mfrow=c(1,3))
 plot_pie_sex0
 plot_pie_sex1
-plot_pie_sex2
+```
 
+### Further, we use the logistic regression model to observe whether this difference is statistically significant when we predict the risk of events.
+
+In order to simplify the model and facilitate effective verification, we classify felony and misdemeanors with no obvious difference into one category - high risk, regard violation as low risk, and assign ordinal variables 1, 0 respectively.
+```{r}
 #manipulate a logistic regression about level~vic
 
-dangrous_data = dangrous_data%>% 
+dangrous_data = dangrous_data %>% 
   mutate(
    level_lm= case_when(
      level == 'VIOLATION' ~ 0,
      level == "MISDEMEANOR" ~ 0,
      level == "FELONY" ~ 1
    )
-  )
-model_virace <- glm(level_lm ~ vic_race , data = dangrous_data)
-summary(model_virace)
+  ) %>% 
+  mutate(
+    level_lm=ordered(level_lm, labels = c('0', '1'))
+    )
+
+model_virsex <- glm(level_lm ~ vic_sex ,family = binomial, data = dangrous_data)
+summary(model_virsex)
 ```
 
+By observing the results, the regression coefficient of the independent variable is positive, and the significance level is less than 0.05. It is not difficult to see that the gender difference has a significant significance for judging the event level. That is, women are more likely to be persecuted in VIOLATION-level events.
+In the event types with higher risk levels, the probability of men and women being in danger will tend to be equal.
 
+##  We will use the same line of thought to analyze the relationship between the race of the victim and the level of danger.
 ```{r}
-# same methods to find the relation about vic_age
-dangrous_data = dangrous_data%>% 
+dangrous_data = dangrous_data %>% 
   mutate(
    level_lm= case_when(
      level == 'VIOLATION' ~ 0,
@@ -200,7 +231,7 @@ dangrous_data = dangrous_data%>%
    )
   )
 
-dnd=dangrous_data %>% 
+plot_bar_agegroup=dangrous_data %>% 
   group_by(level,vic_age_group) %>% 
   dplyr::summarize(
     n_obs=n(),
@@ -210,12 +241,18 @@ dnd=dangrous_data %>%
   ggplot(
     aes(x=level,y=n_obs,fill=vic_age_group)
   )+
-  geom_bar(stat="identity")
+  geom_bar(stat="identity")+
+  labs(
+    title = "relationship between dangerous level and victim age range",
+    x = "dangerous level",
+    y = "number of cases"
+  )
+plot_bar_agegroup
 
 
 
 
-plot_pie_age0=dangrous_data %>%
+plot_pie_age0 = dangrous_data %>%
   group_by(level,vic_age_group) %>% 
   dplyr::summarize(
     n_obs=n(),
@@ -264,11 +301,17 @@ dangrous_data = dangrous_data%>%
      level == "MISDEMEANOR" ~ 0,
      level == "FELONY" ~ 1
    )
-  )
-model_viage <- glm(level_lm ~ vic_age_group , data = dangrous_data)
+  ) %>% 
+  mutate(
+    level_lm=ordered(level_lm, labels = c('0', '1'))
+    )
+model_viage <- glm(level_lm ~ vic_age_group ,family=binomial, data = dangrous_data)
 summary(model_viage)
 ```
-# same way for sus_race
+The results show that although the victim group is mainly targeted at 25-44. With the level of dangerous increase, the 45-64 victim age group dropped about 4 percentage points and the 18-24 victim age group rose about 3 points.
+From the logistics regression, vic_age_group is useful for predicting the level of dangerous.
+
+## Victim's race and the level of danger
 ```{r}
 dangrous_data = dangrous_data%>% 
   mutate(
@@ -289,7 +332,12 @@ dnd=dangrous_data %>%
   ggplot(
     aes(x=level,y=n_obs,fill=vic_race)
   )+
-  geom_bar(stat="identity")
+  geom_bar(stat="identity")+
+  labs(
+    title="relationship between dangerous and victim race",
+    x="dangerous level",
+    y="number of cases"
+  )
 
 plot_his_race=dangrous_data %>% 
   group_by(level,vic_race) %>% 
@@ -354,18 +402,18 @@ dangrous_data_3 = dangrous_data%>%
      level == "MISDEMEANOR" ~ 0,
      level == "FELONY" ~ 1
    )
-  ) %>% 
-  filter(!vic_age_group=="18-24")
-model_visex <- glm(level_lm ~ vic_race, data = dangrous_data_3)
-summary(model_visex)
+  )  %>% 
+  mutate(
+    level_lm=ordered(level_lm, labels = c('0', '1'))
+    )
+model_vicrace <- glm(level_lm ~ vic_race, family = binomial, data = dangrous_data_3)
+summary(model_vicrace)
 ```
 
+The relationship between victim race and case level. The black race occupies the majority of the victims, and as the severity of the case increases, the proportion of black victims decreases significantly, while the proportion of white Hispanic and ASIAN/PACIFIC ISLAND victims gradually increases. This can be confirmed by observing the size relationship of the logistic regression coefficient.
 
 
-
-# do a multi logistics regression
-
-# go into detials about offense
+## We conclude with the multi logistics regression model. 
 ```{r}
 
 dangerous=dangrous_data%>%
@@ -376,10 +424,12 @@ dangerous=dangrous_data%>%
      level == "FELONY" ~ 1
    ) )%>% 
   mutate(
-    level_lm=ordered(level_lm, labels = c('1', '0'))
-    )
+    level_lm=ordered(level_lm, labels = c('1', '0')
+    ))
 
-model_toal<- glm(level_lm ~ vic_race + vic_age_group + vic_sex,family = binomial,data=dangerous)
+model_toal<- glm(level_lm ~ vic_race + vic_age_group + vic_sex,family = binomial,data=dangerous)    
+
+
 summary(model_toal)
 dangerous=dangerous%>% 
   filter(!vic_age_group=="18-24")
@@ -388,10 +438,12 @@ summary(model_toal)
 
 
 ```
+We finally presented the model in the form of multiple logistic regression, but it should be noted that the information of the victim alone cannot fit the data well, and the regression only shows the correlation between the danger level and the characteristics of the victim.
 
 
+# For future research, we can deeply analyze the relationship between the specific event content and the victim for each type of danger level.
 
-## take a pie_piechart for MISDEMEANOR,to have a general info about what can be determine as a mid level dangerous.
+## At present, for the example of a misdemeanor, we can use a pie chart to observe its event composition.
 ```{r}
 pie_chart=dangrous_data %>% 
   filter(level=="MISDEMEANOR")
@@ -412,11 +464,11 @@ pie_chart=pie_chart %>%
 # mid victem event as offense details
 plot_ly(pie_chart,labels =~ offense,values= ~n) %>% 
   add_pie %>% 
-  layout(title="just for try")
+  layout(title="Constituent Incidents of MISDEMEANOR")
 
 ```
 
-##look difference among most common event
+## Look difference among most common event
 ```{r}
 offense_data= dangrous_data %>% 
   filter(offense=="ASSAULT 3 & RELATED OFFENSES"|
@@ -436,8 +488,17 @@ dnd=offense_data %>%
   ggplot(
     aes(x=offense,y=n_obs,fill=vic_sex)
   )+
-  geom_bar(stat="identity")  
+  geom_bar(stat="identity")+
+  theme(
+    axis.text.x.bottom = element_text(angle=45, hjust=1)
+  )+
+  labs(
+    title="MISDEMEANOR Incidents VS victim sex ",
+    x="dangerous level",
+    y="number of cases"
+  )
 dnd
 
 ```
 
+By observing the important event composition of misdemeanors and the differences in the characteristics of different victims, we can study the relationship between victim characteristics and danger in more detail. For example, by observing the event of OFF, AGNSTPUB ORD SENSBLTY, we can see that it has a strong gender tendency.

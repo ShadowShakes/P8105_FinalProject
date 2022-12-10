@@ -89,8 +89,7 @@ We want to get rid of redundant variables or variables with little information, 
 
 After detailed discussion, we retained `CMPLNT_NUM`, `ADDR_PCT_CD`, `BORO_NM`, `CMPLNT_FR_DT`, `CMPLNT_FR_TM`, `CRM_ATPT_CPTD_CD`, `JURIS_DESC`, `LAW_CAT_CD`, `OFNS_DESC`, `SUSP_AGE_GROUP`, `SUSP_RACE`, `SUSP_SEX`, `VIC_AGE_GROUP`, `VIC_RACE`, `VIC_SEX`, `Latitude`, and `Longitude`. And rename some variables to more reasonable names. We export the cleaned sliced dataset into the "Data" folder in the root path.
 
-Click the `code` button to see the processing details.
-
+Click code to check the first period's data preprocessing for brief analysis it here.
 ```{r, eval=FALSE}
 files_name = list.files("data/")
 
@@ -141,3 +140,63 @@ cleaning_data = function(filename){
 
 map(files_name, cleaning_data)
 ```
+
+When we are going to conduct in-depth data-driven analysis, we further process the data for the convenience of subsequent data manipulation.  
+Click code to check the second period's data preprocessing for in-depth analysis it here.
+```{r eval = FALSE}
+complaint =
+  tibble(
+    files = list.files("./Data/"),
+    path = str_c("./Data/", files)
+  ) %>% 
+  mutate(data = map(path, read_csv)) %>% 
+  unnest(data) %>% 
+  select(-files, -path, -cmplnt_num, -ky_cd, -atpt_cptd, -jurisdiction) %>% 
+  mutate(day_of_week = strftime(as.Date(date, format = "%m/%d/%Y"),"%a")) %>% 
+  separate(date, into = c("month", "day", "year"), sep = "/", convert = TRUE) %>% 
+  mutate(
+    month = month.abb[month],
+    hour = substr(time, start = 1, stop = 2),
+    minute = substr(time, start = 4, stop = 5),
+    hour = ifelse(hour == "00" & minute == "01", NA, hour),
+    wkend_wkday = ifelse(day_of_week %in% c("Sat", "Sun"), "weekend", "weekday"),
+    borough = ifelse(borough == "(null)", NA, borough),
+    offense = ifelse(offense == "(null)", NA, offense),
+    susp_sex = ifelse(susp_sex %in% c("M", "F"), susp_sex, NA),
+    susp_age_group = ifelse(susp_age_group %in% c("<18", "18-24", "25-44", "45-64", "65+"), susp_age_group, NA),
+    susp_race = ifelse(susp_race %in% c("UNKNOWN", "(null)"), NA, susp_race),
+    vic_sex = ifelse(vic_sex %in% c("M", "F"), vic_sex, NA),
+    vic_age_group = ifelse(vic_age_group %in% c("<18", "18-24", "25-44", "45-64", "65+"), vic_age_group, NA),
+    vic_race = ifelse(vic_race %in% c("UNKNOWN", "(null)"), NA, vic_race),
+    jurisdiction_code = as.numeric(jurisdiction_code),
+    jurisdiction_code = ifelse(jurisdiction_code >= 3, 3, jurisdiction_code),
+    covid_state = ifelse(year >= 2020, 1, 0),
+    time_range = case_when(
+      (as.integer(hour) > 22) | (as.integer(hour) <= 6) ~ 0,
+      (as.integer(hour) > 6) & (as.integer(hour) <= 14) ~ 1,
+      (as.integer(hour) > 14) & (as.integer(hour) <= 22) ~ 2
+    )
+  ) %>% 
+  select(-time, -minute) %>% 
+  mutate(
+    year = as.factor(year),
+    month = factor(month, levels = month.abb),
+    day_of_week = factor(day_of_week, levels = c("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")),
+    hour = factor(hour),
+    precinct = as.factor(precinct),
+    borough = as.factor(borough),
+    level = as.factor(level),
+    offense = as.factor(offense),
+    susp_sex = as.factor(susp_sex),
+    susp_age_group = as.factor(susp_age_group),
+    susp_race = as.factor(susp_race),
+    vic_sex = as.factor(vic_sex),
+    vic_age_group = as.factor(vic_age_group),
+    vic_race = as.factor(vic_race),
+    wkend_wkday = as.factor(wkend_wkday),
+    covid_state = as.factor(covid_state),
+    time_range = as.factor(time_range),
+    jurisdiction_code = as.factor(jurisdiction_code)
+  )
+```
+

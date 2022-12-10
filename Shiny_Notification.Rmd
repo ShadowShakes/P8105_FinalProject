@@ -15,9 +15,10 @@ output:
 Shiny is a useful framework to create inteactive interfaces and web-based applications for data analysis.  
 In this project, we construct two interactive maps and one safety assessment  app based on Shiny App.  
 
-The interactive maps visualize the distribution of seven kinds of felony crimes on the New York City map and offer filters for time, victim and suspect.  
+The interactive maps visualize the distribution of seven kinds of felony crimes on the New York City map and offer filters for borough, location, time, victim and suspect.  
+We divide the crime data to two maps mainly to avoid memory overflow. As free Shiny developers, we have limited RAM and App users will sometimes disconnect from Shiny server because of large crime dataset size.  
 The first map contains data before Covid-19 from 2017 to 2019. The second map has data after Covid-19 from 2020 to 2022.  
-We divide the crime data to two maps mainly to avoid memory overflow. As free Shiny users, we have limited RAM and users will sometimes disconnect from Shiny server because of large crime dataset size.
+
 
 <img src="Images/shiny_example.png" style="width:100%">  
 

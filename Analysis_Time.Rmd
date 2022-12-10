@@ -139,7 +139,7 @@ complaint %>%
   filter(!(month %in% c("Oct", "Nov", "Dec"))) %>% 
   group_by(year, month, day) %>% 
   dplyr::summarize(n_obs = n()) %>% 
-  plot_ly(x = ~year, y = ~n_obs, color = ~year, type = "box") %>% 
+  plot_ly(x = ~year, y = ~n_obs, color = ~year, colors = "viridis", type = "box") %>% 
   layout(
     title = "Daily Felony Frequency by Year (January to September)",
     xaxis = list(title = "Year"),
@@ -148,7 +148,7 @@ complaint %>%
   )
 ```
 
-The boxplot further supports our previous conclusion. In pre-COVID years, the distributions of daily felony frequency are generally the same across years. The median frequency of 2020 is lower than, showing that the stay-at-home order might lead to a decrease in the frequency of felonies overall. It appears that the frequency distribution in 2021 returned to the pre-COVID level, while that in 2022 greatly exceeded the level, which was probably due to the long-term economic and social effects of the pandemic, such as the increase in income inequality.
+The boxplot further supports our previous conclusion. In pre-COVID years, the distributions of daily felony frequency are generally the same across years. The median frequency of 2020 is lower than the pre-COVID level, showing that the stay-at-home order might lead to a decrease in the frequency of felonies overall. It appears that the frequency distribution in 2021 returned to the pre-COVID level, while that in 2022 greatly exceeded the level, which was probably due to the long-term economic and social effects of the pandemic, such as the increase in income inequality.
 
 ### Temporal Heat Map for Felony Crimes
 

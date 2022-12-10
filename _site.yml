@@ -23,6 +23,8 @@ navbar:
         href: https://shadowshakes.shinyapps.io/app_before_covid/
       - text: "Shiny Map After Covid"
         href: https://shadowshakes.shinyapps.io/app_after_covid/ 
+      - text: "Shiny Safety Assessment" 
+        href: https://shadowshakes.shinyapps.io/app_detect_safety/
   right:
     - text: "Conclusion and Report"
       href: https://github.com/ 

@@ -13,17 +13,25 @@ output:
 ### Notifications for using Shiny
 
 Shiny is a useful framework to create inteactive interfaces and web-based applications for data analysis.  
-In this project, we construct two interactive maps based on Shiny App.  
+In this project, we construct two interactive maps and one safety assessment  app based on Shiny App.  
 
+The interactive maps visualize the distribution of seven kinds of felony crimes on the New York City map and offer filters for time, victim and suspect.  
 The first map contains data before Covid-19 from 2017 to 2019. The second map has data after Covid-19 from 2020 to 2022.  
 We divide the crime data to two maps mainly to avoid memory overflow. As free Shiny users, we have limited RAM and users will sometimes disconnect from Shiny server because of large crime dataset size.
 
-If you encounter the disconnection, please try reconnect to the server and avoid selecting too much data in the slider. If there is any other problem with our Shiny App, please kindly contact us immediately [E-mail](mailto:<sc5154@cumc.columiba.edu>).
-Thank you for your cooperation and have fun in our Shiny Map.
-
-<img src="Images/shiny_example.png" style="width:100%">
+<img src="Images/shiny_example.png" style="width:100%">  
 
 Explore the first map that has data before Covid-19: [Shiny Map 1](https://shadowshakes.shinyapps.io/app_before_covid/)
 
 Explore the second map that has data after Covid-19: [Shiny Map 2](https://shadowshakes.shinyapps.io/app_after_covid/)
+
+The safety assessment app offers the visualization of potential suspect's feature and also the crimes in different borough, and it is based on the filters of victim's feature(e.g. Yourself) and time period for going out.   
+
+<img src="Images/shiny_safety_assess.png" style="width:100%">
+
+Explore the safety assessment app here: [Shiny Safety Assessment](https://shadowshakes.shinyapps.io/app_detect_safety/)
+
+If you encounter the disconnection, mostly it is caused by limited RAM, and please try to reconnect to the server or avoid selecting too much data in the slider. But if you keep failing to reconnect, it is also possible that our free user's usage of application time has reached the upper limit. In this circumstance or you have any other problem with our Shiny App, please kindly contact us immediately [E-mail](mailto:<sc5154@cumc.columiba.edu>).
+Thank you for your cooperation and have fun in our Shiny Apps.
+
 

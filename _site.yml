@@ -4,22 +4,30 @@ navbar:
   title: "Home"
   left:
     - text: "Data & Processing"
-      href: Part_Data_Preprocessing.html 
+      href: Data_Preprocessing.html 
     - text: 'Data-driven Analysis'
       menu:
-      - text: "Visual Analysis"
-        href: Part_Visualization.html
-      - text: "Statistical Testing"
-        href: Part_Statistical_Test.html
-      - text: "Machine Learning Modelling"
-        href: Part_Statistical_Modelling.html 
-    - text: "Interactive Map"
-      href: Part_Interactive_Map.html
+      - text: "Suspect Analysis"
+        href: Analysis_Suspect.html
+      - text: "Victim Analysis"
+        href: Analysis_Victim.html
+      - text: "Region Analysis"
+        href: Analysis_Region.html 
+      - text: "Time Range Analysis"
+        href: Analysis_Time.html
     - text: "Shiny App"
-      href: https://shadowshakes.shinyapps.io/map_app/ 
+      menu:
+      - text: "Shiny App Notification"
+        href: Shiny_Notification.html 
+      - text: "Shiny Map Before Covid"
+        href: https://shadowshakes.shinyapps.io/app_before_covid/
+      - text: "Shiny Map After Covid"
+        href: https://shadowshakes.shinyapps.io/app_after_covid/ 
+  right:
     - text: "Conclusion and Report"
       href: https://github.com/ 
-  right:
+    - text: "Screencast"
+      href: https://www.youtube.com/ 
     - text: "About"
       href: about.html
     - icon: fa-envelope fa-lg

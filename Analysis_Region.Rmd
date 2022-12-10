@@ -1,0 +1,215 @@
+---
+title: "Region Analysis"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+    code_folding: hide
+---
+
+```{r setup, include = FALSE}
+library(tidyverse)
+library(viridis)
+library(plotly)
+
+knitr::opts_chunk$set(
+	message = FALSE,
+	warning = FALSE,
+	fig.width = 10,
+  out.width = "80%"
+)
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+```
+
+\ \par
+
+<center><img src="Images/neighborhood_1.jpg" style="width:100%"></center>
+
+\ \par
+
+In this section we would like to investigate more about the regional characteristics of the case.
+
+```{r read&tidy, include = FALSE}
+complaint =
+  tibble(
+    files = list.files("./Data_Processing/Data/"),
+    path = str_c("./Data_Processing/Data/", files)
+  ) %>% 
+  mutate(data = map(path, read_csv)) %>% 
+  unnest(data) %>% 
+  select(-files, -path, -cmplnt_num, -ky_cd, -atpt_cptd, -jurisdiction) %>% 
+  mutate(day_of_week = strftime(as.Date(date, format = "%m/%d/%Y"),"%a")) %>% 
+  separate(date, into = c("month", "day", "year"), sep = "/", convert = TRUE) %>% 
+  mutate(
+    month = month.abb[month],
+    hour = substr(time, start = 1, stop = 2),
+    minute = substr(time, start = 4, stop = 5),
+    hour = ifelse(hour == "00" & minute == "01", NA, hour),
+    wkend_wkday = ifelse(day_of_week %in% c("Sat", "Sun"), "weekend", "weekday"),
+    borough = ifelse(borough == "(null)", NA, borough),
+    offense = ifelse(offense == "(null)", NA, offense),
+    susp_sex = ifelse(susp_sex %in% c("M", "F"), susp_sex, NA),
+    susp_age_group = ifelse(susp_age_group %in% c("<18", "18-24", "25-44", "45-64", "65+"), susp_age_group, NA),
+    susp_race = ifelse(susp_race %in% c("UNKNOWN", "(null)"), NA, susp_race),
+    vic_sex = ifelse(vic_sex %in% c("M", "F"), vic_sex, NA),
+    vic_age_group = ifelse(vic_age_group %in% c("<18", "18-24", "25-44", "45-64", "65+"), vic_age_group, NA),
+    vic_race = ifelse(vic_race %in% c("UNKNOWN", "(null)"), NA, vic_race),
+    jurisdiction_code = as.numeric(jurisdiction_code),
+    jurisdiction_code = ifelse(jurisdiction_code >= 3, 3, jurisdiction_code),
+    covid_state = ifelse(year >= 2020, 1, 0),
+    time_range = case_when(
+      (as.integer(hour) > 22) | (as.integer(hour) <= 6) ~ 0,
+      (as.integer(hour) > 6) & (as.integer(hour) <= 14) ~ 1,
+      (as.integer(hour) > 14) & (as.integer(hour) <= 22) ~ 2
+    )
+  ) %>% 
+  select(-day, -time, -minute) %>% 
+  mutate(
+    year = as.factor(year),
+    month = factor(month, levels = month.abb),
+    day_of_week = factor(day_of_week, levels = c("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")),
+    hour = factor(hour),
+    precinct = as.factor(precinct),
+    borough = as.factor(borough),
+    level = as.factor(level),
+    offense = as.factor(offense),
+    susp_sex = as.factor(susp_sex),
+    susp_age_group = as.factor(susp_age_group),
+    susp_race = as.factor(susp_race),
+    vic_sex = as.factor(vic_sex),
+    vic_age_group = as.factor(vic_age_group),
+    vic_race = as.factor(vic_race),
+    wkend_wkday = as.factor(wkend_wkday),
+    covid_state = as.factor(covid_state),
+    time_range = as.factor(time_range)
+  )
+```
+
+## Visual Analysis
+
+We will first use data visualization to give an overview of the distribution of suspect's features.
+
+### Borough
+
+```{r}
+complaint %>% 
+  filter(level == "FELONY") %>% 
+  drop_na(borough) %>% 
+  group_by(year, borough) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
+  ggplot(aes(x = reorder(borough, -n_obs), y = n_obs, fill = reorder(borough, -n_obs))) +
+  geom_bar(stat = 'identity') +
+  labs(
+    title = "Frequency of Felonies by Borough (2016-2022)",
+    x = "Borough",
+    y = "Frequency"
+  ) +
+  theme(legend.position = "none")
+```
+
+According to the plot, Brooklyn had the most felonies, followed by Manhattan, and Bronx has about the same felonies as Queens. Staten Island has the least felonies.
+
+```{r plot_borough}
+complaint %>% 
+  filter(level == "FELONY") %>% 
+  drop_na(borough) %>% 
+  group_by(year, borough) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
+  dplyr::summarize(borough, percentage = n_obs / sum(n_obs)) %>% 
+  ggplot(aes(x = year, y = percentage, fill = borough)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Year",
+    y = "Proportion",
+    title = "Proportions of Felonies by Borough and Year",
+    fill = "Borough"
+  )
+```
+
+The proportion of felonies does not appear to have changed significantly over the years
+
+
+## Statistical Testing
+We use statistical tests to find if there is a difference in monthly crime records from different regions.
+
+### Test average number of crimes per day
+```{r}
+anova_table =
+  complaint %>% 
+  filter(borough %in% c("BRONX", "BROOKLYN", "MANHATTAN", "QUEENS", "STATEN ISLAND")) %>% 
+  mutate(monthly = str_c(as.character(year), as.character(month))) %>% 
+  group_by(borough,monthly) %>%
+  dplyr::summarise(
+    n_obs = n(),
+    n_felony = sum(level == "FELONY"),
+    felony_rate = n_felony / n_obs) 
+
+anova_table %>% 
+  group_by(borough) %>% 
+  dplyr::summarise(
+    monthly_cases = mean(n_obs)
+  )
+
+res_monthly_case = aov(n_obs ~ factor(borough), data = anova_table)
+summary(res_monthly_case)
+pairwise.t.test(anova_table$n_obs, anova_table$borough, p.adj = 'bonferroni')
+```
+
+The ANOVA test shows that the five boroughs do not have equal monthly cases, and the pairwise t test further reveals each borough differs from the others on monthly cases. Based on monthly cases, from highest to lowest, Brooklyn, Manhattan, Bronx, Queens, Staten Island.
+
+
+### Test felony rate
+```{r}
+anova_table %>% 
+  group_by(borough) %>% 
+  dplyr::summarise(
+    mean_felony_rate = mean(felony_rate)
+  )
+
+res_felony_rate = aov(felony_rate ~ factor(borough), data = anova_table)
+summary(res_felony_rate)
+pairwise.t.test(anova_table$felony_rate, anova_table$borough, p.adj = 'bonferroni')
+```
+
+The ANOVA test shows that the five boroughs do not have equal felony rate, and the pairwise t test further reveals that Bronx and Staten Island are different from others; Manhattan differs from Brooklyn, but does not differ from Queens; while Brooklyn does not differ from Queens either. Based on felony rate, from highest to lowest, Brooklyn, Queens, Manhattan, Bronx, Staten Island.
+
+###Partial conclusion
+
+The test above shows that high monthly cases do not necessarily mean high felony rate. While Brooklyn both has the highest monthly cases and the highest felony rate, Staten Island both has the lowest monthly cases and the lowest felony rate.
+
+## Plotly 2022 map based on borough
+
+```{r}
+NYPD_plot = 
+  complaint %>% 
+  mutate(
+    text_label = str_c("Borough: ", borough, "\nPrecinct: ", precinct, "\nLevel: ",  level, "\nOffense: ", offense)) %>% 
+  filter(year == 2022) %>% 
+  plot_ly(
+    lat = ~latitude,
+    lon = ~longitude,
+    type = "scattermapbox",
+    mode = "markers",
+    alpha = 0.2,
+    color = ~ borough,
+    text = ~text_label) %>%
+  layout(
+    mapbox = list(
+      style = "carto-positron",
+      zoom = 9,
+      center = list(lon = -73.9, lat = 40.7)
+    )
+  )
+  
+NYPD_plot
+```
+

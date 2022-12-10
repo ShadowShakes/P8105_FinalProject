@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Victim Analysis</title>
+
+<script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.10.0/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.2.0/css/crosstalk.min.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.2.0/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-2.5.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-2.5.1/plotly-latest.min.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="Data_Preprocessing.html">Data &amp; Processing</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Data-driven Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Analysis_Suspect.html">Suspect Analysis</a>
+    </li>
+    <li>
+      <a href="Analysis_Victim.html">Victim Analysis</a>
+    </li>
+    <li>
+      <a href="Analysis_Region.html">Region Analysis</a>
+    </li>
+    <li>
+      <a href="Analysis_Time.html">Time Range Analysis</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Shiny App
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="Shiny_Notification.html">Shiny App Notification</a>
+    </li>
+    <li>
+      <a href="https://shadowshakes.shinyapps.io/app_before_covid/">Shiny Map Before Covid</a>
+    </li>
+    <li>
+      <a href="https://shadowshakes.shinyapps.io/app_after_covid/">Shiny Map After Covid</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/">Conclusion and Report</a>
+</li>
+<li>
+  <a href="https://www.youtube.com/">Screencast</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="mailto:&lt;sc5154@cumc.columiba.edu&gt;">
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/ShadowShakes/P8105_Final_Project">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Victim Analysis</h1>
+
+</div>
+
+
+<p>Our dataset does not contain data for October, November and December
+of the year 2022. We are interested in the following main felonies:
+Burglary, Felony Assault, Grand Larceny, Grand Larceny of Motor Vehicle,
+Murder and Non-negligent Manslaughter, Rape, and Robbery.</p>
+<div
+id="lets-define-the-dangerous-level-related-to-average-daily-criminal-events"
+class="section level1">
+<h1>let’s define the dangerous level related to average daily criminal
+events</h1>
+<pre class="r"><code>dangrous_data=complaint %&gt;% 
+ # filter(!level==&quot;VIOLATION&quot;) %&gt;%
+  na.omit()
+
+dangrous_data = dangrous_data%&gt;% 
+  mutate(
+   level_lm= case_when(
+     level == &#39;VIOLATION&#39; ~ 0,
+     level == &quot;MISDEMEANOR&quot; ~ 1,
+     level == &quot;FELONY&quot; ~ 2
+   )
+  )
+
+## first
+plot_his_sex=dangrous_data %&gt;% 
+  group_by(level,vic_sex) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level_lm
+  ) %&gt;% 
+  unique() %&gt;% 
+  ggplot(
+    aes(x=level,y=n_obs,fill=vic_sex)
+  )+
+  geom_bar(stat=&quot;identity&quot;)
+plot_his_sex</code></pre>
+<p><img src="Analysis_Victim_files/figure-html/unnamed-chunk-1-1.png" width="80%" /></p>
+<pre class="r"><code>plot_pie_sex0=dangrous_data %&gt;%
+  group_by(level,vic_sex) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level_lm
+  ) %&gt;% 
+  unique() %&gt;%
+  filter(type==0)
+
+plot_pie_sex0=plot_ly(plot_pie_sex0,labels =~ vic_sex,values= ~n_obs) %&gt;% 
+  add_pie %&gt;% 
+  layout(title=&quot;MISDEMEANOR for vic_sex&quot;)
+
+plot_pie_sex1=dangrous_data %&gt;%
+  group_by(level,vic_sex) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level_lm
+  ) %&gt;% 
+  unique() %&gt;%
+  filter(type==1)
+plot_pie_sex1=plot_ly(plot_pie_sex1,labels =~ vic_sex,values= ~n_obs) %&gt;% 
+  add_pie %&gt;% 
+  layout(title=&quot;VIOLATION for vic_sex&quot;)
+
+plot_pie_sex2=dangrous_data %&gt;%
+  group_by(level,vic_sex) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level_lm
+  ) %&gt;% 
+  unique() %&gt;%
+  filter(type==2)
+
+plot_pie_sex2=plot_ly(plot_pie_sex2,labels =~ vic_sex,values= ~n_obs) %&gt;% 
+  add_pie %&gt;% 
+  layout(title=&quot;FELONY for vic_sex&quot;)
+
+plot_pie_sex0</code></pre>
+<div id="htmlwidget-5a82692a3de0236510da" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-5a82692a3de0236510da">{"x":{"visdat":{"37a07de3f88f":["function () ","plotlyVisDat"]},"cur_data":"37a07de3f88f","attrs":{"37a07de3f88f":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"MISDEMEANOR for vic_sex","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["F","M"],"values":[169874,80131],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>plot_pie_sex1</code></pre>
+<div id="htmlwidget-32af0569ab28e70972a1" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-32af0569ab28e70972a1">{"x":{"visdat":{"37a01d3b4db":["function () ","plotlyVisDat"]},"cur_data":"37a01d3b4db","attrs":{"37a01d3b4db":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"VIOLATION for vic_sex","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["F","M"],"values":[254030,147465],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>plot_pie_sex2</code></pre>
+<div id="htmlwidget-89a9ce8abcf2fe6d6dd4" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-89a9ce8abcf2fe6d6dd4">{"x":{"visdat":{"37a0720696cc":["function () ","plotlyVisDat"]},"cur_data":"37a0720696cc","attrs":{"37a0720696cc":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"FELONY for vic_sex","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["F","M"],"values":[138249,101837],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>#manipulate a logistic regression about level~vic
+
+dangrous_data = dangrous_data%&gt;% 
+  mutate(
+   level_lm= case_when(
+     level == &#39;VIOLATION&#39; ~ 0,
+     level == &quot;MISDEMEANOR&quot; ~ 0,
+     level == &quot;FELONY&quot; ~ 1
+   )
+  )
+model_virace &lt;- glm(level_lm ~ vic_race , data = dangrous_data)
+summary(model_virace)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = level_lm ~ vic_race, data = dangrous_data)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -0.3049  -0.2683  -0.2631   0.6950   0.7599  
+## 
+## Coefficients:
+##                                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                      0.240061   0.006536  36.729  &lt; 2e-16 ***
+## vic_raceASIAN / PACIFIC ISLANDER 0.064891   0.006729   9.643  &lt; 2e-16 ***
+## vic_raceBLACK                    0.023036   0.006577   3.502 0.000461 ***
+## vic_raceBLACK HISPANIC           0.026933   0.006810   3.955 7.65e-05 ***
+## vic_raceWHITE                    0.029154   0.006632   4.396 1.10e-05 ***
+## vic_raceWHITE HISPANIC           0.028232   0.006599   4.278 1.88e-05 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for gaussian family taken to be 0.1966393)
+## 
+##     Null deviance: 175436  on 891585  degrees of freedom
+## Residual deviance: 175320  on 891580  degrees of freedom
+## AIC: 1080158
+## 
+## Number of Fisher Scoring iterations: 2</code></pre>
+<pre class="r"><code># same methods to find the relation about vic_age
+dnd=dangrous_data %&gt;% 
+  group_by(level,vic_age_group) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level
+  ) %&gt;% 
+  unique() %&gt;% 
+  ggplot(
+    aes(x=level,y=n_obs,fill=vic_age_group)
+  )+
+  geom_bar(stat=&quot;identity&quot;)
+
+
+plot_his_age=dangrous_data %&gt;% 
+  group_by(level,vic_age_group) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level_lm
+  ) %&gt;% 
+  unique() %&gt;% 
+  ggplot(
+    aes(x=level,y=n_obs,fill=vic_age_group)
+  )+
+  geom_bar(stat=&quot;identity&quot;)
+plot_his_age</code></pre>
+<p><img src="Analysis_Victim_files/figure-html/unnamed-chunk-2-1.png" width="80%" /></p>
+<pre class="r"><code>plot_pie_age0=dangrous_data %&gt;%
+  group_by(level,vic_age_group) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level_lm
+  ) %&gt;% 
+  unique() %&gt;%
+  filter(type==0)
+
+plot_pie_age0=plot_ly(plot_pie_age0,labels =~ vic_age_group,values= ~n_obs) %&gt;% 
+  add_pie %&gt;% 
+  layout(title=&quot;MISDEMEANOR for vic_age&quot;)
+
+plot_pie_age1=dangrous_data %&gt;%
+  group_by(level,vic_age_group) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level_lm
+  ) %&gt;% 
+  unique() %&gt;%
+  filter(type==1)
+plot_pie_age1=plot_ly(plot_pie_age1,labels =~ vic_age_group,values= ~n_obs) %&gt;% 
+  add_pie %&gt;% 
+  layout(title=&quot;VIOLATION for vic_age&quot;)
+
+plot_pie_age2=dangrous_data %&gt;%
+  group_by(level,vic_age_group) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level_lm
+  ) %&gt;% 
+  unique() %&gt;%
+  filter(type==2)
+
+plot_pie_age2=plot_ly(plot_pie_age2,labels =~ vic_age_group,values= ~n_obs) %&gt;% 
+  add_pie %&gt;% 
+  layout(title=&quot;FELONY for vic_age&quot;)
+
+plot_pie_age0</code></pre>
+<div id="htmlwidget-b6b69d75fc427106d1eb" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b6b69d75fc427106d1eb">{"x":{"visdat":{"37a033e5d86b":["function () ","plotlyVisDat"]},"cur_data":"37a033e5d86b","attrs":{"37a033e5d86b":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"MISDEMEANOR for vic_age","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["<18","18-24","25-44","45-64","65+","<18","18-24","25-44","45-64","65+"],"values":[30045,65808,206302,88934,10406,12023,28866,122430,71856,14830],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>plot_pie_age1</code></pre>
+<div id="htmlwidget-e4d9edc0cd9ada3e1464" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e4d9edc0cd9ada3e1464">{"x":{"visdat":{"37a036e3736b":["function () ","plotlyVisDat"]},"cur_data":"37a036e3736b","attrs":{"37a036e3736b":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"VIOLATION for vic_age","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["<18","18-24","25-44","45-64","65+"],"values":[17982,37725,118069,51165,15145],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>plot_pie_age2</code></pre>
+<div id="htmlwidget-572e87871a640027a2e4" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-572e87871a640027a2e4">{"x":{"visdat":{"37a0eae91f4":["function () ","plotlyVisDat"]},"cur_data":"37a0eae91f4","attrs":{"37a0eae91f4":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"FELONY for vic_age","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>dangrous_data = dangrous_data%&gt;% 
+  mutate(
+   level_lm= case_when(
+     level == &#39;VIOLATION&#39; ~ 0,
+     level == &quot;MISDEMEANOR&quot; ~ 0,
+     level == &quot;FELONY&quot; ~ 1
+   )
+  )
+model_viage &lt;- glm(level_lm ~ vic_age_group , data = dangrous_data)
+summary(model_viage)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = level_lm ~ vic_age_group, data = dangrous_data)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -0.3750  -0.2642  -0.2642   0.7006   0.7586  
+## 
+## Coefficients:
+##                     Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)         0.299450   0.001806 165.764  &lt; 2e-16 ***
+## vic_age_group18-24 -0.014516   0.002178  -6.665 2.65e-11 ***
+## vic_age_group25-44 -0.035196   0.001924 -18.293  &lt; 2e-16 ***
+## vic_age_group45-64 -0.058055   0.002046 -28.369  &lt; 2e-16 ***
+## vic_age_group65+    0.075602   0.002849  26.537  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for gaussian family taken to be 0.1959673)
+## 
+##     Null deviance: 175436  on 891585  degrees of freedom
+## Residual deviance: 174721  on 891581  degrees of freedom
+## AIC: 1077105
+## 
+## Number of Fisher Scoring iterations: 2</code></pre>
+</div>
+<div id="same-way-for-sus_race" class="section level1">
+<h1>same way for sus_race</h1>
+<pre class="r"><code>dnd=dangrous_data %&gt;% 
+  group_by(level,vic_race) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level
+  ) %&gt;% 
+  unique() %&gt;% 
+  ggplot(
+    aes(x=level,y=n_obs,fill=vic_race)
+  )+
+  geom_bar(stat=&quot;identity&quot;)
+
+plot_his_race=dangrous_data %&gt;% 
+  group_by(level,vic_race) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level_lm
+  ) %&gt;% 
+  unique() %&gt;% 
+  ggplot(
+    aes(x=level,y=n_obs,fill=vic_race)
+  )+
+  geom_bar(stat=&quot;identity&quot;)
+plot_his_race</code></pre>
+<p><img src="Analysis_Victim_files/figure-html/unnamed-chunk-3-1.png" width="80%" /></p>
+<pre class="r"><code>plot_pie_race0=dangrous_data %&gt;%
+  group_by(level,vic_race) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level_lm
+  ) %&gt;% 
+  unique() %&gt;%
+  filter(type==0)
+
+plot_pie_race0=plot_ly(plot_pie_race0,labels =~ vic_race,values= ~n_obs) %&gt;% 
+  add_pie %&gt;% 
+  layout(title=&quot;MISDEMEANOR for vic_race&quot;)
+
+plot_pie_race1=dangrous_data %&gt;%
+  group_by(level,vic_race) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level_lm
+  ) %&gt;% 
+  unique() %&gt;%
+  filter(type==1)
+
+plot_pie_race1=plot_ly(plot_pie_race1,labels =~ vic_race,values= ~n_obs) %&gt;% 
+  add_pie %&gt;% 
+  layout(title=&quot;VIOLATION for vic_race&quot;)
+
+plot_pie_race2=dangrous_data %&gt;%
+  group_by(level,vic_race) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level_lm
+  ) %&gt;% 
+  unique() %&gt;%
+  filter(type==2)
+
+plot_pie_race2=plot_ly(plot_pie_race2,labels =~ vic_race,values= ~n_obs) %&gt;% 
+  add_pie %&gt;% 
+  layout(title=&quot;FELONY for vic_age&quot;)
+
+plot_pie_race0</code></pre>
+<div id="htmlwidget-86eee131868961237abd" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-86eee131868961237abd">{"x":{"visdat":{"37a0234f1391":["function () ","plotlyVisDat"]},"cur_data":"37a0234f1391","attrs":{"37a0234f1391":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"MISDEMEANOR for vic_race","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["AMERICAN INDIAN/ALASKAN NATIVE","ASIAN / PACIFIC ISLANDER","BLACK","BLACK HISPANIC","WHITE","WHITE HISPANIC","AMERICAN INDIAN/ALASKAN NATIVE","ASIAN / PACIFIC ISLANDER","BLACK","BLACK HISPANIC","WHITE","WHITE HISPANIC"],"values":[2076,33397,163181,25718,65064,112059,1422,19998,103443,13761,48777,62604],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>plot_pie_race1</code></pre>
+<div id="htmlwidget-ac940cca423d831007ca" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-ac940cca423d831007ca">{"x":{"visdat":{"37a01c8da6b3":["function () ","plotlyVisDat"]},"cur_data":"37a01c8da6b3","attrs":{"37a01c8da6b3":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"VIOLATION for vic_race","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["AMERICAN INDIAN/ALASKAN NATIVE","ASIAN / PACIFIC ISLANDER","BLACK","BLACK HISPANIC","WHITE","WHITE HISPANIC"],"values":[1105,23427,95193,14380,41938,64043],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>plot_pie_race2</code></pre>
+<div id="htmlwidget-368403bf970622a4307d" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-368403bf970622a4307d">{"x":{"visdat":{"37a017bb406a":["function () ","plotlyVisDat"]},"cur_data":"37a017bb406a","attrs":{"37a017bb406a":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"FELONY for vic_age","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>dangrous_data_3 = dangrous_data%&gt;% 
+  mutate(
+   level_lm= case_when(
+     level == &#39;VIOLATION&#39; ~ 0,
+     level == &quot;MISDEMEANOR&quot; ~ 0,
+     level == &quot;FELONY&quot; ~ 1
+   )
+  ) %&gt;% 
+  filter(!vic_age_group==&quot;18-24&quot;)
+model_visex &lt;- glm(level_lm ~ vic_race, data = dangrous_data_3)
+summary(model_visex)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = level_lm ~ vic_race, data = dangrous_data_3)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -0.3011  -0.2659  -0.2603   0.6989   0.7710  
+## 
+## Coefficients:
+##                                  Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)                      0.229050   0.007044  32.519  &lt; 2e-16 ***
+## vic_raceASIAN / PACIFIC ISLANDER 0.072063   0.007250   9.940  &lt; 2e-16 ***
+## vic_raceBLACK                    0.031254   0.007089   4.409 1.04e-05 ***
+## vic_raceBLACK HISPANIC           0.034989   0.007348   4.761 1.92e-06 ***
+## vic_raceWHITE                    0.037549   0.007143   5.257 1.46e-07 ***
+## vic_raceWHITE HISPANIC           0.036892   0.007113   5.186 2.14e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for gaussian family taken to be 0.1953747)
+## 
+##     Null deviance: 148422  on 759186  degrees of freedom
+## Residual deviance: 148325  on 759181  degrees of freedom
+## AIC: 914860
+## 
+## Number of Fisher Scoring iterations: 2</code></pre>
+</div>
+<div id="do-a-multi-logistics-regression" class="section level1">
+<h1>do a multi logistics regression</h1>
+</div>
+<div id="go-into-detials-about-offense" class="section level1">
+<h1>go into detials about offense</h1>
+<pre class="r"><code>dangerous=dangrous_data%&gt;%
+  mutate(
+    level_lm=ordered(level_lm, labels = c(&#39;1&#39;, &#39;0&#39;))
+    )
+
+model_toal&lt;- glm(level_lm ~ vic_race + vic_age_group + vic_sex,family = binomial,data=dangerous)
+summary(model_toal)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = level_lm ~ vic_race + vic_age_group + vic_sex, 
+##     family = binomial, data = dangerous)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.0926  -0.7948  -0.7415   1.4730   1.8477  
+## 
+## Coefficients:
+##                                   Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                      -1.191741   0.035897 -33.199  &lt; 2e-16 ***
+## vic_raceASIAN / PACIFIC ISLANDER  0.345333   0.035531   9.719  &lt; 2e-16 ***
+## vic_raceBLACK                     0.195906   0.034877   5.617 1.94e-08 ***
+## vic_raceBLACK HISPANIC            0.188928   0.036018   5.245 1.56e-07 ***
+## vic_raceWHITE                     0.182666   0.035130   5.200 2.00e-07 ***
+## vic_raceWHITE HISPANIC            0.207319   0.034976   5.927 3.08e-09 ***
+## vic_age_group18-24               -0.035027   0.010840  -3.231  0.00123 ** 
+## vic_age_group25-44               -0.154960   0.009581 -16.174  &lt; 2e-16 ***
+## vic_age_group45-64               -0.314967   0.010327 -30.500  &lt; 2e-16 ***
+## vic_age_group65+                  0.323457   0.013730  23.558  &lt; 2e-16 ***
+## vic_sexM                          0.320299   0.004971  64.433  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1038771  on 891585  degrees of freedom
+## Residual deviance: 1030559  on 891575  degrees of freedom
+## AIC: 1030581
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>dangerous=dangerous%&gt;% 
+  filter(!vic_age_group==&quot;18-24&quot;)
+model_toal&lt;- glm(level_lm ~ vic_race + vic_age_group + vic_sex,family = binomial,data=dangerous)
+summary(model_toal)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = level_lm ~ vic_race + vic_age_group + vic_sex, 
+##     family = binomial, data = dangerous)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.0907  -0.7939  -0.7423   1.4700   1.8649  
+## 
+## Coefficients:
+##                                   Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)                      -1.232385   0.039228 -31.416  &lt; 2e-16 ***
+## vic_raceASIAN / PACIFIC ISLANDER  0.388330   0.039011   9.954  &lt; 2e-16 ***
+## vic_raceBLACK                     0.239284   0.038317   6.245 4.24e-10 ***
+## vic_raceBLACK HISPANIC            0.234296   0.039589   5.918 3.25e-09 ***
+## vic_raceWHITE                     0.222765   0.038565   5.776 7.64e-09 ***
+## vic_raceWHITE HISPANIC            0.255464   0.038432   6.647 2.99e-11 ***
+## vic_age_group25-44               -0.154987   0.009583 -16.174  &lt; 2e-16 ***
+## vic_age_group45-64               -0.313381   0.010332 -30.331  &lt; 2e-16 ***
+## vic_age_group65+                  0.325361   0.013740  23.679  &lt; 2e-16 ***
+## vic_sexM                          0.311245   0.005364  58.022  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 880348  on 759186  degrees of freedom
+## Residual deviance: 873204  on 759177  degrees of freedom
+## AIC: 873224
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<div
+id="take-a-pie_piechart-for-misdemeanorto-have-a-general-info-about-what-can-be-determine-as-a-mid-level-dangerous."
+class="section level2">
+<h2>take a pie_piechart for MISDEMEANOR,to have a general info about
+what can be determine as a mid level dangerous.</h2>
+<pre class="r"><code>pie_chart=dangrous_data %&gt;% 
+  filter(level==&quot;MISDEMEANOR&quot;)
+pie_chart =pie_chart%&gt;% 
+  group_by(offense) %&gt;% 
+  dplyr::summarize(n=n()) %&gt;% 
+  mutate(
+    offense=as.character(offense)
+  )
+
+pie_chart= rbind(pie_chart,c(&quot;others&quot;,290))
+pie_chart=pie_chart %&gt;% 
+  mutate(
+    n=as.numeric(n)
+    ) %&gt;% 
+  filter(n&gt;100)
+
+# mid victem event as offense details
+plot_ly(pie_chart,labels =~ offense,values= ~n) %&gt;% 
+  add_pie %&gt;% 
+  layout(title=&quot;just for try&quot;)</code></pre>
+<div id="htmlwidget-00e5eee6d3ae9873a309" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-00e5eee6d3ae9873a309">{"x":{"visdat":{"37a04ab54feb":["function () ","plotlyVisDat"]},"cur_data":"37a04ab54feb","attrs":{"37a04ab54feb":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"just for try","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["ADMINISTRATIVE CODE","ASSAULT 3 & RELATED OFFENSES","BURGLAR'S TOOLS","CRIMINAL MISCHIEF & RELATED OF","CRIMINAL TRESPASS","DANGEROUS DRUGS","DANGEROUS WEAPONS","FRAUDS","FRAUDULENT ACCOSTING","INTOXICATED & IMPAIRED DRIVING","OFF. AGNST PUB ORD SENSBLTY &","OFFENSES AGAINST PUBLIC ADMINI","OFFENSES AGAINST THE PERSON","OTHER OFFENSES RELATED TO THEF","OTHER STATE LAWS (NON PENAL LA","PETIT LARCENY","POSSESSION OF STOLEN PROPERTY","SEX CRIMES","UNAUTHORIZED USE OF A VEHICLE","VEHICLE AND TRAFFIC LAWS","others"],"values":[2521,212808,215,30367,4131,251,1497,491,228,1578,66871,25580,1962,1572,217,27205,1207,15857,3723,2921,290],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>##look difference among most common event</p>
+<pre class="r"><code>offense_data= dangrous_data %&gt;% 
+  filter(offense==&quot;ASSAULT 3 &amp; RELATED OFFENSES&quot;|
+           offense==&quot;OFF. AGNST PUB ORD SENSBLTY &amp;&quot;|  
+           offense==&quot;CRIMINAL MISCHIEF &amp; RELATED OF&quot;|
+           offense==    &quot;PETIT LARCENY&quot;|offense==&quot;OFFENSES AGAINST PUBLIC ADMINI&quot; | 
+           offense==    &quot;SEX CRIMES&quot;) %&gt;% 
+  filter(level==&quot;MISDEMEANOR&quot;)
+
+dnd=offense_data %&gt;% 
+  group_by(offense,vic_sex) %&gt;% 
+  dplyr::summarize(
+    n_obs=n(),
+    type=level
+  ) %&gt;% 
+  unique() %&gt;% 
+  ggplot(
+    aes(x=offense,y=n_obs,fill=vic_sex)
+  )+
+  geom_bar(stat=&quot;identity&quot;)  
+dnd</code></pre>
+<p><img src="Analysis_Victim_files/figure-html/unnamed-chunk-6-1.png" width="80%" /></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -47,30 +47,48 @@ In this section we would like to explore more about the crime suspect's features
 We will first use data visualization to give an overview of the distribution of suspect's features.
 
 ```{r read&tidy, include = FALSE}
-complaint =
-  tibble(
-    files = list.files("./Data/"),
-    path = str_c("./Data/", files)
-  ) %>% 
-  mutate(data = map(path, read_csv)) %>% 
-  unnest(data) %>% 
-  select(-files, -path, -cmplnt_num, -ky_cd, -atpt_cptd, -jurisdiction, -jurisdiction_code) %>% 
+setwd(dir = "./Data")
+a <- list.files()     
+
+dir <- paste("./",a,sep="")                 
+n <- length(dir) 
+merge_data <- read.csv(file = dir[1],header=T,sep=",")   
+merge_data <- cbind(dir[1], merge_data )
+merge_data <- rename(merge_data, c("dir[1]"="yyyymm"))
+for (i in 2:7){
+  new.data <- read.csv(file = dir[i], header=T, sep=",")
+  new.data <- cbind(dir[i], new.data)
+  new.data <- rename(new.data, c("dir[i]"="yyyymm"))
+  merge_data <- rbind(merge_data,new.data)
+}
+complaint=merge_data%>% 
+  select(-cmplnt_num, -ky_cd, -atpt_cptd, -jurisdiction) %>% 
   mutate(day_of_week = strftime(as.Date(date, format = "%m/%d/%Y"),"%a")) %>% 
   separate(date, into = c("month", "day", "year"), sep = "/", convert = TRUE) %>% 
   mutate(
     month = month.abb[month],
     hour = substr(time, start = 1, stop = 2),
     minute = substr(time, start = 4, stop = 5),
+    hour = ifelse(hour == "00" & minute == "01", NA, hour),
+    wkend_wkday = ifelse(day_of_week %in% c("Sat", "Sun"), "weekend", "weekday"),
     borough = ifelse(borough == "(null)", NA, borough),
+    offense = ifelse(offense == "(null)", NA, offense),
     susp_sex = ifelse(susp_sex %in% c("M", "F"), susp_sex, NA),
     susp_age_group = ifelse(susp_age_group %in% c("<18", "18-24", "25-44", "45-64", "65+"), susp_age_group, NA),
     susp_race = ifelse(susp_race %in% c("UNKNOWN", "(null)"), NA, susp_race),
     vic_sex = ifelse(vic_sex %in% c("M", "F"), vic_sex, NA),
     vic_age_group = ifelse(vic_age_group %in% c("<18", "18-24", "25-44", "45-64", "65+"), vic_age_group, NA),
     vic_race = ifelse(vic_race %in% c("UNKNOWN", "(null)"), NA, vic_race),
-    offense = ifelse(offense %in% c("BURGLARY", "FELONY ASSAULT", "GRAND LARCENY", "GRAND LARCENY OF MOTOR VEHICLE", "MURDER & NON-NEGL. MANSLAUGHTER", "RAPE", "ROBBERY"), offense, NA)
+    jurisdiction_code = as.numeric(jurisdiction_code),
+    jurisdiction_code = ifelse(jurisdiction_code >= 3, 3, jurisdiction_code),
+    covid_state = ifelse(year >= 2020, 1, 0),
+    time_range = case_when(
+      (as.integer(hour) > 22) | (as.integer(hour) <= 6) ~ 0,
+      (as.integer(hour) > 6) & (as.integer(hour) <= 14) ~ 1,
+      (as.integer(hour) > 14) & (as.integer(hour) <= 22) ~ 2
+    )
   ) %>% 
-  select(-day, -time) %>% 
+  select(-day, -time, -minute) %>% 
   mutate(
     year = as.factor(year),
     month = factor(month, levels = month.abb),
@@ -86,6 +104,10 @@ complaint =
     vic_sex = as.factor(vic_sex),
     vic_age_group = as.factor(vic_age_group),
     vic_race = as.factor(vic_race),
+    wkend_wkday = as.factor(wkend_wkday),
+covid_state = as.factor(covid_state),
+time_range = as.factor(time_range),
+jurisdiction_code=as.factor(jurisdiction_code)
   )
 ```
 
@@ -104,12 +126,26 @@ complaint %>%
   labs(
     x = "Year",
     y = "Proportion",
-    title = "Proportions of Felonies by Suspect Sex and Year",
+    title = "Proportions of Suspect Sex and Year",
+    fill = "Suspect Sex"
+  )
+complaint %>% 
+  drop_na(offense, susp_sex) %>% 
+  group_by(level, susp_sex) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
+  group_by(level) %>% 
+  dplyr::summarize(susp_sex, percentage = n_obs / sum(n_obs)) %>% 
+  ggplot(aes(x = level, y = percentage, fill = susp_sex)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Level",
+    y = "Proportion",
+    title = "Proportions of Suspect Sex and Level",
     fill = "Suspect Sex"
   )
 ```
 According to the plot, most of the suspect's sex(if recorded) is male, female suspects appear to be much fewer than male suspect.  
-And in 2020, the propotions of male suspect are even larger than other years.
+And in 2020, the propotions of male suspect are even larger than other years. In the three kinds of crime level, male aslo has larger proportion than female.
 
 ### Suspect Race
 
@@ -125,13 +161,28 @@ complaint %>%
   labs(
     x = "Year",
     y = "Proportion",
-    title = "Proportions of Felonies by Suspect Race and Year",
+    title = "Proportions of Suspect Race and Year",
+    fill = "Suspect Race"
+  )
+complaint %>% 
+  drop_na(offense, susp_race) %>% 
+  group_by(level, susp_race) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
+  group_by(level) %>% 
+  dplyr::summarize(susp_race, percentage = n_obs / sum(n_obs)) %>% 
+  ggplot(aes(x = level, y = percentage, fill = susp_race)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Level",
+    y = "Proportion",
+    title = "Proportions of Suspect Race and Level",
     fill = "Suspect Race"
   )
 ```
-Based on barplot, we can see that the most frequent suspect races are: Black, White Hispanic and White, while Asian/Pacific Islander and American Indian/Alaskan Native are the least freqeut races to be a suspect.
+Based on barplot, we can see that the most frequent suspect races are: Black, White Hispanic and White, while Asian/Pacific Islander and American Indian/Alaskan Native are the least freqeut races to be a suspect. In the three kinds of crime level, black and white hispanic also take the largest proportion.
 
 ### Suspect Age Group
+
 ```{r}
 complaint %>% 
   drop_na(offense, susp_age_group) %>% 
@@ -144,7 +195,21 @@ complaint %>%
   labs(
     x = "Year",
     y = "Proportion",
-    title = "Proportions of Felonies by Suspect Age Group and Year",
+    title = "Proportions of Suspect Age Group and Year",
+    fill = "Suspect Age Group"
+  )
+complaint %>% 
+  drop_na(offense, susp_age_group) %>% 
+  group_by(level, susp_age_group) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
+  group_by(level) %>% 
+  dplyr::summarize(susp_age_group, percentage = n_obs / sum(n_obs)) %>% 
+  ggplot(aes(x = level, y = percentage, fill = susp_age_group)) +
+  geom_bar(stat = 'identity') +
+  labs(
+    x = "Level",
+    y = "Proportion",
+    title = "Proportions of Suspect Age Group and Level",
     fill = "Suspect Age Group"
   )
 ```
@@ -173,7 +238,7 @@ crimebyday_white = complaint %>%
   ) %>% 
   unique()
 
-t.test(crimebyday_aspa$n_bydate,crimebyday_white$n_bydate)
+t.test(crimebyday_aspa$n_bydate,crimebyday_white$n_bydate)%>% broom::tidy()
 ```
 
 According to the test results, we can find that there's a significant difference between the suspect races.
@@ -183,42 +248,22 @@ According to the test results, we can find that there's a significant difference
 We try to build models to give prediction of the criminal's features based on other factors, and see if we can draw conclusions from the coefficients of the factors.
 
 ### Suspect Sex
-```{r}
-a <- list.files("./Data")     
-dir <- paste("./Data/",a,sep = "")                  
-n <- length(dir) 
-merge_data <- read.csv(file = dir[1],header = T,sep =",")   
-merge_data <- cbind(dir[1], merge_data )
-merge_data <- rename(merge_data, c("dir[1]" = "yyyymm"))
-for (i in 2:7){
-  new.data <- read.csv(file = dir[i], header = T, sep = ",")
-  new.data <- cbind(dir[i], new.data)
-  new.data <- rename(new.data, c("dir[i]"="yyyymm"))
-  merge_data <- rbind(merge_data,new.data)
-}
-```
 
 ```{r}
-# filter data with unknown
-tidydata1 = merge_data %>%
+tidydata1 = complaint %>%
+  select(-day_of_week) %>%
   na.omit() %>%
-  filter(!susp_sex == "U") %>%
-  filter(!susp_race == "UNKNOWN") %>%
-  filter(!susp_age_group == "UNKNOWN") %>%
-   filter(!vic_race == "UNKNOWN") %>%
-  filter(!vic_age_group == "UNKNOWN") %>%
-  separate(date,into = c("mon","day","year"),sep = "/") %>%
-  mutate(jurisdiction_code = as.numeric(jurisdiction_code)) %>%
-  mutate(susp_sex = ifelse(susp_sex == "M",1,0),vic_sex = ifelse(vic_sex == "M",1,0),jurisdiction_code=ifelse(jurisdiction_code >= 3,3,jurisdiction_code + 0)) %>%
-  mutate(jurisdiction_code=as.factor(jurisdiction_code)) %>%
-  mutate(covid_state=ifelse(year>=2020,1,0))
-# When year >=2020, we assume the world is in a covid state.
+  mutate(susp_sex = ifelse(susp_sex == "M",1,0),vic_sex = ifelse(vic_sex == "M",1,0),jurisdiction_code = as.numeric(jurisdiction_code)) %>%
+  mutate(
+    jurisdiction_code = ifelse(jurisdiction_code >= 3, 3, jurisdiction_code)) %>%
+  mutate(jurisdiction_code=as.factor(jurisdiction_code))
+
 ```
 
 We build a logistic regression model to predict the suspect's sex based on other factors.
 ```{r}
-mylogit <- glm(susp_sex ~ precinct
-               + borough + jurisdiction_code+atpt_cptd 
+mylogit <- glm(susp_sex ~ 
+                borough + jurisdiction_code 
                +level+susp_age_group +susp_race+vic_age_group
                +vic_race+vic_sex+covid_state, data = tidydata1, family = "binomial")
 
@@ -239,6 +284,26 @@ We see the output of the model.
 ```{r}
 tidydata1 %>% 
   modelr::add_residuals(mylogit) %>% 
-  ggplot(aes(x = susp_age_group, y = resid)) + geom_violin() + facet_wrap(~covid_state)
+  ggplot(aes(x = susp_age_group, y = resid)) + geom_violin(aes(fill = susp_age_group)) + facet_wrap(~covid_state)
 ```
 
+### Suspect Race
+
+```{r}
+tidy_data2 = tidydata1%>%
+  filter(susp_race %in% c("BLACK","ASIAN / PACIFIC ISLANDER"))%>%
+  mutate(susp_race=ifelse(susp_race == "BLACK",1,0))
+mylogit_2 = glm(susp_race ~  borough + jurisdiction_code
++level+susp_age_group
++susp_sex+vic_age_group+vic_race+vic_sex+covid_state, data = tidy_data2, family = "binomial")
+# almost full model except victor information
+mylogit_2 %>%
+  broom::tidy() %>% 
+  select(term, estimate, p.value)
+```
+
+```{r}
+tidy_data2 %>% 
+  modelr::add_residuals(mylogit_2) %>% 
+  ggplot(aes(x = level, y = resid)) + geom_violin(aes(fill = level)) + facet_wrap(~covid_state)
+```

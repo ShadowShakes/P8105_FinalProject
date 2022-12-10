@@ -1,0 +1,29 @@
+---
+title: "Shiny App Notification"
+output: 
+  html_document
+---
+
+\ \par
+
+<img src="Images/shiny_app.png" style="width:100%">
+
+\ \par
+       
+### Notifications for using Shiny
+
+Shiny is a useful framework to create inteactive interfaces and web-based applications for data analysis.  
+In this project, we construct two interactive maps based on Shiny App.  
+
+The first map contains data before Covid-19 from 2016 to 2019. The second map has data after Covid-19 from 2020 to 2022.  
+We divide the crime data to two maps mainly to avoid memory overflow. As free Shiny users, we have limited RAM and users will sometimes disconnect from Shiny server because of large crime dataset size.
+
+If you encounter the disconnection, please try reconnect to the server and avoid selecting too much data in the slider. If there is any other problem with our Shiny App, please kindly contact us immediately [E-mail](mailto:<sc5154@cumc.columiba.edu>).
+Thank you for your cooperation and have fun in our Shiny Map.
+
+<img src="Images/shiny_example.png" style="width:100%">
+
+Explore the first map that has data before Covid-19: [Shiny Map 1](https://shadowshakes.shinyapps.io/app_before_covid/)
+
+Explore the second map that has data after Covid-19: [Shiny Map 2](https://shadowshakes.shinyapps.io/app_after_covid/)
+

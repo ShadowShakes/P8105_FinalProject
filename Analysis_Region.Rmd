@@ -30,9 +30,7 @@ scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
-\ \par
-
-<center><img src="Images/neighborhood_1.jpg" style="width:100%"></center>
+<center><img src="Images/borough_1.jpeg" style="width:100%"></center>
 
 \ \par
 

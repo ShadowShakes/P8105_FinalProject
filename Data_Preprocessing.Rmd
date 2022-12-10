@@ -16,8 +16,6 @@ library(wordcloud2)
 library(kableExtra)
 ```
 
-\ \par
-
 <center><img src="Images/data_processing.jpeg" style="width:100%"></center>
 
 \ \par

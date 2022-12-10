@@ -38,6 +38,9 @@ scale_fill_discrete = scale_fill_viridis_d
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 ```
 
+<center><img src="Images/victim_1.jpeg" style="width:100%"></center>
+
+\ \par
 Our dataset does not contain data for October, November and December of the year 2022. We are interested in the following main felonies: Burglary, Felony Assault, Grand Larceny, Grand Larceny of Motor Vehicle, Murder and Non-negligent Manslaughter, Rape, and Robbery.
 
 ```{r read&tidy, include = FALSE}

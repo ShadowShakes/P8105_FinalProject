@@ -94,7 +94,7 @@ complaint =
 
 ## Visual Analysis
 
-We will first use data visualization to give an overview of the distribution of suspect's features.
+We will first use data visualization to get an overview.
 
 ### Borough
 
@@ -133,7 +133,7 @@ complaint %>%
   )
 ```
 
-The proportion of felonies does not appear to have changed significantly over the years
+The proportion of felonies does not appear to have changed significantly over the years.
 
 
 ## Statistical Testing

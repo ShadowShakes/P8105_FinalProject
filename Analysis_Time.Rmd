@@ -94,11 +94,11 @@ complaint =
 
 ## Exploratory Analysis
 
-We would like to use visualization to find out some patterns of felony frequency in NYC regarding time and date. We want to know how month, day of the week, and specific hour of the day are associated with the felony counts.
+We would like to use visualization to find out some patterns of felony frequency in NYC regarding time and date. We are interested in how month, day of the week, and time of the day are associated with felony frequency.
 
 ### Average Daily Felony Frequency by Year and Month
 
-First, we’ll explore trends of felony crimes from 2016 to September of 2022. We want to identify general trends over time and to see if there were any significant changes before and during the covid-19 pandemic.
+We would like to explore trends of felony crimes from 2016 to September 2022. We want to identify general trends over time and see if there are any significant changes before and during the COVID-19 pandemic.
 
 ```{r plot_year&month}
 num_days = function(month, year) {
@@ -129,11 +129,30 @@ complaint %>%
   )
 ```
 
-It seems that prior to 2020, felony frequency was slighter lower in colder months and slighter higher in warmer months, with no apparent annual fluctuations. Since 2020, the frequency of serious crimes has been more variable compared to before the pandemic. In April 2020, the frequency of serious crimes was the lowest point in the observed time range, which is probably due to the statewide stay-at-home order. Besides, since the beginning of 2022, felony frequency has significantly increased compared to previous years, reaching its highest point in June and July.
+It seems that prior to 2020, felony frequency is slightly lower in colder months and slightly higher in warmer months, with no apparent annual fluctuations. Starting from 2020, the frequency seems to be more variable compared to before the pandemic. In April 2020, the frequency was the lowest point in the observed time range, which is probably due to the statewide stay-at-home order. Besides, since the beginning of 2022, felony frequency has significantly increased compared to previous years, reaching its highest point in June and July.
+
+We then make a boxplot to see if the distributions of daily felony frequency are different across years. Since there is no data available for October and later in 2022, in order to make a fair comparison, we only compare the distribution of felony frequency for the first nine months of different years.
+
+```{r pre_vs_during}
+complaint %>% 
+  filter(level == "FELONY") %>% 
+  filter(!(month %in% c("Oct", "Nov", "Dec"))) %>% 
+  group_by(year, month, day) %>% 
+  dplyr::summarize(n_obs = n()) %>% 
+  plot_ly(x = ~year, y = ~n_obs, color = ~year, colors = "viridis", type = "box") %>% 
+  layout(
+    title = "Daily Felony Frequency by Year (January to September)",
+    xaxis = list(title = "Year"),
+    yaxis = list(title = "Daily Felony Frequency"),
+    showlegend = FALSE
+  )
+```
+
+The boxplot further supports our previous conclusion. In pre-COVID years, the distributions of daily felony frequency are generally the same across years. The median frequency of 2020 is lower than the pre-COVID level, showing that the stay-at-home order might lead to a decrease in the frequency of felonies overall. It appears that the frequency distribution in 2021 returned to the pre-COVID level, while that in 2022 greatly exceeded the level, which was probably due to the long-term economic and social effects of the pandemic, such as the increase in income inequality.
 
 ### Temporal Heat Map for Felony Crimes
 
-We would like to create a plot that shows the hourly frequency of felonies by hour of the day and day of the week.
+We want to create a plot that shows the hourly frequency of felonies by hour of the day and day of the week.
 
 ```{r plot_week&time}
 complaint %>% 
@@ -154,10 +173,10 @@ complaint %>%
   )
 ```
 
-From the heatmap above, we can observe the following characteristics of the hourly crime frequency over the course of a week:
+From the heatmap above, we can observe the following characteristics of the hourly felony frequency over the course of a week:
 
-* During weekdays (Monday to Friday), the felony frequency is higher during the afternoon and early evening hours (3pm-7pm), and gradually decreases until the early morning hours (3am-6am) where it reaches its lowest point.
-* During weekends (Saturday and Sunday), the felony frequency is lower in the afternoon compared to weekdays, but does not show a significant decrease until midnight. The crime frequency in the late night and early morning hours (12am-5am) is significantly higher than on weekdays and reaches its lowest point at around 6-7am, later than on weekdays.
+* During weekdays (Monday to Friday), felony frequency is higher during the afternoon and early evening hours (3pm-7pm), and gradually decreases until the early morning hours (3am-6am) where it reaches its lowest point.
+* During weekends (Saturday and Sunday), felony frequency is lower in the afternoon compared to weekdays, but does not show a significant decrease until midnight. The frequency in the late night and early morning hours (12am-5am) is significantly higher than on weekdays and reaches its lowest point at around 6-7am, later than on weekdays.
 
 ```{r plot_week&time_robbery}
 complaint %>% 
@@ -179,13 +198,13 @@ complaint %>%
   )
 ```
 
-The frequency characteristics of robbery are generally the same as that of felony overall: fewer robberies in the morning, more in the afternoon and evening. However, robbery frequency in the late night (0-4 am) on weekends is relatively high and reaches its highest point at 4 am on Sunday. Given that robberies typically occur in public places (such as streets), and that the number of people outside at late night on weekends is certainly much smaller than during the day, going out at this time is much more likely to make you a target of robbery.
+The frequency patterns of robbery are generally the same as that of felony overall: fewer robberies in the morning, more in the afternoon and evening. However, robbery frequency in the late night (0-4 am) on weekends is relatively high and reaches its highest point at 4 am on Sunday. Given that robberies typically occur in public places (such as streets), and that the number of people outside at late night on weekends is certainly much smaller than during the day, going out at this time is much more likely to make you a target of robbery.
 
 ## Statistical Testing
 
 ### Felony Frequency by Season
 
-From the visualization, it seems that the difference in felony frequency between colder months and warmer months is not very obvious prior to 2020. We want to use one-way ANOVA to test if daily felony frequency means are equal across four seasons in pre-covid years (2016-2019).
+From the visualization, it seems that the difference in felony frequency between colder months and warmer months is not very obvious prior to 2020. We want to use one-way ANOVA to test if daily felony frequency means are equal across four seasons in pre-COVID years (2016-2019).
 
 $H_0$: Daily felony frequency means does not vary between seasons.
 
@@ -214,12 +233,12 @@ daily_by_season %>%
   knitr::kable(caption = "One Way ANOVA of Felony Frequency and Seasons")
 ```
 
-Since the p-value is less than 0.05, we reject the null hypothesis. We have sufficient evidence to conclude that at least two seasons have different daily felony frequency means in pre-covid years.
+Since the p-value is less than 0.05, we reject the null hypothesis. We have sufficient evidence to conclude that at least two seasons have different daily felony frequency means in pre-COVID years.
 
-We want to conduct post-hoc analysis to determine which items are significantly different or similar. We will use Bonferroni adjustment to modify the critical regions, allowing us to control the probability of rejecting the null hypothesis when there are no real differences.
+We want to conduct post-hoc analysis to determine which seasons are significantly different or similar. We will use Bonferroni adjustment to modify the critical regions, allowing us to control the probability of rejecting the null hypothesis when there are no real differences.
 
 ```{r bonferroni}
 pairwise.t.test(daily_by_season$n_obs, daily_by_season$season, p.adj = 'bonferroni')
 ```
 
-We have sufficient evidence that the daily frequencies of felonies across the four seasons are different from each other, with the exception of the difference between spring and summer. 
+We have sufficient evidence that the daily frequencies of felonies across the four seasons are different from each other, with the exception of the difference between spring and summer.

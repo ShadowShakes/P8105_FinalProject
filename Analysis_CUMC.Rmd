@@ -117,10 +117,7 @@ num_days = function(month, year) {
 
 complaint %>%
   filter(level == "FELONY") %>% 
-  mutate(
-    year = fct_rev(year),
-    month = fct_rev(month)
-         ) %>% 
+  mutate(month = match(month, month.abb)) %>%
   group_by(year, month) %>% 
   dplyr::summarize(mean_freq = n() / num_days(month, year)) %>% 
   plot_ly(

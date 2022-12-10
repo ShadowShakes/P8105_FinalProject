@@ -142,6 +142,7 @@ complaint %>%
     fill = "Suspect Sex"
   )
 ```
+
 According to the plot, most of the suspect's sex(if recorded) is male, female suspects appear to be much fewer than male suspect.  
 And in 2020, the propotions of male suspect are even larger than other years. In the three kinds of crime level, male aslo has larger proportion than female.
 
@@ -177,6 +178,7 @@ complaint %>%
     fill = "Suspect Race"
   )
 ```
+
 Based on barplot, we can see that the most frequent suspect races are: Black, White Hispanic and White, while Asian/Pacific Islander and American Indian/Alaskan Native are the least freqeut races to be a suspect. In the three kinds of crime level, black and white hispanic also take the largest proportion.
 
 ### Suspect Age Group
@@ -211,6 +213,7 @@ complaint %>%
     fill = "Suspect Age Group"
   )
 ```
+
 According to the barplot, we can see that the age group between 25 and 44 years old takes up largest proportion in suspects, and the next is 18-24 years old.  
 Besides, with time going by, the proportion of age group between 25-64 years old are rising in suspects' age distribution.
 

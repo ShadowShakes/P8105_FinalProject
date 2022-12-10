@@ -132,6 +132,10 @@ complaint %>%
   )
 ```
 
+According to this plot, we find that the daily felony frequency trend around CUMC has strong fluctuation between different months, seasons and years. But there does not seem to have obvious common patterns in each year.  
+There is a peak appears from the autumn 2020 to the spring of 2021. Based on the Covid-10 pandemic period, we think that it may have some connection with the end of city lockdown and economic downturn caused by Covid. 
+
+
 ### Suspect Race
 ```{r}
 complaint %>% 
@@ -163,6 +167,11 @@ complaint %>%
     fill = "Suspect Race"
   )
 ```
+Based on the plot, the suspect race around CUMC is mostly Black, White Hispanic, Black Hispanic. This is probably because there are more Black, White Hispanic, Black Hispanic people living in Washington Height around CUMC than other regions.
+
+The distribution of suspect races committing crime between years have some differences, but it becomes more stable after Covid-19 from 2020 to 2022.
+
+And for crime levels, there are larger proportion of White Hispanic and Black Hispanic people committing Felony level crimes, while suspects from other races have larger proportion of committing Misdemeanor and Violation crimes.
 
 ### Suspect Age Group
 ```{r}
@@ -195,6 +204,8 @@ complaint %>%
     fill = "Suspect Age Group"
   )
 ```
+
+According to this plot, the most frequency suspect age group is from 25 to 64. And there are more suspects in 45-64 age group that commit violation crime.
 
 ### Victim Sex
 ```{r}

@@ -120,7 +120,7 @@ dangrous_data = dangrous_data%>%
   )
 ```
 
-From the data and online research, we can easily find that violation represents the lowest level, followed by misdemeanors and felonies. Therefore, they are assigned 0, 1, and 2 to represent the degree of danger of the event, that is, the risk factor faced by the victim.
+From the data and online research, we can easily find that violation represents the lowest level, followed by misdemeanors and felonies. Therefore, they are assigned 0， 1 and 2 to represent the degree of danger of the event, that is, the risk factor faced by the victim.
 
 ## Relationship between victim characteristics and crime level
 

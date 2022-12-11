@@ -34,11 +34,11 @@ Introduction of our data source and how we preprocess (import, clean, tidy) the 
 * Data-Driven Analysis  
 In-depth data analysis concerning crime topics on suspects, victims, regions and time range distribution.
 
-* CUMC Safety Analysis   
-Crime analysis restricted to regions around CUMC campus.  
-
 * Shiny App Interaction  
 Interactive apps developed by Shiny for interactive data analysis and visualization.
+
+* CUMC Safety Analysis   
+Crime analysis restricted to regions around CUMC campus. 
 
 * Conclusions and report  
 Our final analytics conclusions and further details in this project.

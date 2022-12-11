@@ -152,6 +152,7 @@ complaint %>%
     title = "Proportions of Suspect Race and Year",
     fill = "Suspect Race"
   )
+
 complaint %>% 
   drop_na(offense, susp_race) %>% 
   group_by(level, susp_race) %>% 
@@ -189,6 +190,7 @@ complaint %>%
     title = "Proportions of Suspect Age Group and Year",
     fill = "Suspect Age Group"
   )
+
 complaint %>% 
   drop_na(offense, susp_age_group) %>% 
   group_by(level, susp_age_group) %>% 
@@ -223,6 +225,7 @@ complaint %>%
     title = "Proportions of Suspect Sex and Year",
     fill = "Suspect Sex"
   )
+
 complaint %>% 
   drop_na(offense, vic_sex) %>% 
   group_by(level, vic_sex) %>% 
@@ -238,6 +241,11 @@ complaint %>%
     fill = "Suspect Sex"
   )
 ```
+
+There is equal proportion of victim sex to be Female or Male, both around 0.5.  
+But on different levels, the victim sex has large difference. There are significantly more Male victims on Felony crimes, more Male victims on Misdemeanor crimes, and significantly more Female victims on Violation crimes. We infer that the violations like the sexual harassment happens more on Female victims which may partly explain for this difference.
+
+
 ### Victim Race
 ```{r}
 complaint %>% 
@@ -254,6 +262,7 @@ complaint %>%
     title = "Proportions of Suspect Race and Year",
     fill = "Suspect Race"
   )
+
 complaint %>% 
   drop_na(offense, vic_race) %>% 
   group_by(level, vic_race) %>% 
@@ -270,3 +279,5 @@ complaint %>%
   )
 ```
 
+According to the plot, victims from White Hispanic are the most frequent, and Black Hispanic victims are the second most frequent, then the Black and Black Hispanic. This trends are similar to suspects' race distribution.   
+Also, we observe that fewer Black victims in Felony crimes and more Black Hispanic and White Hispanic crimes.

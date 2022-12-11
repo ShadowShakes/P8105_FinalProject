@@ -397,7 +397,7 @@ div.tocify {
   <a href="Project_Report.html">Conclusion &amp; Report</a>
 </li>
 <li>
-  <a href="https://www.youtube.com/">Screencast</a>
+  <a href="https://youtu.be/dyx0UMpr_Tk">Screencast</a>
 </li>
 <li>
   <a href="about.html">About</a>
@@ -533,32 +533,34 @@ events are defined as violations, misdemeanors, and felonies. We will
 discuss this issue by observing whether the severity of the case is
 related to the victim’s race, age range, and gender.</p>
 <p>After that, we are trying to dig out the relationship between cases
-and regions. The first thing is to define how to evaluate cases. We now
-have the total number of complaints recorded from 2016 to 2022, but does
-the dataset truly record all the cases? We think this question can be
-raised to every dataset, and even though it is not completely recorded,
-it represents a perfect sample of the population. Initially, we would
-like to get the probability that the crime will happen. Then we realized
-that it was impossible because we only have the recorded cases, and we
-don’t have safe situations. That might be a publication bias, and we
-could not get the crime rate based on this dataset. Hence, we later
-focus on the number of cases monthly and the felony rate. We care much
-about felony because it has the greatest impact on our personal safety.
-I did the job to figure out the difference in monthly cases and felony
-rates between the five boroughs in New York City. We wanted to see which
-borough is the safest and which one is the most dangerous. Then I
-realized that using the borough variable may be a bit too broad. There
-is another variable called precinct which divides New York City into
-smaller areas. However, that is not a good idea to use in the comparison
-part because there are so many precincts. It can be used in the
-prediction part. We may also want to ask what is the trend of felony
-frequency in NYC over time? Are there any temporal patterns of felony
-frequency, particularly robbery? Are there any seasonal differences? We
-want to explore patterns in felony frequency in NYC regarding date and
-time. The focus is on identifying trends related to the month, day of
-the week, and hour of the day. The period of interest is from 2016 to
-September 2022, with a specific focus on changes before and during the
-COVID-19 pandemic.</p>
+and regions.<br />
+The first thing is to define how to evaluate cases. We now have the
+total number of complaints recorded from 2016 to 2022, but does the
+dataset truly record all the cases? We think this question can be raised
+to every dataset, and even though it is not completely recorded, it
+represents a perfect sample of the population.</p>
+<p>Initially, we would like to get the probability that the crime will
+happen. Then we realized that it was impossible because we only have the
+recorded cases, and we don’t have safe situations. That might be a
+publication bias, and we could not get the crime rate based on this
+dataset. Hence, we later focus on the number of cases monthly and the
+felony rate. We care much about felony because it has the greatest
+impact on our personal safety. We did the job to figure out the
+difference in monthly cases and felony rates between the five boroughs
+in New York City. We wanted to see which borough is the safest and which
+one is the most dangerous. Then we realized that using the borough
+variable may be a bit too broad. There is another variable called
+precinct which divides New York City into smaller areas. However, that
+is not a good idea to use in the comparison part because there are so
+many precincts. It can be used in the prediction part.</p>
+<p>We may also want to ask what is the trend of felony frequency in NYC
+over time? Are there any temporal patterns of felony frequency,
+particularly robbery? Are there any seasonal differences? We want to
+explore patterns in felony frequency in NYC regarding date and time. The
+focus is on identifying trends related to the month, day of the week,
+and hour of the day. The period of interest is from 2016 to September
+2022, with a specific focus on changes before and during the COVID-19
+pandemic.</p>
 </div>
 <div id="exploratory-analysis" class="section level3">
 <h3>Exploratory analysis</h3>
@@ -668,18 +670,19 @@ outbreak of the epidemic, the proportion of male group crimes has
 decreased. We guess it may be because the epidemic has a greater
 psychological and physical impact on women. In the angle of crime level,
 the men have the largest part in felony, while in the proportion of
-misdemeanors and violation, the part of men has decreased. Especially in
-the crime of violation, women account for more than a quarter. In the
-proportion of suspect race and year, the Black take the largest part of
-crime, second is white Hispanic, then white, the last are black Hispanic
-and Asian. The race proportion of suspects does not change with time. In
-the crime level of felony, black take larger part than misdemeanors and
-violation. The White are more likely to commit misdemeanors and
-violation, rather than felony. When refers to suspect age group, we
-found that people between 25 and 44 years old take the largest part of
-crime. This proportion is even increasing every year. We also did the
-regression of the suspect’s gender and race on other variables
-respectively. We find that the coefficient of each variable is
+misdemeanors and violation, the part of men has decreased.</p>
+<p>Especially in the crime of violation, women account for more than a
+quarter. In the proportion of suspect race and year, the Black take the
+largest part of crime, second is white Hispanic, then white, the last
+are black Hispanic and Asian. The race proportion of suspects does not
+change with time. In the crime level of felony, black take larger part
+than misdemeanors and violation. The White are more likely to commit
+misdemeanors and violation, rather than felony. When refers to suspect
+age group, we found that people between 25 and 44 years old take the
+largest part of crime. This proportion is even increasing every
+year.</p>
+<p>We also did the regression of the suspect’s gender and race on other
+variables respectively. We find that the coefficient of each variable is
 significant. We also found men prefer to commit crimes in borough STATEN
 ISLAND. They are more likely to commit crimes against age groups of
 45-64 years old, sex of female and race of black.</p>
@@ -693,15 +696,16 @@ severity of the crime type rises to misdemeanor and felony, the
 probability of the victim being male and female tends to be similar, and
 the probability of male is slightly lower than that of female. In the
 same way, we want to observe the differences in different age ranges and
-levels. The results show that although the victim group is mainly
-targeted at 25-44. In the progression of violations to misdemeanors and
-felonies, the 45-64 victim age group dropped about 4 percentage points
-and the 18-24 victim age group rose about 3 points. The same method
-observes the relationship between victim race and case level. The black
-race occupies most of the victims, and as the severity of the case
-increases, the proportion of black victims decreases significantly,
-while the proportion of white Hispanic and ASIAN/PACIFIC ISLAND victims
-gradually increases.</p>
+levels.</p>
+<p>The results show that although the victim group is mainly targeted at
+25-44. In the progression of violations to misdemeanors and felonies,
+the 45-64 victim age group dropped about 4 percentage points and the
+18-24 victim age group rose about 3 points. The same method observes the
+relationship between victim race and case level. The black race occupies
+most of the victims, and as the severity of the case increases, the
+proportion of black victims decreases significantly, while the
+proportion of white Hispanic and ASIAN/PACIFIC ISLAND victims gradually
+increases.</p>
 <p>We found that Brooklyn had the most felonies, followed by Manhattan,
 and Bronx has about the same felonies as Queens. Staten Island has the
 least felonies. The proportion of felonies does not appear to have
@@ -717,7 +721,7 @@ either. Based on felony rate, from highest to lowest, Brooklyn, Queens,
 Manhattan, Bronx, Staten Island. This was somehow out of our
 expectations because we often heard that Bronx is the most dangerous
 borough. At least we could conclude that Staten Island is the safest
-among the five boroughs. As for the most dangerous part, I think we can
+among the five boroughs. As for the most dangerous part, we think we can
 investigate further on precincts, for example, East Harlem versus
 Washington Heights because still, analysis based on the borough is just
 too broad.</p>

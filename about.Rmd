@@ -71,5 +71,5 @@ Thanks again for everyone's participation and contribution to this project!
 <img src="Images/Team_Members/Zijian_Xu.png" style="width:15%">  \ \ \ \ \ \ \ \ \ **<font size= "3"> Zijian Xu</font>**
 
 * Statistical testing analysis.
-* Crime victim analysis and concluding.
+* Crime victim analysis and report improvement.
 

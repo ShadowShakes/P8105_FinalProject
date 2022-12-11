@@ -139,6 +139,10 @@ The proportion of felonies does not appear to have changed significantly over th
 ## Statistical Testing Analysis
 We use statistical tests to find if there is a difference in monthly crime records from different regions.
 
+$H_0$: The monthly crime records from different regions are equal.
+
+$H_1$: The monthly crime records from different regions are not equal.
+
 ### Test average number of crimes per day
 ```{r}
 anova_table =
@@ -163,7 +167,6 @@ pairwise.t.test(anova_table$n_obs, anova_table$borough, p.adj = 'bonferroni')
 ```
 
 The ANOVA test shows that the five boroughs do not have equal monthly cases, and the pairwise t test further reveals each borough differs from the others on monthly cases. Based on monthly cases, from highest to lowest, Brooklyn, Manhattan, Bronx, Queens, Staten Island.
-
 
 ### Test felony rate
 ```{r}

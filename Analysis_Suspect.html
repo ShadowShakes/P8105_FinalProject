@@ -441,11 +441,12 @@ div.tocify {
 </center>
  
 <p>In this section we would like to explore more about the crime
-suspect’s features. We mainly focus on studying the “Felony Crimes”,
-which includes:<br />
+suspect’s features.<br />
+We mainly focus on studying the “Felony Crimes”, which includes:<br />
 “BURGLARY”, “FELONY ASSAULT”, “GRAND LARCENY”, “GRAND LARCENY OF MOTOR
 VEHICLE”, “MURDER &amp; NON-NEGL. MANSLAUGHTER”, “RAPE”, “ROBBERY” in
-<code>offense</code> column</p>
+<code>offense</code> column based on the common definition and
+reference.</p>
 <div id="visual-analysis" class="section level2">
 <h2>Visual Analysis</h2>
 <p>We will first use data visualization to give an overview of the
@@ -568,12 +569,18 @@ years old are rising in suspects’ age distribution.</p>
 <div id="statistical-testing-analysis" class="section level2">
 <h2>Statistical Testing Analysis</h2>
 <p>We use statistical tests to find if there is a difference in daily
-crime records of suspects from difference races.</p>
+crime records of suspects from difference races like Asian/Pacific
+Islander and White.</p>
+<p><span class="math inline">\(H_0\)</span>:The average number of daily
+crimes recorded by NYPD is equal for Asian/Pacific suspect and White
+suspect.</p>
+<p><span class="math inline">\(H_1\)</span>: The average number of daily
+crimes recorded by NYPD is not equal for Asian/Pacific suspect and White
+suspect.</p>
 <div id="suspect-race-analysis-1" class="section level3">
 <h3>Suspect Race Analysis</h3>
 <pre class="r"><code>crimebyday_aspa = complaint %&gt;% 
-  group_by(year,month,day_of_week) %&gt;% 
-  filter(susp_race == &quot;ASIAN / PACIFIC ISLANDER&quot;) %&gt;% 
+  group_by(year,month,day_of_week, susp_race) %&gt;% 
   dplyr::summarize(
     n_bydate = n(),
   ) %&gt;% 
@@ -587,148 +594,161 @@ crimebyday_white = complaint %&gt;%
   ) %&gt;% 
   unique()
 
-t.test(crimebyday_aspa$n_bydate,crimebyday_white$n_bydate)%&gt;% broom::tidy()</code></pre>
+t.test(crimebyday_aspa$n_bydate,crimebyday_white$n_bydate) %&gt;% broom::tidy()</code></pre>
 <pre><code>## # A tibble: 1 × 10
-##   estim…¹ estim…² estim…³ stati…⁴ p.value param…⁵ conf.…⁶ conf.…⁷ method alter…⁸
-##     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;  
-## 1   -259.    153.    412.   -79.7       0    749.   -265.   -253. Welch… two.si…
-## # … with abbreviated variable names ¹​estimate, ²​estimate1, ³​estimate2,
-## #   ⁴​statistic, ⁵​parameter, ⁶​conf.low, ⁷​conf.high, ⁸​alternative</code></pre>
-<p>According to the test results, we can find that there’s a significant
-difference between the suspect races.</p>
+##   estimate estimate1 estimate2 statis…¹   p.value param…² conf.…³ conf.…⁴ method
+##      &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt; 
+## 1     371.      782.      412.     27.1 2.62e-149   4304.    344.    397. Welch…
+## # … with 1 more variable: alternative &lt;chr&gt;, and abbreviated variable names
+## #   ¹​statistic, ²​parameter, ³​conf.low, ⁴​conf.high</code></pre>
+<p>According to the test results, since the p-value is very small, we
+reject <span class="math inline">\(H_0\)</span> and conclude that
+there’s a significant difference on daily crime numbers between those
+two suspect races.</p>
 </div>
 </div>
 <div id="regression-modelling-analysis" class="section level2">
 <h2>Regression Modelling Analysis</h2>
-<p>We try to build models to give prediction of the criminal’s features
-based on other factors, and see if we can draw conclusions from the
+<p>In many circumstances, the NYPD is unclear about the suspect’s
+features, thus make it more difficult to find the suspect. Here we are
+interested in how suspect’s Sex and Race are related to other factors in
+the dataset, and if we can predict the suspect’s feature based on other
+information.<br />
+We build classification models to give prediction of the criminal’s
+features based on other factors, and draw conclusions from the
 coefficients of the factors.</p>
-<div id="suspect-sex-analysis-1" class="section level3">
-<h3>Suspect Sex Analysis</h3>
+<div id="suspect-sex-prediction" class="section level3">
+<h3>Suspect Sex Prediction</h3>
 <pre class="r"><code>tidydata1 = complaint %&gt;%
   select(-day_of_week) %&gt;%
   na.omit() %&gt;%
-  mutate(susp_sex = ifelse(susp_sex == &quot;M&quot;,1,0),vic_sex = ifelse(vic_sex == &quot;M&quot;,1,0),jurisdiction_code = as.numeric(jurisdiction_code)) %&gt;%
+  mutate(susp_sex = ifelse(susp_sex == &quot;M&quot;, 1, 0),
+         vic_sex = ifelse(vic_sex == &quot;M&quot;, 1, 0), 
+         jurisdiction_code = as.numeric(jurisdiction_code)) %&gt;%
   mutate(
     jurisdiction_code = ifelse(jurisdiction_code &gt;= 3, 3, jurisdiction_code)) %&gt;%
-  mutate(jurisdiction_code=as.factor(jurisdiction_code))</code></pre>
-<p>We build a logistic regression model to predict the suspect’s sex
-based on other factors.</p>
+  mutate(jurisdiction_code = as.factor(jurisdiction_code))</code></pre>
+<p>The logistic regression model to predict the suspect’s sex based on
+other factors.</p>
 <pre class="r"><code>mylogit &lt;- glm(susp_sex ~ 
                 borough + jurisdiction_code 
-               +level+susp_age_group +susp_race+vic_age_group
-               +vic_race+vic_sex+covid_state, data = tidydata1, family = &quot;binomial&quot;)
+               + level + susp_age_group + susp_race + vic_age_group
+               + vic_race + vic_sex, data = tidydata1, family = &quot;binomial&quot;)
 
 mylogit %&gt;%
   broom::tidy() %&gt;% 
   select(term, estimate, p.value)</code></pre>
-<pre><code>## # A tibble: 29 × 3
+<pre><code>## # A tibble: 28 × 3
 ##    term                 estimate   p.value
 ##    &lt;chr&gt;                   &lt;dbl&gt;     &lt;dbl&gt;
-##  1 (Intercept)            1.58   2.27e-213
-##  2 boroughBROOKLYN        0.0507 2.34e- 13
-##  3 boroughMANHATTAN       0.0749 2.86e- 22
-##  4 boroughQUEENS          0.0542 1.01e- 12
-##  5 boroughSTATEN ISLAND  -0.110  5.70e- 19
-##  6 jurisdiction_code2     0.683  2.99e-209
-##  7 jurisdiction_code3    -0.148  1.12e- 84
-##  8 levelMISDEMEANOR      -0.396  0        
+##  1 (Intercept)            1.59   1.09e-216
+##  2 boroughBROOKLYN        0.0495 8.58e- 13
+##  3 boroughMANHATTAN       0.0757 1.03e- 22
+##  4 boroughQUEENS          0.0547 6.26e- 13
+##  5 boroughSTATEN ISLAND  -0.111  2.56e- 19
+##  6 jurisdiction_code2     0.686  4.52e-211
+##  7 jurisdiction_code3    -0.148  2.35e- 84
+##  8 levelMISDEMEANOR      -0.399  0        
 ##  9 levelVIOLATION        -0.761  0        
-## 10 susp_age_group18-24    0.0570 1.90e-  6
-## # … with 19 more rows</code></pre>
+## 10 susp_age_group18-24    0.0613 2.94e-  7
+## # … with 18 more rows</code></pre>
+<p>Based on the coefficient output, we find that:</p>
 <p>For backward stepwise, in order to select variables.</p>
 <pre class="r"><code>step(mylogit, direction = &#39;backward&#39;)</code></pre>
-<pre><code>## Start:  AIC=986247.5
+<pre><code>## Start:  AIC=986504.8
 ## susp_sex ~ borough + jurisdiction_code + level + susp_age_group + 
-##     susp_race + vic_age_group + vic_race + vic_sex + covid_state
+##     susp_race + vic_age_group + vic_race + vic_sex
 ## 
 ##                     Df Deviance    AIC
-## &lt;none&gt;                   986190 986248
-## - covid_state        1   986449 986505
-## - borough            4   986481 986531
-## - susp_race          5   986886 986934
-## - jurisdiction_code  2   987750 987804
-## - susp_age_group     4   987901 987951
-## - vic_age_group      4   987904 987954
-## - vic_sex            1   988580 988636
-## - vic_race           5   992151 992199
-## - level              2   998679 998733</code></pre>
+## &lt;none&gt;                   986449 986505
+## - borough            4   986744 986792
+## - susp_race          5   987154 987200
+## - jurisdiction_code  2   988019 988071
+## - vic_age_group      4   988155 988203
+## - susp_age_group     4   988227 988275
+## - vic_sex            1   988839 988893
+## - vic_race           5   992411 992457
+## - level              2   998945 998997</code></pre>
 <pre><code>## 
 ## Call:  glm(formula = susp_sex ~ borough + jurisdiction_code + level + 
-##     susp_age_group + susp_race + vic_age_group + vic_race + vic_sex + 
-##     covid_state, family = &quot;binomial&quot;, data = tidydata1)
+##     susp_age_group + susp_race + vic_age_group + vic_race + vic_sex, 
+##     family = &quot;binomial&quot;, data = tidydata1)
 ## 
 ## Coefficients:
 ##                       (Intercept)                    boroughBROOKLYN  
-##                          1.579895                           0.050725  
+##                           1.59193                            0.04949  
 ##                  boroughMANHATTAN                      boroughQUEENS  
-##                          0.074871                           0.054240  
+##                           0.07566                            0.05472  
 ##              boroughSTATEN ISLAND                 jurisdiction_code2  
-##                         -0.109742                           0.683404  
+##                          -0.11080                            0.68632  
 ##                jurisdiction_code3                   levelMISDEMEANOR  
-##                         -0.147868                          -0.395793  
+##                          -0.14756                           -0.39883  
 ##                    levelVIOLATION                susp_age_group18-24  
-##                         -0.760748                           0.056956  
+##                          -0.76094                            0.06128  
 ##               susp_age_group25-44                susp_age_group45-64  
-##                          0.255213                           0.351577  
+##                           0.26388                            0.35888  
 ##                 susp_age_group65+  susp_raceASIAN / PACIFIC ISLANDER  
-##                          0.319272                          -0.227534  
+##                           0.32977                           -0.22312  
 ##                    susp_raceBLACK            susp_raceBLACK HISPANIC  
-##                         -0.150989                          -0.096140  
+##                          -0.14695                           -0.09303  
 ##                    susp_raceWHITE            susp_raceWHITE HISPANIC  
-##                         -0.303292                          -0.300790  
+##                          -0.30158                           -0.29779  
 ##                vic_age_group18-24                 vic_age_group25-44  
-##                          0.392450                           0.277469  
+##                           0.39380                            0.28113  
 ##                vic_age_group45-64                   vic_age_group65+  
-##                          0.191089                           0.003363  
+##                           0.19505                            0.01045  
 ##  vic_raceASIAN / PACIFIC ISLANDER                      vic_raceBLACK  
-##                          0.098853                          -0.582878  
+##                           0.10760                           -0.57548  
 ##            vic_raceBLACK HISPANIC                      vic_raceWHITE  
-##                         -0.379615                          -0.067581  
+##                          -0.37122                           -0.06131  
 ##            vic_raceWHITE HISPANIC                            vic_sex  
-##                         -0.183392                          -0.255437  
-##                      covid_state1  
-##                          0.081949  
+##                          -0.17573                           -0.25542  
 ## 
-## Degrees of Freedom: 891585 Total (i.e. Null);  891557 Residual
+## Degrees of Freedom: 891585 Total (i.e. Null);  891558 Residual
 ## Null Deviance:       1015000 
-## Residual Deviance: 986200    AIC: 986200</code></pre>
-<p>Through backward, we found that we need all the variables.</p>
-<p>We see the output of the model.</p>
+## Residual Deviance: 986400    AIC: 986500</code></pre>
+<p>Through backward, we found that we need most of the variables in
+previous model since the coefficients are significant.</p>
+<p>We see the output performance of the model.</p>
 <pre class="r"><code>tidydata1 %&gt;% 
   modelr::add_residuals(mylogit) %&gt;% 
-  ggplot(aes(x = susp_age_group, y = resid)) + geom_violin(aes(fill = susp_age_group)) + facet_wrap(~covid_state)</code></pre>
+  ggplot(aes(x = susp_age_group, y = resid)) + geom_violin(aes(fill = susp_age_group))</code></pre>
 <p><img src="Analysis_Suspect_files/figure-html/unnamed-chunk-7-1.png" width="80%" /></p>
+<p>According to the plot</p>
 </div>
-<div id="suspect-race-analysis-2" class="section level3">
-<h3>Suspect Race Analysis</h3>
-<pre class="r"><code>tidy_data2 = tidydata1%&gt;%
-  filter(susp_race %in% c(&quot;BLACK&quot;,&quot;ASIAN / PACIFIC ISLANDER&quot;))%&gt;%
-  mutate(susp_race=ifelse(susp_race == &quot;BLACK&quot;,1,0))
+<div id="suspect-race-prediction" class="section level3">
+<h3>Suspect Race Prediction</h3>
+<p>And we also want to take a lot at the race prediction.</p>
+<pre class="r"><code>tidy_data2 = tidydata1 %&gt;%
+  filter(susp_race %in% c(&quot;BLACK&quot;,&quot;ASIAN / PACIFIC ISLANDER&quot;)) %&gt;%
+  mutate(susp_race = ifelse(susp_race == &quot;BLACK&quot;,1,0))
+
 mylogit_2 = glm(susp_race ~  borough + jurisdiction_code
-+level+susp_age_group
-+susp_sex+vic_age_group+vic_race+vic_sex+covid_state, data = tidy_data2, family = &quot;binomial&quot;)
-# almost full model except victor information
++ level + susp_age_group
++ susp_sex + vic_age_group + vic_race + vic_sex, data = tidy_data2, family = &quot;binomial&quot;)
+
+# almost full model except victim information
 mylogit_2 %&gt;%
   broom::tidy() %&gt;% 
   select(term, estimate, p.value)</code></pre>
-<pre><code>## # A tibble: 25 × 3
+<pre><code>## # A tibble: 24 × 3
 ##    term                 estimate   p.value
 ##    &lt;chr&gt;                   &lt;dbl&gt;     &lt;dbl&gt;
 ##  1 (Intercept)             3.02  0        
-##  2 boroughBROOKLYN        -0.548 9.76e-119
-##  3 boroughMANHATTAN       -0.364 3.51e- 47
+##  2 boroughBROOKLYN        -0.548 8.57e-119
+##  3 boroughMANHATTAN       -0.364 3.48e- 47
 ##  4 boroughQUEENS          -1.76  0        
-##  5 boroughSTATEN ISLAND   -0.556 2.93e- 42
-##  6 jurisdiction_code2      1.77  3.16e-219
-##  7 jurisdiction_code3      1.18  2.20e-229
-##  8 levelMISDEMEANOR       -0.372 7.18e-122
-##  9 levelVIOLATION         -0.463 1.58e-151
-## 10 susp_age_group18-24    -0.642 1.94e- 73
-## # … with 15 more rows</code></pre>
+##  5 boroughSTATEN ISLAND   -0.556 2.87e- 42
+##  6 jurisdiction_code2      1.77  2.72e-219
+##  7 jurisdiction_code3      1.18  2.21e-229
+##  8 levelMISDEMEANOR       -0.372 5.84e-122
+##  9 levelVIOLATION         -0.463 1.60e-151
+## 10 susp_age_group18-24    -0.642 1.83e- 73
+## # … with 14 more rows</code></pre>
+<p>The output performance of the model.</p>
 <pre class="r"><code>tidy_data2 %&gt;% 
   modelr::add_residuals(mylogit_2) %&gt;% 
-  ggplot(aes(x = level, y = resid)) + geom_violin(aes(fill = level)) + facet_wrap(~covid_state)</code></pre>
+  ggplot(aes(x = level, y = resid)) + geom_violin(aes(fill = level))</code></pre>
 <p><img src="Analysis_Suspect_files/figure-html/unnamed-chunk-9-1.png" width="80%" /></p>
 </div>
 </div>

@@ -30,7 +30,11 @@ During the second period, we further divided the project in-depth analysis work 
 * Time range analysis
 * Shiny interactive design
 
-Each part of the work is completed by one of our team members and checked by all of us. Thanks again for everyone's participation and contribution to this project!
+Each part of the work is completed by one of our team members and checked by all of us.  
+
+In order to keep the front-end website design style to be consistent and save time, in many cases other four team members just sent their revised ".Rmd" file and let front-end designer Shaohan to build and update the project website. Therefore, most of the commits are made by Shaohan according to Github statistics. However, we have to notify that every team member is actively participating in revising the code and analysis descriptions, and everybody is actively updating the project repository which are not completely shown in the commit statistics.  
+
+Thanks again for everyone's participation and contribution to this project!
 
 \ \par
 
@@ -42,30 +46,30 @@ Each part of the work is completed by one of our team members and checked by all
 
 <img src="Images/Team_Members/Jiajun_Tao.png" style="width:15%">  \ \ \ \ \ \ \ \ \ **<font size= "3"> Jiajun Tao**
 
-* Dataset tidy and preprocessing. 
-* Crime borough analysis. 
+* Dataset tidy and basic preprocessing. 
+* Crime borough analysis and draft report integration
 
 \ \par
 <img src="Images/Team_Members/Hongru_Tang.png" style="width:15%">  \ \ \ \ \ \ \ \ \ **<font size= "3"> Hongru Tang</font>**
 
-* Statistical modelling. 
-* Crime suspect analysis. 
+* Statistical prediction modelling. 
+* Crime suspect analysis and concluding.
 
 \ \par
 <img src="Images/Team_Members/Hongjie_Liu.png" style="width:15%">  \ \ \ \ \ \ \ \ \ **<font size= "3"> Hongjie Liu</font>** 
 
-* Data visualization and double dataset cleaning. 
-* Crime time range analysis. 
+* Data visualization and further dataset cleaning. 
+* Crime time range analysis and project quality&detail control.
 
 \ \par
 <img src="Images/Team_Members/Shaohan_Chen.png" style="width:15%">  \ \ \ \ \ \ \ \ \ **<font size= "3"> Shaohan Chen</font>** 
 
-* Website front-end development and report summarizing. 
-* Shiny app development. 
+* Project website front-end development, report integration and screen cast. 
+* Shiny apps development and CUMC safety analysis.
 
 \ \par
 <img src="Images/Team_Members/Zijian_Xu.png" style="width:15%">  \ \ \ \ \ \ \ \ \ **<font size= "3"> Zijian Xu</font>**
 
-* Statistical testing analysis. 
-* Crime victim analysis. 
+* Statistical testing analysis.
+* Crime victim analysis and concluding.
 

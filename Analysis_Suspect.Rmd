@@ -38,8 +38,9 @@ theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 \ \par
 
-In this section we would like to explore more about the crime suspect's features. We mainly focus on studying the "Felony Crimes", which includes:  
-"BURGLARY", "FELONY ASSAULT", "GRAND LARCENY", "GRAND LARCENY OF MOTOR VEHICLE", "MURDER & NON-NEGL. MANSLAUGHTER", "RAPE", "ROBBERY" in `offense` column
+In this section we would like to explore more about the crime suspect's features.  
+We mainly focus on studying the "Felony Crimes", which includes:  
+"BURGLARY", "FELONY ASSAULT", "GRAND LARCENY", "GRAND LARCENY OF MOTOR VEHICLE", "MURDER & NON-NEGL. MANSLAUGHTER", "RAPE", "ROBBERY" in `offense` column based on the common definition and reference.  
 
 ## Visual Analysis
 We will first use data visualization to give an overview of the distribution of suspect's features.
@@ -219,13 +220,16 @@ Besides, with time going by, the proportion of age group between 25-64 years old
 
 
 ## Statistical Testing Analysis
-We use statistical tests to find if there is a difference in daily crime records of suspects from difference races.
+We use statistical tests to find if there is a difference in daily crime records of suspects from difference races like Asian/Pacific Islander and White.
+
+$H_0$:The average number of daily crimes recorded by NYPD is equal for Asian/Pacific suspect and White suspect.
+
+$H_1$: The average number of daily crimes recorded by NYPD is not equal for Asian/Pacific suspect and White suspect. 
 
 ### Suspect Race Analysis
 ```{r}
 crimebyday_aspa = complaint %>% 
-  group_by(year,month,day_of_week) %>% 
-  filter(susp_race == "ASIAN / PACIFIC ISLANDER") %>% 
+  group_by(year,month,day_of_week, susp_race) %>% 
   dplyr::summarize(
     n_bydate = n(),
   ) %>% 
@@ -239,39 +243,45 @@ crimebyday_white = complaint %>%
   ) %>% 
   unique()
 
-t.test(crimebyday_aspa$n_bydate,crimebyday_white$n_bydate)%>% broom::tidy()
+t.test(crimebyday_aspa$n_bydate,crimebyday_white$n_bydate) %>% broom::tidy()
 ```
 
-According to the test results, we can find that there's a significant difference between the suspect races.
+According to the test results, since the p-value is very small, we reject $H_0$ and conclude that there's a significant difference on daily crime numbers between those two suspect races.
 
 
 ## Regression Modelling Analysis
-We try to build models to give prediction of the criminal's features based on other factors, and see if we can draw conclusions from the coefficients of the factors.
 
-### Suspect Sex Analysis
+In many circumstances, the NYPD is unclear about the suspect's features, thus make it more difficult to find the suspect. 
+Here we are interested in how suspect's Sex and Race are related to other factors in the dataset, and if we can predict the suspect's feature based on other information.  
+We build classification models to give prediction of the criminal's features based on other factors, and draw conclusions from the coefficients of the factors. 
+
+### Suspect Sex Prediction
 
 ```{r}
 tidydata1 = complaint %>%
   select(-day_of_week) %>%
   na.omit() %>%
-  mutate(susp_sex = ifelse(susp_sex == "M",1,0),vic_sex = ifelse(vic_sex == "M",1,0),jurisdiction_code = as.numeric(jurisdiction_code)) %>%
+  mutate(susp_sex = ifelse(susp_sex == "M", 1, 0),
+         vic_sex = ifelse(vic_sex == "M", 1, 0), 
+         jurisdiction_code = as.numeric(jurisdiction_code)) %>%
   mutate(
     jurisdiction_code = ifelse(jurisdiction_code >= 3, 3, jurisdiction_code)) %>%
-  mutate(jurisdiction_code=as.factor(jurisdiction_code))
-
+  mutate(jurisdiction_code = as.factor(jurisdiction_code))
 ```
 
-We build a logistic regression model to predict the suspect's sex based on other factors.
+The logistic regression model to predict the suspect's sex based on other factors.
 ```{r}
 mylogit <- glm(susp_sex ~ 
                 borough + jurisdiction_code 
-               +level+susp_age_group +susp_race+vic_age_group
-               +vic_race+vic_sex+covid_state, data = tidydata1, family = "binomial")
+               + level + susp_age_group + susp_race + vic_age_group
+               + vic_race + vic_sex, data = tidydata1, family = "binomial")
 
 mylogit %>%
   broom::tidy() %>% 
   select(term, estimate, p.value)
 ```
+
+Based on the coefficient output, we find that:
 
 For backward stepwise, in order to select variables.
 
@@ -279,32 +289,40 @@ For backward stepwise, in order to select variables.
 step(mylogit, direction = 'backward')
 ```
 
-Through backward, we found that we need all the variables.
+Through backward, we found that we need most of the variables in previous model since the coefficients are significant.
 
-We see the output of the model.
+We see the output performance of the model.
 ```{r}
 tidydata1 %>% 
   modelr::add_residuals(mylogit) %>% 
-  ggplot(aes(x = susp_age_group, y = resid)) + geom_violin(aes(fill = susp_age_group)) + facet_wrap(~covid_state)
+  ggplot(aes(x = susp_age_group, y = resid)) + geom_violin(aes(fill = susp_age_group))
 ```
 
-### Suspect Race Analysis
+According to the plot
 
+### Suspect Race Prediction
+
+And we also want to take a lot at the race prediction.
 ```{r}
-tidy_data2 = tidydata1%>%
-  filter(susp_race %in% c("BLACK","ASIAN / PACIFIC ISLANDER"))%>%
-  mutate(susp_race=ifelse(susp_race == "BLACK",1,0))
+tidy_data2 = tidydata1 %>%
+  filter(susp_race %in% c("BLACK","ASIAN / PACIFIC ISLANDER")) %>%
+  mutate(susp_race = ifelse(susp_race == "BLACK",1,0))
+
 mylogit_2 = glm(susp_race ~  borough + jurisdiction_code
-+level+susp_age_group
-+susp_sex+vic_age_group+vic_race+vic_sex+covid_state, data = tidy_data2, family = "binomial")
-# almost full model except victor information
++ level + susp_age_group
++ susp_sex + vic_age_group + vic_race + vic_sex, data = tidy_data2, family = "binomial")
+
+# almost full model except victim information
 mylogit_2 %>%
   broom::tidy() %>% 
   select(term, estimate, p.value)
 ```
 
+The output performance of the model.
 ```{r}
 tidy_data2 %>% 
   modelr::add_residuals(mylogit_2) %>% 
-  ggplot(aes(x = level, y = resid)) + geom_violin(aes(fill = level)) + facet_wrap(~covid_state)
+  ggplot(aes(x = level, y = resid)) + geom_violin(aes(fill = level))
 ```
+
+

@@ -451,11 +451,9 @@ div.tocify {
 of the year 2022. We are interested in the following main felonies:
 Burglary, Felony Assault, Grand Larceny, Grand Larceny of Motor Vehicle,
 Murder and Non-negligent Manslaughter, Rape, and Robbery.</p>
-<div
-id="lets-define-the-dangerous-level-related-to-average-daily-criminal-events"
-class="section level1">
-<h1>let’s define the dangerous level related to average daily criminal
-events</h1>
+<div id="daily-crimes-on-different-dangerous-level"
+class="section level2">
+<h2>Daily crimes on different dangerous level</h2>
 <pre class="r"><code>dangrous_data=complaint %&gt;% 
   select(-day_of_week) %&gt;% 
   dplyr::filter(!is.na(vic_race)) %&gt;% 
@@ -466,7 +464,7 @@ events</h1>
 
 dangrous_data = dangrous_data%&gt;% 
   mutate(
-   level_lm= case_when(
+   level_lm = case_when(
      level == &#39;VIOLATION&#39; ~ 0,
      level == &quot;MISDEMEANOR&quot; ~ 1,
      level == &quot;FELONY&quot; ~ 2
@@ -477,34 +475,30 @@ lowest level, followed by misdemeanors and felonies. Therefore, they are
 assigned 0, 1, and 2 to represent the degree of danger of the event,
 that is, the risk factor faced by the victim.</p>
 </div>
-<div
-id="next-lets-further-analyze-the-relationship-between-the-characteristics-of-the-victim-and-the-level-of-danger."
-class="section level1">
-<h1>Next, let’s further analyze the relationship between the
-characteristics of the victim and the level of danger.</h1>
-<div id="the-first-is-the-gender-of-the-victim" class="section level2">
-<h2>The first is the gender of the victim</h2>
-<div
-id="first-by-drawing-a-stacked-bar-graph-we-will-observe-whether-there-are-differences-in-the-historical-total-amount-of-dangerous-incidents-encountered-by-victims-of-different-genders."
+<div id="relationship-between-victim-characteristics-and-crime-level"
+class="section level2">
+<h2>Relationship between victim characteristics and crime level</h2>
+<div id="victim-gender-analysis" class="section level3">
+<h3>Victim Gender Analysis</h3>
+</div>
+<div id="number-of-incidents-on-different-gender"
 class="section level3">
-<h3>First, by drawing a stacked bar graph, we will observe whether there
-are differences in the historical total amount of dangerous incidents
-encountered by victims of different genders.</h3>
-<pre class="r"><code>plot_his_sex=dangrous_data %&gt;% 
+<h3>Number of incidents on different gender</h3>
+<pre class="r"><code>plot_his_sex = dangrous_data %&gt;% 
   group_by(level,vic_sex) %&gt;% 
   dplyr::summarize(
-    n_obs=n(),
-    type=level_lm
+    n_obs= n(),
+    type = level_lm
   ) %&gt;% 
   unique() %&gt;% 
   ggplot(
-    aes(x=level,y=n_obs,fill=vic_sex)
-  )+
-  geom_bar(stat=&quot;identity&quot;)+
+    aes(x = level,y = n_obs,fill = vic_sex)
+  ) +
+  geom_bar(stat=&quot;identity&quot;) +
   labs(
-    title=&quot;relationship between dangerous and victim sex&quot;,
-    x=&quot;dangerous level&quot;,
-    y=&quot;number of cases&quot;
+    title = &quot;relationship between dangerous and victim sex&quot;,
+    x = &quot;dangerous level&quot;,
+    y = &quot;number of cases&quot;
   )
 plot_his_sex</code></pre>
 <p><img src="Analysis_Victim_files/figure-html/unnamed-chunk-2-1.png" width="80%" /></p>
@@ -512,66 +506,59 @@ plot_his_sex</code></pre>
 is violation (0), the number of incidents where the victim is a woman is
 much higher than that of a man. At intermediate and higher levels, no
 significant differences can be observed by observation,</p>
-</div>
-<div
-id="first-by-drawing-a-stacked-bar-graph-we-will-observe-whether-there-are-differences-in-the-historical-total-amount-of-dangerous-incidents-encountered-by-victims-of-different-genders.-1"
-class="section level3">
-<h3>First, by drawing a stacked bar graph, we will observe whether there
-are differences in the historical total amount of dangerous incidents
-encountered by victims of different genders.</h3>
-<pre class="r"><code>plot_pie_sex0=dangrous_data %&gt;%
+<pre class="r"><code>plot_pie_sex0 = dangrous_data %&gt;%
   group_by(level,vic_sex) %&gt;% 
   dplyr::summarize(
-    n_obs=n(),
-    type=level_lm
+    n_obs = n(),
+    type = level_lm
   ) %&gt;% 
   unique() %&gt;%
-  filter(type==0)
+  filter(type == 0)
 
 plot_pie_sex0=plot_ly(plot_pie_sex0,labels =~ vic_sex,values= ~n_obs) %&gt;% 
   add_pie %&gt;% 
-  layout(title=&quot;VIOLATION for vic_sex&quot;)
+  layout(title = &quot;VIOLATION for vic_sex&quot;)
 
-plot_pie_sex1=dangrous_data %&gt;%
+plot_pie_sex1 = dangrous_data %&gt;%
   group_by(level,vic_sex) %&gt;% 
   dplyr::summarize(
-    n_obs=n(),
-    type=level_lm
+    n_obs = n(),
+    type = level_lm
   ) %&gt;% 
   unique() %&gt;%
-  filter(type==1)
-plot_pie_sex1=plot_ly(plot_pie_sex1,labels =~ vic_sex,values= ~n_obs) %&gt;% 
-  add_pie %&gt;% 
-  layout(title=&quot;MISDEMEANOR for vic_sex&quot;)
+  filter(type == 1)
 
-plot_pie_sex2=dangrous_data %&gt;%
+plot_pie_sex1 = plot_ly(plot_pie_sex1,labels = ~ vic_sex,values = ~n_obs) %&gt;% 
+  add_pie %&gt;% 
+  layout(title = &quot;MISDEMEANOR for vic_sex&quot;)
+
+plot_pie_sex2 = dangrous_data %&gt;%
   group_by(level,vic_sex) %&gt;% 
   dplyr::summarize(
-    n_obs=n(),
-    type=level_lm
+    n_obs = n(),
+    type = level_lm
   ) %&gt;% 
   unique() %&gt;%
-  filter(type==2)
+  filter(type == 2)
 
-plot_pie_sex2=plot_ly(plot_pie_sex2,labels =~ vic_sex,values= ~n_obs) %&gt;% 
+plot_pie_sex2 = plot_ly(plot_pie_sex2,labels = ~ vic_sex,values = ~n_obs) %&gt;% 
   add_pie %&gt;% 
-  layout(title=&quot;FELONY for vic_sex&quot;)
+  layout(title = &quot;FELONY for vic_sex&quot;)
 
-
-par(mfrow=c(1,3))
+par(mfrow = c(1,3))
 plot_pie_sex0</code></pre>
-<div id="htmlwidget-445f432dcc62f87cff7d" style="width:80%;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-445f432dcc62f87cff7d">{"x":{"visdat":{"35691e429496":["function () ","plotlyVisDat"]},"cur_data":"35691e429496","attrs":{"35691e429496":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"VIOLATION for vic_sex","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["F","M"],"values":[284922,157163],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-b6e4d9435f6e9b82b016" style="width:80%;height:864px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b6e4d9435f6e9b82b016">{"x":{"visdat":{"4198447500af":["function () ","plotlyVisDat"]},"cur_data":"4198447500af","attrs":{"4198447500af":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"VIOLATION for vic_sex","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["F","M"],"values":[284922,157163],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code>plot_pie_sex1</code></pre>
-<div id="htmlwidget-3b327aa907cfd6477f65" style="width:80%;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-3b327aa907cfd6477f65">{"x":{"visdat":{"35692529135f":["function () ","plotlyVisDat"]},"cur_data":"35692529135f","attrs":{"35692529135f":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"MISDEMEANOR for vic_sex","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["F","M"],"values":[536728,488121],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-b123d5195d1c5a5e8f1e" style="width:80%;height:864px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b123d5195d1c5a5e8f1e">{"x":{"visdat":{"41985d800445":["function () ","plotlyVisDat"]},"cur_data":"41985d800445","attrs":{"41985d800445":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"MISDEMEANOR for vic_sex","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["F","M"],"values":[536728,488121],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>plot_pie_sex2</code></pre>
+<div id="htmlwidget-c7d6c963de8a08b3d213" style="width:80%;height:864px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-c7d6c963de8a08b3d213">{"x":{"visdat":{"41987f987df7":["function () ","plotlyVisDat"]},"cur_data":"41987f987df7","attrs":{"41987f987df7":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"FELONY for vic_sex","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["F","M"],"values":[325917,357391],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
-<div
-id="further-we-use-the-logistic-regression-model-to-observe-whether-this-difference-is-statistically-significant-when-we-predict-the-risk-of-events."
+<div id="prediction-of-crime-level-based-on-logistic-regression"
 class="section level3">
-<h3>Further, we use the logistic regression model to observe whether
-this difference is statistically significant when we predict the risk of
-events.</h3>
+<h3>Prediction of crime level based on logistic regression</h3>
 <p>In order to simplify the model and facilitate effective verification,
 we classify felony and misdemeanors with no obvious difference into one
 category - high risk, regard violation as low risk, and assign ordinal
@@ -580,14 +567,14 @@ variables 1, 0 respectively.</p>
 
 dangrous_data = dangrous_data %&gt;% 
   mutate(
-   level_lm= case_when(
+   level_lm = case_when(
      level == &#39;VIOLATION&#39; ~ 0,
      level == &quot;MISDEMEANOR&quot; ~ 0,
      level == &quot;FELONY&quot; ~ 1
    )
   ) %&gt;% 
   mutate(
-    level_lm=ordered(level_lm, labels = c(&#39;0&#39;, &#39;1&#39;))
+    level_lm = ordered(level_lm, labels = c(&#39;0&#39;, &#39;1&#39;))
     )
 
 model_virsex &lt;- glm(level_lm ~ vic_sex ,family = binomial, data = dangrous_data)
@@ -622,98 +609,95 @@ more likely to be persecuted in VIOLATION-level events. In the event
 types with higher risk levels, the probability of men and women being in
 danger will tend to be equal.</p>
 </div>
-</div>
-<div
-id="we-will-use-the-same-line-of-thought-to-analyze-the-relationship-between-the-race-of-the-victim-and-the-level-of-danger."
-class="section level2">
-<h2>We will use the same line of thought to analyze the relationship
-between the race of the victim and the level of danger.</h2>
+<div id="relationship-between-victims-age-group-and-crime-level"
+class="section level3">
+<h3>Relationship between victim’s age group and crime level</h3>
 <pre class="r"><code>dangrous_data = dangrous_data %&gt;% 
   mutate(
-   level_lm= case_when(
+   level_lm = case_when(
      level == &#39;VIOLATION&#39; ~ 0,
      level == &quot;MISDEMEANOR&quot; ~ 1,
      level == &quot;FELONY&quot; ~ 2
    )
   )
 
-plot_bar_agegroup=dangrous_data %&gt;% 
+plot_bar_agegroup = dangrous_data %&gt;% 
   group_by(level,vic_age_group) %&gt;% 
   dplyr::summarize(
-    n_obs=n(),
-    type=level
+    n_obs = n(),
+    type = level
   ) %&gt;% 
   unique() %&gt;% 
   ggplot(
-    aes(x=level,y=n_obs,fill=vic_age_group)
-  )+
-  geom_bar(stat=&quot;identity&quot;)+
+    aes(x = level,y = n_obs,fill = vic_age_group)
+  ) +
+  geom_bar(stat = &quot;identity&quot;) +
   labs(
     title = &quot;relationship between dangerous level and victim age range&quot;,
     x = &quot;dangerous level&quot;,
     y = &quot;number of cases&quot;
   )
+
 plot_bar_agegroup</code></pre>
 <p><img src="Analysis_Victim_files/figure-html/unnamed-chunk-5-1.png" width="80%" /></p>
 <pre class="r"><code>plot_pie_age0 = dangrous_data %&gt;%
   group_by(level,vic_age_group) %&gt;% 
   dplyr::summarize(
-    n_obs=n(),
-    type=level_lm
+    n_obs = n(),
+    type = level_lm
   ) %&gt;% 
   unique() %&gt;%
-  filter(type==0)
+  filter(type == 0)
 
-plot_pie_age0=plot_ly(plot_pie_age0,labels =~ vic_age_group,values= ~n_obs) %&gt;% 
-  add_pie %&gt;% 
-  layout(title=&quot;VIOLATION for vic_age&quot;)
+plot_pie_age0 = plot_ly(data = plot_pie_age0, x = ~vic_age_group,y = ~n_obs, type = &quot;bar&quot;, color = ~vic_age_group) %&gt;% 
+  layout(title = &quot;VIOLATION for vic_age&quot;)
 
-plot_pie_age1=dangrous_data %&gt;%
+plot_pie_age1 = dangrous_data %&gt;%
   group_by(level,vic_age_group) %&gt;% 
   dplyr::summarize(
-    n_obs=n(),
-    type=level_lm
+    n_obs = n(),
+    type = level_lm
   ) %&gt;% 
   unique() %&gt;%
-  filter(type==1)
-plot_pie_age1=plot_ly(plot_pie_age1,labels =~ vic_age_group,values= ~n_obs) %&gt;% 
-  add_pie %&gt;% 
-  layout(title=&quot;MISDEMEANOR for vic_age&quot;)
+  filter(type == 1)
 
-plot_pie_age2=dangrous_data %&gt;%
+plot_pie_age1 = plot_ly(data = plot_pie_age1, x = ~vic_age_group,y = ~n_obs, type = &quot;bar&quot;, color = ~vic_age_group) %&gt;% 
+  layout(title = &quot;MISDEMEANOR for vic_age&quot;)
+
+plot_pie_age2 = dangrous_data %&gt;%
   group_by(level,vic_age_group) %&gt;% 
   dplyr::summarize(
-    n_obs=n(),
-    type=level_lm
+    n_obs = n(),
+    type = level_lm
   ) %&gt;% 
   unique() %&gt;%
-  filter(type==2)
+  filter(type == 2)
 
-plot_pie_age2=plot_ly(plot_pie_age2,labels =~ vic_age_group,values= ~n_obs) %&gt;% 
-  add_pie %&gt;% 
-  layout(title=&quot;FELONY for vic_age&quot;)
+plot_pie_age2 = plot_ly(data = plot_pie_age2, x = ~vic_age_group,y = ~n_obs, type = &quot;bar&quot;, color = ~vic_age_group) %&gt;% 
+  layout(title = &quot;FELONY for vic_age&quot;)
 
 plot_pie_age0</code></pre>
-<div id="htmlwidget-2292f60f71833b436db5" style="width:80%;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2292f60f71833b436db5">{"x":{"visdat":{"35694edbcdfa":["function () ","plotlyVisDat"]},"cur_data":"35694edbcdfa","attrs":{"35694edbcdfa":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"VIOLATION for vic_age","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["<18","18-24","25-44","45-64","65+"],"values":[22833,47981,211098,132348,27825],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-b3fc8d50e58ff4915f43" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-b3fc8d50e58ff4915f43">{"x":{"visdat":{"419828df312a":["function () ","plotlyVisDat"]},"cur_data":"419828df312a","attrs":{"419828df312a":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"VIOLATION for vic_age","xaxis":{"domain":[0,1],"automargin":true,"title":"vic_age_group","type":"category","categoryorder":"array","categoryarray":["<18","18-24","25-44","45-64","65+"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n_obs"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["<18"],"y":[22833],"type":"bar","name":"<18","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-24"],"y":[47981],"type":"bar","name":"18-24","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["25-44"],"y":[211098],"type":"bar","name":"25-44","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["45-64"],"y":[132348],"type":"bar","name":"45-64","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["65+"],"y":[27825],"type":"bar","name":"65+","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code>plot_pie_age1</code></pre>
-<div id="htmlwidget-ae6a07028a6d817d5864" style="width:80%;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-ae6a07028a6d817d5864">{"x":{"visdat":{"356940b00088":["function () ","plotlyVisDat"]},"cur_data":"356940b00088","attrs":{"356940b00088":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"MISDEMEANOR for vic_age","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["<18","18-24","25-44","45-64","65+"],"values":[60163,138417,513187,264282,48800],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-1d5df133aca99ce92593" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1d5df133aca99ce92593">{"x":{"visdat":{"41985514d15c":["function () ","plotlyVisDat"]},"cur_data":"41985514d15c","attrs":{"41985514d15c":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"MISDEMEANOR for vic_age","xaxis":{"domain":[0,1],"automargin":true,"title":"vic_age_group","type":"category","categoryorder":"array","categoryarray":["<18","18-24","25-44","45-64","65+"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n_obs"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["<18"],"y":[60163],"type":"bar","name":"<18","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-24"],"y":[138417],"type":"bar","name":"18-24","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["25-44"],"y":[513187],"type":"bar","name":"25-44","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["45-64"],"y":[264282],"type":"bar","name":"45-64","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["65+"],"y":[48800],"type":"bar","name":"65+","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code>plot_pie_age2</code></pre>
-<div id="htmlwidget-b1297443e890c6b2daf1" style="width:80%;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-b1297443e890c6b2daf1">{"x":{"visdat":{"356962f301e5":["function () ","plotlyVisDat"]},"cur_data":"356962f301e5","attrs":{"356962f301e5":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"FELONY for vic_age","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["<18","18-24","25-44","45-64","65+"],"values":[31668,93409,333316,170719,54196],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-<pre class="r"><code>dangrous_data = dangrous_data%&gt;% 
+<div id="htmlwidget-9dfe4e9589e8eab71c15" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9dfe4e9589e8eab71c15">{"x":{"visdat":{"419849bd1aa7":["function () ","plotlyVisDat"]},"cur_data":"419849bd1aa7","attrs":{"419849bd1aa7":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"FELONY for vic_age","xaxis":{"domain":[0,1],"automargin":true,"title":"vic_age_group","type":"category","categoryorder":"array","categoryarray":["<18","18-24","25-44","45-64","65+"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n_obs"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["<18"],"y":[31668],"type":"bar","name":"<18","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["18-24"],"y":[93409],"type":"bar","name":"18-24","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["25-44"],"y":[333316],"type":"bar","name":"25-44","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["45-64"],"y":[170719],"type":"bar","name":"45-64","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["65+"],"y":[54196],"type":"bar","name":"65+","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>dangrous_data = dangrous_data %&gt;% 
   mutate(
-   level_lm= case_when(
+   level_lm = case_when(
      level == &#39;VIOLATION&#39; ~ 0,
      level == &quot;MISDEMEANOR&quot; ~ 0,
      level == &quot;FELONY&quot; ~ 1
    )
   ) %&gt;% 
   mutate(
-    level_lm=ordered(level_lm, labels = c(&#39;0&#39;, &#39;1&#39;))
+    level_lm = ordered(level_lm, labels = c(&#39;0&#39;, &#39;1&#39;))
     )
-model_viage &lt;- glm(level_lm ~ vic_age_group ,family=binomial, data = dangrous_data)
+model_viage &lt;- glm(level_lm ~ vic_age_group ,family = binomial, data = dangrous_data)
+
 summary(model_viage)</code></pre>
 <pre><code>## 
 ## Call:
@@ -743,110 +727,109 @@ summary(model_viage)</code></pre>
 <p>The results show that although the victim group is mainly targeted at
 25-44. With the level of dangerous increase, the 45-64 victim age group
 dropped about 4 percentage points and the 18-24 victim age group rose
-about 3 points. From the logistics regression, vic_age_group is useful
-for predicting the level of dangerous.</p>
+about 3 points. From the logistics regression,
+<code>vic_age_group</code> is useful for predicting the level of
+dangerous.</p>
 </div>
-<div id="victims-race-and-the-level-of-danger" class="section level2">
-<h2>Victim’s race and the level of danger</h2>
-<pre class="r"><code>dangrous_data = dangrous_data%&gt;% 
+<div id="victims-race-and-crime-level" class="section level3">
+<h3>Victim’s race and crime level</h3>
+<pre class="r"><code>dangrous_data = dangrous_data %&gt;% 
   mutate(
-   level_lm= case_when(
+   level_lm = case_when(
      level == &#39;VIOLATION&#39; ~ 0,
      level == &quot;MISDEMEANOR&quot; ~ 1,
      level == &quot;FELONY&quot; ~ 2
    )
   )
 
-dnd=dangrous_data %&gt;% 
+dnd = dangrous_data %&gt;% 
   group_by(level,vic_race) %&gt;% 
   dplyr::summarize(
-    n_obs=n(),
-    type=level
+    n_obs = n(),
+    type = level
   ) %&gt;% 
   unique() %&gt;% 
   ggplot(
-    aes(x=level,y=n_obs,fill=vic_race)
-  )+
-  geom_bar(stat=&quot;identity&quot;)+
+    aes(x = level,y = n_obs,fill = vic_race)
+  ) +
+  geom_bar(stat = &quot;identity&quot;)+
   labs(
-    title=&quot;relationship between dangerous and victim race&quot;,
-    x=&quot;dangerous level&quot;,
-    y=&quot;number of cases&quot;
+    title = &quot;relationship between dangerous and victim race&quot;,
+    x = &quot;dangerous level&quot;,
+    y = &quot;number of cases&quot;
   )
 
-plot_his_race=dangrous_data %&gt;% 
+plot_his_race = dangrous_data %&gt;% 
   group_by(level,vic_race) %&gt;% 
   dplyr::summarize(
-    n_obs=n(),
-    type=level_lm
+    n_obs = n(),
+    type = level_lm
   ) %&gt;% 
   unique() %&gt;% 
   ggplot(
-    aes(x=level,y=n_obs,fill=vic_race)
-  )+
-  geom_bar(stat=&quot;identity&quot;)
+    aes(x = level,y = n_obs,fill=vic_race)
+  ) +
+  geom_bar(stat = &quot;identity&quot;)
 plot_his_race</code></pre>
 <p><img src="Analysis_Victim_files/figure-html/unnamed-chunk-6-1.png" width="80%" /></p>
 <pre class="r"><code>plot_pie_race0=dangrous_data %&gt;%
   group_by(level,vic_race) %&gt;% 
   dplyr::summarize(
-    n_obs=n(),
-    type=level_lm
+    n_obs = n(),
+    type = level_lm
   ) %&gt;% 
   unique() %&gt;%
-  filter(type==0)
+  filter(type == 0)
 
-plot_pie_race0=plot_ly(plot_pie_race0,labels =~ vic_race,values= ~n_obs) %&gt;% 
-  add_pie %&gt;% 
-  layout(title=&quot;VIOLATION for vic_race&quot;)
+plot_pie_race0 = plot_ly(data = plot_pie_race0, x = ~ vic_race, y= ~n_obs, type = &quot;bar&quot;, color = ~vic_race) %&gt;% 
+  layout(title = &quot;VIOLATION for vic_race&quot;)
 
-plot_pie_race1=dangrous_data %&gt;%
+plot_pie_race1 = dangrous_data %&gt;%
   group_by(level,vic_race) %&gt;% 
   dplyr::summarize(
-    n_obs=n(),
-    type=level_lm
+    n_obs = n(),
+    type = level_lm
   ) %&gt;% 
   unique() %&gt;%
-  filter(type==1)
+  filter(type == 1)
 
-plot_pie_race1=plot_ly(plot_pie_race1,labels =~ vic_race,values= ~n_obs) %&gt;% 
-  add_pie %&gt;% 
-  layout(title=&quot;MISDEMEANOR for vic_race&quot;)
+plot_pie_race1 = plot_ly(data = plot_pie_race1, x = ~ vic_race, y= ~n_obs, type = &quot;bar&quot;, color = ~vic_race) %&gt;% 
+  layout(title = &quot;MISDEMEANOR for vic_race&quot;)
 
-plot_pie_race2=dangrous_data %&gt;%
+plot_pie_race2 = dangrous_data %&gt;%
   group_by(level,vic_race) %&gt;% 
   dplyr::summarize(
-    n_obs=n(),
-    type=level_lm
+    n_obs = n(),
+    type = level_lm
   ) %&gt;% 
   unique() %&gt;%
-  filter(type==2)
+  filter(type == 2)
 
-plot_pie_race2=plot_ly(plot_pie_race2,labels =~ vic_race,values= ~n_obs) %&gt;% 
-  add_pie %&gt;% 
-  layout(title=&quot;FELONY for vic_age&quot;)
+plot_pie_race2 = plot_ly(data = plot_pie_race2, x = ~ vic_race, y= ~n_obs, type = &quot;bar&quot;, color = ~vic_race) %&gt;% 
+  layout(title = &quot;FELONY for vic_age&quot;)
 
 plot_pie_race0</code></pre>
-<div id="htmlwidget-5d6866827ea26fd277c4" style="width:80%;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-5d6866827ea26fd277c4">{"x":{"visdat":{"356927a4a6a9":["function () ","plotlyVisDat"]},"cur_data":"356927a4a6a9","attrs":{"356927a4a6a9":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"VIOLATION for vic_race","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["AMERICAN INDIAN/ALASKAN NATIVE","ASIAN / PACIFIC ISLANDER","BLACK","BLACK HISPANIC","WHITE","WHITE HISPANIC"],"values":[3058,38004,177269,24306,90599,108849],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-12cc79c4247a5d7d2cde" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-12cc79c4247a5d7d2cde">{"x":{"visdat":{"419845cfaa9":["function () ","plotlyVisDat"]},"cur_data":"419845cfaa9","attrs":{"419845cfaa9":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"VIOLATION for vic_race","xaxis":{"domain":[0,1],"automargin":true,"title":"vic_race","type":"category","categoryorder":"array","categoryarray":["AMERICAN INDIAN/ALASKAN NATIVE","ASIAN / PACIFIC ISLANDER","BLACK","BLACK HISPANIC","WHITE","WHITE HISPANIC"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n_obs"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["AMERICAN INDIAN/ALASKAN NATIVE"],"y":[3058],"type":"bar","name":"AMERICAN INDIAN/ALASKAN NATIVE","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["ASIAN / PACIFIC ISLANDER"],"y":[38004],"type":"bar","name":"ASIAN / PACIFIC ISLANDER","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["BLACK"],"y":[177269],"type":"bar","name":"BLACK","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["BLACK HISPANIC"],"y":[24306],"type":"bar","name":"BLACK HISPANIC","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["WHITE"],"y":[90599],"type":"bar","name":"WHITE","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["WHITE HISPANIC"],"y":[108849],"type":"bar","name":"WHITE HISPANIC","marker":{"color":"rgba(255,217,47,1)","line":{"color":"rgba(255,217,47,1)"}},"textfont":{"color":"rgba(255,217,47,1)"},"error_y":{"color":"rgba(255,217,47,1)"},"error_x":{"color":"rgba(255,217,47,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code>plot_pie_race1</code></pre>
-<div id="htmlwidget-a788466bbbb2a7f3a615" style="width:80%;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-a788466bbbb2a7f3a615">{"x":{"visdat":{"35692ab9b594":["function () ","plotlyVisDat"]},"cur_data":"35692ab9b594","attrs":{"35692ab9b594":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"MISDEMEANOR for vic_race","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["AMERICAN INDIAN/ALASKAN NATIVE","ASIAN / PACIFIC ISLANDER","BLACK","BLACK HISPANIC","WHITE","WHITE HISPANIC"],"values":[6920,104088,373581,59931,220892,259437],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-48498d3479583ea7647c" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-48498d3479583ea7647c">{"x":{"visdat":{"4198744c6f7b":["function () ","plotlyVisDat"]},"cur_data":"4198744c6f7b","attrs":{"4198744c6f7b":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"MISDEMEANOR for vic_race","xaxis":{"domain":[0,1],"automargin":true,"title":"vic_race","type":"category","categoryorder":"array","categoryarray":["AMERICAN INDIAN/ALASKAN NATIVE","ASIAN / PACIFIC ISLANDER","BLACK","BLACK HISPANIC","WHITE","WHITE HISPANIC"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n_obs"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["AMERICAN INDIAN/ALASKAN NATIVE"],"y":[6920],"type":"bar","name":"AMERICAN INDIAN/ALASKAN NATIVE","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["ASIAN / PACIFIC ISLANDER"],"y":[104088],"type":"bar","name":"ASIAN / PACIFIC ISLANDER","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["BLACK"],"y":[373581],"type":"bar","name":"BLACK","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["BLACK HISPANIC"],"y":[59931],"type":"bar","name":"BLACK HISPANIC","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["WHITE"],"y":[220892],"type":"bar","name":"WHITE","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["WHITE HISPANIC"],"y":[259437],"type":"bar","name":"WHITE HISPANIC","marker":{"color":"rgba(255,217,47,1)","line":{"color":"rgba(255,217,47,1)"}},"textfont":{"color":"rgba(255,217,47,1)"},"error_y":{"color":"rgba(255,217,47,1)"},"error_x":{"color":"rgba(255,217,47,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 <pre class="r"><code>plot_pie_race2</code></pre>
-<div id="htmlwidget-7995b72a6acf53e7c064" style="width:80%;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-7995b72a6acf53e7c064">{"x":{"visdat":{"35696401d76":["function () ","plotlyVisDat"]},"cur_data":"35696401d76","attrs":{"35696401d76":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"FELONY for vic_age","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["AMERICAN INDIAN/ALASKAN NATIVE","ASIAN / PACIFIC ISLANDER","BLACK","BLACK HISPANIC","WHITE","WHITE HISPANIC"],"values":[4040,84157,224360,38198,168092,164461],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
-<pre class="r"><code>dangrous_data_3 = dangrous_data%&gt;% 
+<div id="htmlwidget-1643c77e023602f18c84" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1643c77e023602f18c84">{"x":{"visdat":{"4198462b2fe3":["function () ","plotlyVisDat"]},"cur_data":"4198462b2fe3","attrs":{"4198462b2fe3":{"x":{},"y":{},"color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"FELONY for vic_age","xaxis":{"domain":[0,1],"automargin":true,"title":"vic_race","type":"category","categoryorder":"array","categoryarray":["AMERICAN INDIAN/ALASKAN NATIVE","ASIAN / PACIFIC ISLANDER","BLACK","BLACK HISPANIC","WHITE","WHITE HISPANIC"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n_obs"},"hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"x":["AMERICAN INDIAN/ALASKAN NATIVE"],"y":[4040],"type":"bar","name":"AMERICAN INDIAN/ALASKAN NATIVE","marker":{"color":"rgba(102,194,165,1)","line":{"color":"rgba(102,194,165,1)"}},"textfont":{"color":"rgba(102,194,165,1)"},"error_y":{"color":"rgba(102,194,165,1)"},"error_x":{"color":"rgba(102,194,165,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["ASIAN / PACIFIC ISLANDER"],"y":[84157],"type":"bar","name":"ASIAN / PACIFIC ISLANDER","marker":{"color":"rgba(252,141,98,1)","line":{"color":"rgba(252,141,98,1)"}},"textfont":{"color":"rgba(252,141,98,1)"},"error_y":{"color":"rgba(252,141,98,1)"},"error_x":{"color":"rgba(252,141,98,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["BLACK"],"y":[224360],"type":"bar","name":"BLACK","marker":{"color":"rgba(141,160,203,1)","line":{"color":"rgba(141,160,203,1)"}},"textfont":{"color":"rgba(141,160,203,1)"},"error_y":{"color":"rgba(141,160,203,1)"},"error_x":{"color":"rgba(141,160,203,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["BLACK HISPANIC"],"y":[38198],"type":"bar","name":"BLACK HISPANIC","marker":{"color":"rgba(231,138,195,1)","line":{"color":"rgba(231,138,195,1)"}},"textfont":{"color":"rgba(231,138,195,1)"},"error_y":{"color":"rgba(231,138,195,1)"},"error_x":{"color":"rgba(231,138,195,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["WHITE"],"y":[168092],"type":"bar","name":"WHITE","marker":{"color":"rgba(166,216,84,1)","line":{"color":"rgba(166,216,84,1)"}},"textfont":{"color":"rgba(166,216,84,1)"},"error_y":{"color":"rgba(166,216,84,1)"},"error_x":{"color":"rgba(166,216,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"x":["WHITE HISPANIC"],"y":[164461],"type":"bar","name":"WHITE HISPANIC","marker":{"color":"rgba(255,217,47,1)","line":{"color":"rgba(255,217,47,1)"}},"textfont":{"color":"rgba(255,217,47,1)"},"error_y":{"color":"rgba(255,217,47,1)"},"error_x":{"color":"rgba(255,217,47,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>dangrous_data_3 = dangrous_data %&gt;% 
   mutate(
-   level_lm= case_when(
+   level_lm = case_when(
      level == &#39;VIOLATION&#39; ~ 0,
      level == &quot;MISDEMEANOR&quot; ~ 0,
      level == &quot;FELONY&quot; ~ 1
    )
   )  %&gt;% 
   mutate(
-    level_lm=ordered(level_lm, labels = c(&#39;0&#39;, &#39;1&#39;))
+    level_lm = ordered(level_lm, labels = c(&#39;0&#39;, &#39;1&#39;))
     )
 model_vicrace &lt;- glm(level_lm ~ vic_race, family = binomial, data = dangrous_data_3)
+
 summary(model_vicrace)</code></pre>
 <pre><code>## 
 ## Call:
@@ -881,22 +864,21 @@ while the proportion of white Hispanic and ASIAN/PACIFIC ISLAND victims
 gradually increases. This can be confirmed by observing the size
 relationship of the logistic regression coefficient.</p>
 </div>
-<div id="we-conclude-with-the-multi-logistics-regression-model."
-class="section level2">
-<h2>We conclude with the multi logistics regression model.</h2>
-<pre class="r"><code>dangerous=dangrous_data%&gt;%
+<div id="conclude-the-multi-logistic-regression-model"
+class="section level3">
+<h3>Conclude the multi logistic regression model</h3>
+<pre class="r"><code>dangerous = dangrous_data %&gt;%
   mutate(
-   level_lm= case_when(
+   level_lm = case_when(
      level == &#39;VIOLATION&#39; ~ 0,
      level == &quot;MISDEMEANOR&quot; ~ 0,
      level == &quot;FELONY&quot; ~ 1
-   ) )%&gt;% 
+   ) ) %&gt;% 
   mutate(
-    level_lm=ordered(level_lm, labels = c(&#39;1&#39;, &#39;0&#39;)
+    level_lm = ordered(level_lm, labels = c(&#39;1&#39;, &#39;0&#39;)
     ))
 
-model_toal&lt;- glm(level_lm ~ vic_race + vic_age_group + vic_sex,family = binomial,data=dangerous)    
-
+model_toal &lt;- glm(level_lm ~ vic_race + vic_age_group + vic_sex,family = binomial,data=dangerous)    
 
 summary(model_toal)</code></pre>
 <pre><code>## 
@@ -931,9 +913,9 @@ summary(model_toal)</code></pre>
 ## AIC: 2662142
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
-<pre class="r"><code>dangerous=dangerous%&gt;% 
-  filter(!vic_age_group==&quot;18-24&quot;)
-model_toal&lt;- glm(level_lm ~ vic_race + vic_age_group + vic_sex,family = binomial,data=dangerous)
+<pre class="r"><code>dangerous = dangerous %&gt;% 
+  filter(!vic_age_group == &quot;18-24&quot;)
+model_toal &lt;- glm(level_lm ~ vic_race + vic_age_group + vic_sex,family = binomial,data=dangerous)
 summary(model_toal)</code></pre>
 <pre><code>## 
 ## Call:
@@ -973,69 +955,66 @@ correlation between the danger level and the characteristics of the
 victim.</p>
 </div>
 </div>
-<div
-id="for-future-research-we-can-deeply-analyze-the-relationship-between-the-specific-event-content-and-the-victim-for-each-type-of-danger-level."
-class="section level1">
-<h1>For future research, we can deeply analyze the relationship between
-the specific event content and the victim for each type of danger
-level.</h1>
-<div
-id="at-present-for-the-example-of-a-misdemeanor-we-can-use-a-pie-chart-to-observe-its-event-composition."
-class="section level2">
-<h2>At present, for the example of a misdemeanor, we can use a pie chart
-to observe its event composition.</h2>
-<pre class="r"><code>pie_chart=dangrous_data %&gt;% 
-  filter(level==&quot;MISDEMEANOR&quot;)
-pie_chart =pie_chart%&gt;% 
+<div id="additional-study" class="section level2">
+<h2>Additional study</h2>
+<p>For future research, we can deeply analyze the relationship between
+the specific event content and the victim for each type of danger level.
+At present, for the example of a misdemeanor, we can use a pie chart to
+observe its event composition.</p>
+<div id="event-composition-of-misdemeanor" class="section level3">
+<h3>Event composition of misdemeanor</h3>
+<pre class="r"><code>pie_chart = dangrous_data %&gt;% 
+  filter(level == &quot;MISDEMEANOR&quot;)
+
+pie_chart = pie_chart %&gt;% 
   group_by(offense) %&gt;% 
-  dplyr::summarize(n=n()) %&gt;% 
+  dplyr::summarize(n = n()) %&gt;% 
   mutate(
-    offense=as.character(offense)
+    offense = as.character(offense)
   )
 
-pie_chart= rbind(pie_chart,c(&quot;others&quot;,290))
-pie_chart=pie_chart %&gt;% 
+pie_chart = rbind(pie_chart,c(&quot;others&quot;,290))
+pie_chart = pie_chart %&gt;% 
   mutate(
-    n=as.numeric(n)
+    n = as.numeric(n)
     ) %&gt;% 
-  filter(n&gt;100)
+  filter(n &gt; 100)
 
-# mid victem event as offense details
-plot_ly(pie_chart,labels =~ offense,values= ~n) %&gt;% 
+# mid victim event as offense details
+plot_ly(pie_chart,labels = ~ offense,values = ~n) %&gt;% 
   add_pie %&gt;% 
-  layout(title=&quot;Constituent Incidents of MISDEMEANOR&quot;)</code></pre>
-<div id="htmlwidget-46bba5eef0864556fc14" style="width:80%;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-46bba5eef0864556fc14">{"x":{"visdat":{"356934374f39":["function () ","plotlyVisDat"]},"cur_data":"356934374f39","attrs":{"356934374f39":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Constituent Incidents of MISDEMEANOR","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["ADMINISTRATIVE CODE","ASSAULT 3 & RELATED OFFENSES","BURGLAR'S TOOLS","CRIMINAL MISCHIEF & RELATED OF","CRIMINAL TRESPASS","DANGEROUS DRUGS","DANGEROUS WEAPONS","FRAUDS","FRAUDULENT ACCOSTING","INTOXICATED & IMPAIRED DRIVING","OFF. AGNST PUB ORD SENSBLTY &","OFFENSES AGAINST PUBLIC ADMINI","OFFENSES AGAINST THE PERSON","OFFENSES INVOLVING FRAUD","OTHER OFFENSES RELATED TO THEF","OTHER STATE LAWS (NON PENAL LA","PETIT LARCENY","PETIT LARCENY OF MOTOR VEHICLE","POSSESSION OF STOLEN PROPERTY","SEX CRIMES","UNAUTHORIZED USE OF A VEHICLE","VEHICLE AND TRAFFIC LAWS","others"],"values":[5170,322026,264,135523,7823,311,1951,9992,474,2080,115367,29624,2994,280,3919,510,309693,640,1635,29551,5852,38852,290],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+  layout(title = &quot;Constituent Incidents of MISDEMEANOR&quot;)</code></pre>
+<div id="htmlwidget-4a78db22283bc11c6ce7" style="width:80%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-4a78db22283bc11c6ce7">{"x":{"visdat":{"4198f122fd5":["function () ","plotlyVisDat"]},"cur_data":"4198f122fd5","attrs":{"4198f122fd5":{"labels":{},"values":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"pie","inherit":true}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"title":"Constituent Incidents of MISDEMEANOR","hovermode":"closest","showlegend":true},"source":"A","config":{"modeBarButtonsToAdd":["hoverclosest","hovercompare"],"showSendToCloud":false},"data":[{"labels":["ADMINISTRATIVE CODE","ASSAULT 3 & RELATED OFFENSES","BURGLAR'S TOOLS","CRIMINAL MISCHIEF & RELATED OF","CRIMINAL TRESPASS","DANGEROUS DRUGS","DANGEROUS WEAPONS","FRAUDS","FRAUDULENT ACCOSTING","INTOXICATED & IMPAIRED DRIVING","OFF. AGNST PUB ORD SENSBLTY &","OFFENSES AGAINST PUBLIC ADMINI","OFFENSES AGAINST THE PERSON","OFFENSES INVOLVING FRAUD","OTHER OFFENSES RELATED TO THEF","OTHER STATE LAWS (NON PENAL LA","PETIT LARCENY","PETIT LARCENY OF MOTOR VEHICLE","POSSESSION OF STOLEN PROPERTY","SEX CRIMES","UNAUTHORIZED USE OF A VEHICLE","VEHICLE AND TRAFFIC LAWS","others"],"values":[5170,322026,264,135523,7823,311,1951,9992,474,2080,115367,29624,2994,280,3919,510,309693,640,1635,29551,5852,38852,290],"type":"pie","marker":{"color":"rgba(31,119,180,1)","line":{"color":"rgba(255,255,255,1)"}},"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
 </div>
-<div id="look-difference-among-most-common-event"
-class="section level2">
-<h2>Look difference among most common event</h2>
-<pre class="r"><code>offense_data= dangrous_data %&gt;% 
-  filter(offense==&quot;ASSAULT 3 &amp; RELATED OFFENSES&quot;|
-           offense==&quot;OFF. AGNST PUB ORD SENSBLTY &amp;&quot;|  
-           offense==&quot;CRIMINAL MISCHIEF &amp; RELATED OF&quot;|
-           offense==    &quot;PETIT LARCENY&quot;|offense==&quot;OFFENSES AGAINST PUBLIC ADMINI&quot; | 
-           offense==    &quot;SEX CRIMES&quot;) %&gt;% 
-  filter(level==&quot;MISDEMEANOR&quot;)
+<div id="difference-between-common-events" class="section level3">
+<h3>Difference between common events</h3>
+<pre class="r"><code>offense_data = dangrous_data %&gt;% 
+  filter(offense == &quot;ASSAULT 3 &amp; RELATED OFFENSES&quot;|
+           offense == &quot;OFF. AGNST PUB ORD SENSBLTY &amp;&quot;|  
+           offense == &quot;CRIMINAL MISCHIEF &amp; RELATED OF&quot;|
+           offense ==   &quot;PETIT LARCENY&quot;|offense==&quot;OFFENSES AGAINST PUBLIC ADMINI&quot; | 
+           offense ==   &quot;SEX CRIMES&quot;) %&gt;% 
+  filter(level == &quot;MISDEMEANOR&quot;)
 
-dnd=offense_data %&gt;% 
+dnd = offense_data %&gt;% 
   group_by(offense,vic_sex) %&gt;% 
   dplyr::summarize(
-    n_obs=n(),
-    type=level
+    n_obs = n(),
+    type = level
   ) %&gt;% 
   unique() %&gt;% 
   ggplot(
-    aes(x=offense,y=n_obs,fill=vic_sex)
-  )+
-  geom_bar(stat=&quot;identity&quot;)+
+    aes(x = offense,y=n_obs,fill = vic_sex)
+  ) +
+  geom_bar(stat = &quot;identity&quot;) +
   theme(
-    axis.text.x.bottom = element_text(angle=45, hjust=1)
-  )+
+    axis.text.x.bottom = element_text(angle = 45, hjust = 1)
+  ) +
   labs(
-    title=&quot;MISDEMEANOR Incidents VS victim sex &quot;,
-    x=&quot;dangerous level&quot;,
-    y=&quot;number of cases&quot;
+    title = &quot;MISDEMEANOR Incidents VS victim sex &quot;,
+    x = &quot;dangerous level&quot;,
+    y = &quot;number of cases&quot;
   )
 dnd</code></pre>
 <p><img src="Analysis_Victim_files/figure-html/unnamed-chunk-9-1.png" width="80%" /></p>

@@ -1,1 +1,5 @@
 /Data/NYPD_Complaint_Data_Historic.csv filter=lfs diff=lfs merge=lfs -text
+/Shiny_Final_Apps/Shiny_Crime_Map_Before_Covid/App_Before_Covid/Data/complaint_data_2017_2019.csv filter=lfs diff=lfs merge=lfs -text
+/Shiny_Final_Apps/Shiny_Crime_Map_After_Covid/App_After_Covid/Data/complaint_data_2020_2022.csv filter=lfs diff=lfs merge=lfs -text
+/Shiny_Final_Apps/Shiny_Crime_Map_CUMC/App_Cumc/Data/complaint_cumc_2.csv filter=lfs diff=lfs merge=lfs -text
+/Shiny_Final_Apps/Shiny_Crime_Map_CUMC/App_Cumc/Data/complaint_cumc_1.csv filter=lfs diff=lfs merge=lfs -text

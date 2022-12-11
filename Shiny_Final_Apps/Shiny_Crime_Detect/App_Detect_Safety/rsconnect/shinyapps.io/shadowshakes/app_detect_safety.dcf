@@ -1,0 +1,11 @@
+name: app_detect_safety
+title:
+username:
+account: shadowshakes
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7862196
+bundleId: 6620520
+url: https://shadowshakes.shinyapps.io/app_detect_safety/
+when: 1670690936.05271
+lastSyncTime: 1670690936.05274

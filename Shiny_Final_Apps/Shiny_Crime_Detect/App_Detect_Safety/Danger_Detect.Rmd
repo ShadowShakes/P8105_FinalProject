@@ -1,0 +1,215 @@
+---
+title: "Personal Safety Assessment"
+runtime: shiny
+output: 
+  flexdashboard::flex_dashboard:
+    theme:
+      version: 4
+      bg: "#101010"
+      fg: "#FDF7F7" 
+      primary: "#345f85"
+      navbar-bg: "#3ADAC6"
+      base_font: 
+        google: Prompt
+      heading_font:
+        google: Sen
+      code_font:
+        google: 
+          family: JetBrains Mono
+          local: false
+    orientation: columns
+    vertical_layout: fill
+    source_code: embed
+---
+  
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(broom)
+library(shiny)
+library(shinydashboard)
+library(dplyr)
+library(viridisLite)
+library(markdown)
+library(quantmod)
+library(tidyr)
+library(treemap)
+library(forecast)
+library(plotly)
+library(scatterD3)
+library(shinyWidgets)
+library(leaflet)
+```
+
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+#### Change features of a potential victim (e.g. Yourself)
+
+```{r}
+complaint = read_csv("Data/complaint_data.csv")
+```
+
+
+```{r}
+# Outing Time
+selectInput(
+  "out_time",
+  label = h3("Time to go out"),
+  choices = c("Morning", "Afternoon", "Evening", "Midnight"), selected = "Afternoon")
+
+# Self Biological Sex
+selectInput(
+  "sex_choice",
+  label = h3("Victim Biological Sex"),
+  choices = c("Female", "Male"), selected = "Female")
+                    
+# Self Age
+selectInput(
+  "age_choice",
+  label = h3("Victim Age Group"),
+  choices = c("<18", "25-44", "45-64", "65+"),
+  selected = "25-44")
+                    
+# Self Race
+selectInput(
+  "race_choice",
+  label = h3("Victim Race Group"),
+  choices = c("Black", "White Hispanic", "White", 
+             "Black Hispanic", "Asian / Pacific Islander",
+             "American Indian/Alaskan Native"),
+  selected = "Asian / Pacific Islander")
+```
+
+Column 
+-----------------------------------------------------------------------
+  
+### Borough Distribution
+```{r}
+renderPlotly({
+  complaint %>%
+  drop_na(borough) %>%
+  drop_na(period_range) %>%
+  filter(
+    period_range == input$out_time,
+    vic_sex == input$sex_choice, 
+    vic_age_group == input$age_choice, 
+    tolower(vic_race) == tolower(input$race_choice)
+    ) %>%
+  group_by(borough) %>%
+  summarize(crime_count = n()) %>%
+  plot_ly(
+    x = ~borough, y = ~ crime_count/sum(crime_count)*100, type = "bar",
+    alpha = 0.9, color = ~borough) %>%
+  layout(
+    xaxis = list(title = "Borough"),
+    yaxis = list(title = "Crime Percentage")
+  )
+})
+```
+
+### Felony Distribution
+```{r}
+renderPlotly({
+  complaint %>%
+  drop_na(period_range) %>%
+  filter(
+    period_range == input$out_time,
+    offense %in% c("Rape", "Murder", "Burglary", "Robbery", "Felony Assault",
+                    "Grand Larceny", "Grand Larceny of Motor Vehicle"),
+    vic_sex == input$sex_choice, 
+    vic_age_group == input$age_choice, 
+    tolower(vic_race) == tolower(input$race_choice)
+    ) %>%
+  group_by(offense) %>%
+  summarize(crime_count = n()) %>%
+  plot_ly(
+    x = ~offense, y = ~ crime_count/sum(crime_count)*100, type = "bar",
+    alpha = 0.9, color = ~offense) %>%
+  layout(
+    xaxis = list(title = "Felony Type"),
+    yaxis = list(title = "Crime Percentage")
+  )
+})
+```
+
+
+Column 
+-----------------------------------------------------------------------
+  
+### Suspect Sex Distribution
+```{r}
+renderPlotly({
+  complaint %>%
+  drop_na(period_range) %>%
+  drop_na(susp_sex) %>%
+  filter(
+    period_range == input[["out_time"]],
+    susp_sex %in% c("Female", "Male"),
+    vic_sex == input$sex_choice, 
+    vic_age_group == input$age_choice, 
+    tolower(vic_race) == tolower(input$race_choice)
+    ) %>%
+  group_by(susp_sex) %>%
+  summarize(crime_count = n()) %>%
+  plot_ly(
+    x = ~susp_sex, y = ~ crime_count/sum(crime_count)*100, type = "bar",
+    alpha = 0.9, color = ~susp_sex) %>%
+  layout(
+    xaxis = list(title = "Suspect Sex"),
+    yaxis = list(title = "Crime Percentage")
+  )
+})
+```
+
+### Suspect Age Group Distribution
+```{r}
+renderPlotly({
+  complaint %>%
+  drop_na(period_range) %>%
+  filter(
+    period_range == input$out_time,
+    susp_age_group != "Unclear",
+    vic_sex == input$sex_choice, 
+    vic_age_group == input$age_choice, 
+    tolower(vic_race) == tolower(input$race_choice)
+    ) %>%
+  group_by(susp_age_group) %>%
+  summarize(crime_count = n()) %>%
+  plot_ly(
+    x = ~susp_age_group, y = ~ crime_count/sum(crime_count)*100, type = "bar",
+    alpha = 0.9, color = ~susp_age_group) %>%
+  layout(
+    xaxis = list(title = "Suspect Age Group"),
+    yaxis = list(title = "Crime Percentage")
+  )
+})
+```
+
+Column 
+-----------------------------------------------------------------------
+### Suspect Race Distribution
+```{r}
+renderPlotly({
+  complaint %>%
+  drop_na(period_range) %>%
+  filter(
+    period_range == input$out_time,
+    susp_race != "Unclear",
+    vic_sex == input$sex_choice, 
+    vic_age_group == input$age_choice, 
+    tolower(vic_race) == tolower(input$race_choice)
+    ) %>%
+  group_by(susp_race) %>%
+  summarize(crime_count = n()) %>%
+  plot_ly(
+    x = ~susp_race, y = ~ crime_count/sum(crime_count) * 100, type = "bar",
+    alpha = 0.9, color = ~susp_race) %>%
+  layout(
+    xaxis = list(title = "Suspect Race"),
+    yaxis = list(title = "Crime Percentage"),
+    legend = list(orientation = "h", x = 0, y = 10)
+  )
+})
+```

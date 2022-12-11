@@ -1,0 +1,11 @@
+name: app_after_covid
+title:
+username:
+account: shadowshakes
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7861226
+bundleId: 6618389
+url: https://shadowshakes.shinyapps.io/app_after_covid/
+when: 1670636640.16087
+lastSyncTime: 1670636640.16089

@@ -147,7 +147,7 @@ plot_his_sex = dangrous_data %>%
 plot_his_sex
 ```
 
-Through the stacked bar chart, we can see that when the danger level is violation (0), the number of incidents where the victim is a woman is much higher than that of a man. At intermediate and higher levels, no significant differences can be observed by observation,
+Through the stacked bar chart, we can see that when the danger level is violation (0), the number of incidents where the victim is a woman is much higher than that of a man. At intermediate and higher levels, no significant differences can be observed by observation. This difference will be better reflected in the pie chart. By looking at incidents with different levels of danger, we can see that the proportion of female victims of violation is as high as 64.4%, which is ten percentage points higher than other types of events, misdemeanors and felonies. The images are shown below:
 
 ```{r fig.width = 7.5, fig.height = 9}
 plot_pie_sex0 = dangrous_data %>%

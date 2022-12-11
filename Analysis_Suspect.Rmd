@@ -110,7 +110,7 @@ jurisdiction_code=as.factor(jurisdiction_code)
 ```
 
 
-### Suspect Sex
+### Suspect Sex Analysis
 
 ```{r plot_suspect_sex}
 complaint %>% 
@@ -146,7 +146,7 @@ complaint %>%
 According to the plot, most of the suspect's sex(if recorded) is male, female suspects appear to be much fewer than male suspect.  
 And in 2020, the propotions of male suspect are even larger than other years. In the three kinds of crime level, male aslo has larger proportion than female.
 
-### Suspect Race
+### Suspect Race Analysis
 
 ```{r}
 complaint %>% 
@@ -181,8 +181,8 @@ complaint %>%
 
 Based on barplot, we can see that the most frequent suspect races are: Black, White Hispanic and White, while Asian/Pacific Islander and American Indian/Alaskan Native are the least freqeut races to be a suspect. In the three kinds of crime level, black and white hispanic also take the largest proportion.
 
-### Suspect Age Group
-
+### Suspect Age Group Analysis
+ 
 ```{r}
 complaint %>% 
   drop_na(offense, susp_age_group) %>% 
@@ -218,10 +218,10 @@ According to the barplot, we can see that the age group between 25 and 44 years 
 Besides, with time going by, the proportion of age group between 25-64 years old are rising in suspects' age distribution.
 
 
-## Statistical Testing
+## Statistical Testing Analysis
 We use statistical tests to find if there is a difference in daily crime records of suspects from difference races.
 
-### Suspect Race
+### Suspect Race Analysis
 ```{r}
 crimebyday_aspa = complaint %>% 
   group_by(year,month,day_of_week) %>% 
@@ -248,7 +248,7 @@ According to the test results, we can find that there's a significant difference
 ## Regression Modelling Analysis
 We try to build models to give prediction of the criminal's features based on other factors, and see if we can draw conclusions from the coefficients of the factors.
 
-### Suspect Sex
+### Suspect Sex Analysis
 
 ```{r}
 tidydata1 = complaint %>%
@@ -288,7 +288,7 @@ tidydata1 %>%
   ggplot(aes(x = susp_age_group, y = resid)) + geom_violin(aes(fill = susp_age_group)) + facet_wrap(~covid_state)
 ```
 
-### Suspect Race
+### Suspect Race Analysis
 
 ```{r}
 tidy_data2 = tidydata1%>%

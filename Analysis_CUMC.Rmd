@@ -136,7 +136,7 @@ According to this plot, we find that the daily felony frequency trend around CUM
 There is a peak appears from the autumn 2020 to the spring of 2021. Based on the Covid-10 pandemic period, we think that it may have some connection with the end of city lockdown and economic downturn caused by Covid. 
 
 
-### Suspect Race
+### Suspect Race Analysis
 ```{r}
 complaint %>% 
   drop_na(offense, susp_race) %>% 
@@ -174,7 +174,7 @@ The distribution of suspect races committing crime between years have some diffe
 
 And for crime levels, there are larger proportion of White Hispanic and Black Hispanic people committing Felony level crimes, while suspects from other races have larger proportion of committing Misdemeanor and Violation crimes.
 
-### Suspect Age Group
+### Suspect Age Group Analysis
 ```{r}
 complaint %>% 
   drop_na(offense, susp_age_group) %>% 
@@ -209,7 +209,7 @@ complaint %>%
 
 According to this plot, the most frequency suspect age group is from 25 to 64. And there are more suspects in 45-64 age group that commit violation crime.
 
-### Victim Sex
+### Victim Sex Analysis
 ```{r}
 complaint %>% 
   drop_na(offense, vic_sex) %>% 
@@ -246,7 +246,7 @@ There is equal proportion of victim sex to be Female or Male, both around 0.5.
 But on different levels, the victim sex has large difference. There are significantly more Male victims on Felony crimes, more Male victims on Misdemeanor crimes, and significantly more Female victims on Violation crimes. We infer that the violations like the sexual harassment happens more on Female victims which may partly explain for this difference.
 
 
-### Victim Race
+### Victim Race Analysis
 ```{r}
 complaint %>% 
   drop_na(offense, vic_race) %>% 
@@ -281,3 +281,6 @@ complaint %>%
 
 According to the plot, victims from White Hispanic are the most frequent, and Black Hispanic victims are the second most frequent, then the Black and Black Hispanic. This trends are similar to suspects' race distribution.   
 Also, we observe that fewer Black victims in Felony crimes and more Black Hispanic and White Hispanic crimes.
+
+### Shiny Map
+We also include an inteactive crime map only for CUMC campus area. Explore it here: [Shiny CUMC Safety](https://shadowshakes.shinyapps.io/app_cumc/)

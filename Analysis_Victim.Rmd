@@ -119,6 +119,7 @@ dangrous_data = dangrous_data%>%
    )
   )
 ```
+
 From the data, we can easily find that violation represents the lowest level, followed by misdemeanors and felonies. Therefore, they are assigned 0, 1, and 2 to represent the degree of danger of the event, that is, the risk factor faced by the victim.
 
 # Next, let's further analyze the relationship between the characteristics of the victim and the level of danger.
@@ -220,6 +221,7 @@ By observing the results, the regression coefficient of the independent variable
 In the event types with higher risk levels, the probability of men and women being in danger will tend to be equal.
 
 ##  We will use the same line of thought to analyze the relationship between the race of the victim and the level of danger.
+
 ```{r}
 dangrous_data = dangrous_data %>% 
   mutate(

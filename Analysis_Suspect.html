@@ -450,8 +450,8 @@ VEHICLE”, “MURDER &amp; NON-NEGL. MANSLAUGHTER”, “RAPE”, “ROBBERY”
 <h2>Visual Analysis</h2>
 <p>We will first use data visualization to give an overview of the
 distribution of suspect’s features.</p>
-<div id="suspect-sex" class="section level3">
-<h3>Suspect Sex</h3>
+<div id="suspect-sex-analysis" class="section level3">
+<h3>Suspect Sex Analysis</h3>
 <pre class="r"><code>complaint %&gt;% 
   drop_na(offense, susp_sex) %&gt;% 
   group_by(year, susp_sex) %&gt;% 
@@ -488,8 +488,8 @@ And in 2020, the propotions of male suspect are even larger than other
 years. In the three kinds of crime level, male aslo has larger
 proportion than female.</p>
 </div>
-<div id="suspect-race" class="section level3">
-<h3>Suspect Race</h3>
+<div id="suspect-race-analysis" class="section level3">
+<h3>Suspect Race Analysis</h3>
 <pre class="r"><code>complaint %&gt;% 
   drop_na(offense, susp_race) %&gt;% 
   group_by(year, susp_race) %&gt;% 
@@ -526,8 +526,8 @@ American Indian/Alaskan Native are the least freqeut races to be a
 suspect. In the three kinds of crime level, black and white hispanic
 also take the largest proportion.</p>
 </div>
-<div id="suspect-age-group" class="section level3">
-<h3>Suspect Age Group</h3>
+<div id="suspect-age-group-analysis" class="section level3">
+<h3>Suspect Age Group Analysis</h3>
 <pre class="r"><code>complaint %&gt;% 
   drop_na(offense, susp_age_group) %&gt;% 
   group_by(year, susp_age_group) %&gt;% 
@@ -565,12 +565,12 @@ Besides, with time going by, the proportion of age group between 25-64
 years old are rising in suspects’ age distribution.</p>
 </div>
 </div>
-<div id="statistical-testing" class="section level2">
-<h2>Statistical Testing</h2>
+<div id="statistical-testing-analysis" class="section level2">
+<h2>Statistical Testing Analysis</h2>
 <p>We use statistical tests to find if there is a difference in daily
 crime records of suspects from difference races.</p>
-<div id="suspect-race-1" class="section level3">
-<h3>Suspect Race</h3>
+<div id="suspect-race-analysis-1" class="section level3">
+<h3>Suspect Race Analysis</h3>
 <pre class="r"><code>crimebyday_aspa = complaint %&gt;% 
   group_by(year,month,day_of_week) %&gt;% 
   filter(susp_race == &quot;ASIAN / PACIFIC ISLANDER&quot;) %&gt;% 
@@ -603,8 +603,8 @@ difference between the suspect races.</p>
 <p>We try to build models to give prediction of the criminal’s features
 based on other factors, and see if we can draw conclusions from the
 coefficients of the factors.</p>
-<div id="suspect-sex-1" class="section level3">
-<h3>Suspect Sex</h3>
+<div id="suspect-sex-analysis-1" class="section level3">
+<h3>Suspect Sex Analysis</h3>
 <pre class="r"><code>tidydata1 = complaint %&gt;%
   select(-day_of_week) %&gt;%
   na.omit() %&gt;%
@@ -700,8 +700,8 @@ mylogit %&gt;%
   ggplot(aes(x = susp_age_group, y = resid)) + geom_violin(aes(fill = susp_age_group)) + facet_wrap(~covid_state)</code></pre>
 <p><img src="Analysis_Suspect_files/figure-html/unnamed-chunk-7-1.png" width="80%" /></p>
 </div>
-<div id="suspect-race-2" class="section level3">
-<h3>Suspect Race</h3>
+<div id="suspect-race-analysis-2" class="section level3">
+<h3>Suspect Race Analysis</h3>
 <pre class="r"><code>tidy_data2 = tidydata1%&gt;%
   filter(susp_race %in% c(&quot;BLACK&quot;,&quot;ASIAN / PACIFIC ISLANDER&quot;))%&gt;%
   mutate(susp_race=ifelse(susp_race == &quot;BLACK&quot;,1,0))

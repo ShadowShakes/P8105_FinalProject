@@ -96,7 +96,7 @@ complaint =
 
 We will first use data visualization to get an overview.
 
-### Borough
+### Borough Analysis
 
 ```{r}
 complaint %>% 
@@ -136,7 +136,7 @@ complaint %>%
 The proportion of felonies does not appear to have changed significantly over the years.
 
 
-## Statistical Testing
+## Statistical Testing Analysis
 We use statistical tests to find if there is a difference in monthly crime records from different regions.
 
 ### Test average number of crimes per day
@@ -180,7 +180,7 @@ pairwise.t.test(anova_table$felony_rate, anova_table$borough, p.adj = 'bonferron
 
 The ANOVA test shows that the five boroughs do not have equal felony rate, and the pairwise t test further reveals that Bronx and Staten Island are different from others; Manhattan differs from Brooklyn, but does not differ from Queens; while Brooklyn does not differ from Queens either. Based on felony rate, from highest to lowest, Brooklyn, Queens, Manhattan, Bronx, Staten Island.
 
-###Partial conclusion
+### Partial Conclusion
 
 The test above shows that high monthly cases do not necessarily mean high felony rate. While Brooklyn both has the highest monthly cases and the highest felony rate, Staten Island both has the lowest monthly cases and the lowest felony rate.
 

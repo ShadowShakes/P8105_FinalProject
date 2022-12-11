@@ -200,7 +200,7 @@ complaint %>%
 
 The frequency patterns of robbery are generally the same as that of felony overall: fewer robberies in the morning, more in the afternoon and evening. However, robbery frequency in the late night (0-4 am) on weekends is relatively high and reaches its highest point at 4 am on Sunday. Given that robberies typically occur in public places (such as streets), and that the number of people outside at late night on weekends is certainly much smaller than during the day, going out at this time is much more likely to make you a target of robbery.
 
-## Statistical Testing
+## Statistical Testing Analysis
 
 ### Felony Frequency by Season
 
